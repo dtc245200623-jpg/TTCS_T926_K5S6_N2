@@ -1,0 +1,814 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế hoạch Headcount & Ngân sách Lương - Tuyển dụng Nội bộ</title>
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 280px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
+        .sidebar-header h2 { font-size: 18px; color: #1e3a8a; font-weight: 700; }
+        .sidebar-menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #475569; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; margin-bottom: 4px; transition: background 0.2s, color 0.2s; cursor: pointer; }
+        .menu-item:hover { background: #f1f5f9; color: #1e293b; }
+        .menu-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+        /* Main Wrapper */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #ffffff; padding: 16px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 16px; }
+        .user-name { font-weight: 600; color: #1e293b; font-size: 14px; text-align: right; }
+        .user-role-badge { display: block; font-size: 12px; color: #64748b; font-weight: 400; margin-top: 2px; }
+
+        .avatar-wrapper { position: relative; cursor: pointer; display: inline-block; transition: transform 0.2s; user-select: none; }
+        .avatar-wrapper:hover { transform: scale(1.06); }
+        .header-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white; font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #e2e8f0; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+        }
+        .header-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .btn-header { background: none; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .btn-header:hover { border-color: #2563eb; color: #2563eb; }
+        .btn-logout { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #fca5a5; color: #991b1b; }
+
+        /* Content Area */
+        .content-area { flex: 1; overflow-y: auto; padding: 28px 36px; }
+        .container { max-width: 1360px; margin: 0 auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        .page-header p { font-size: 14px; color: #64748b; }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-primary { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); transition: 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
+        .btn-audit { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-audit:hover { background: #eff6ff; color: #2563eb; border-color: #93c5fd; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-blue { background: #eff6ff; color: #2563eb; }
+        .stat-amber { background: #fffbeb; color: #d97706; }
+        .stat-green { background: #ecfdf5; color: #059669; }
+        .stat-purple { background: #f5f3ff; color: #7c3aed; }
+        .stat-info h3 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+        .stat-info span { font-size: 13px; color: #64748b; }
+
+        /* Filter Toolbar */
+        .toolbar { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .toolbar-left { display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px; flex-wrap: wrap; }
+        .search-input { width: 100%; max-width: 320px; padding: 9px 14px 9px 38px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") no-repeat 12px center; }
+        .search-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .filter-select { padding: 9px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; outline: none; cursor: pointer; color: #334155; }
+
+        /* Data Table */
+        .table-container { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { background: #f8fafc; padding: 14px 18px; font-size: 13px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; }
+        .data-table td { padding: 14px 18px; font-size: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .data-table tr:hover { background: #f8fafc; }
+
+        /* Progress Bar */
+        .progress-box { width: 130px; display: flex; flex-direction: column; gap: 4px; }
+        .progress-bar-bg { width: 100%; height: 7px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+        .fill-normal { background: #10b981; }
+        .fill-warning { background: #f59e0b; }
+        .fill-full { background: #ef4444; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-available { background: #dcfce7; color: #166534; }
+        .badge-exhausted { background: #fee2e2; color: #991b1b; }
+        .badge-dept { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-weight: 600; }
+
+        /* Audit Action Badges */
+        .badge-direct { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .badge-request { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-approve { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-reject { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+        /* Action Buttons */
+        .btn-action { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: 0.15s; }
+        .btn-action-edit { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+        .btn-action-edit:hover { background: #dbeafe; }
+        .btn-action-delete { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .btn-action-delete:hover { background: #fca5a5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; width: 100%; max-width: 650px; border-radius: 14px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; max-height: 90vh; animation: modalFadeIn 0.2s ease-out; }
+        .modal-content-lg { max-width: 950px; }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .modal-close { background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; }
+        .modal-close:hover { color: #0f172a; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Form elements */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #0f172a; outline: none; transition: 0.15s; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-note { font-size: 12px; color: #64748b; margin-top: 4px; }
+        .required-star { color: #ef4444; margin-left: 2px; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+        .toast { padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; }
+        .toast-success { background: #059669; }
+        .toast-error { background: #dc2626; }
+        .toast-info { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <h2>Tuyển dụng Nội bộ</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu"></div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name" id="displayUsername">Đang tải...</div>
+                    <span class="user-role-badge" id="displayRoles">...</span>
+                </div>
+                <div class="avatar-wrapper" onclick="window.location.href='profile.html'">
+                    <div class="header-avatar" id="userAvatarContainer">U</div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1>Kế Hoạch Headcount & Ngân Sách Lương</h1>
+                        <p>Khai báo và kiểm soát định biên nhân sự theo phòng ban theo năm - Trưởng phòng Nhân sự</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-audit" onclick="openAuditModal()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Nhật ký Ghi đè & Kiểm toán
+                        </button>
+                        <button class="btn-primary" id="btnCreatePlan" onclick="openCreatePlanModal()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            Khai báo Chỉ tiêu Mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-blue">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalTarget">0</h3>
+                            <span>Tổng chỉ tiêu Headcount</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-amber">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalUsed">0</h3>
+                            <span>Đã dùng / Đang tuyển</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-green">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalRemaining">0</h3>
+                            <span>Chỉ tiêu còn lại</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-purple">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalBudget">0 VNĐ</h3>
+                            <span>Tổng quỹ lương năm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Tìm theo tên hoặc mã phòng ban..." oninput="filterPlans()">
+                        <select class="filter-select" id="yearFilter" onchange="onYearFilterChange()">
+                            <option value="2024">Năm 2024</option>
+                            <option value="2025">Năm 2025</option>
+                            <option value="2026" selected>Năm 2026</option>
+                            <option value="2027">Năm 2027</option>
+                            <option value="2028">Năm 2028</option>
+                        </select>
+                        <select class="filter-select" id="quotaFilter" onchange="filterPlans()">
+                            <option value="">Tất cả trạng thái chỉ tiêu</option>
+                            <option value="AVAILABLE">Còn chỉ tiêu (>0)</option>
+                            <option value="EXHAUSTED">Đã hết / Vượt chỉ tiêu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Phòng Ban</th>
+                                <th>Năm</th>
+                                <th style="text-align: center;">Chỉ tiêu</th>
+                                <th style="text-align: center;">Đã dùng</th>
+                                <th style="text-align: center;">Còn lại</th>
+                                <th>Tỷ lệ sử dụng</th>
+                                <th>Ngân sách lương</th>
+                                <th>Ghi chú</th>
+                                <th style="text-align: right;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planTableBody">
+                            <tr>
+                                <td colspan="10" style="text-align: center; padding: 40px; color: #64748b;">Đang tải kế hoạch headcount...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Khai báo / Chỉnh sửa Kế hoạch Headcount -->
+    <div class="modal" id="planModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalPlanTitle">Khai Báo Chỉ Tiêu Headcount Mới</h3>
+                <button class="modal-close" onclick="closeModal('planModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal_plan_id">
+
+                <div class="form-group">
+                    <label>Phòng ban<span class="required-star">*</span></label>
+                    <select class="form-control" id="modal_plan_departmentId">
+                        <option value="">-- Chọn phòng ban --</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Năm kế hoạch<span class="required-star">*</span></label>
+                        <input type="number" class="form-control" id="modal_plan_year" min="2020" max="2035" value="2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Chỉ tiêu Headcount (Nhân sự)<span class="required-star">*</span></label>
+                        <input type="number" class="form-control" id="modal_plan_targetHeadcount" min="1" placeholder="VD: 15">
+                        <div class="form-note">Số lượng nhân sự tối đa được phép tuyển trong năm.</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ngân sách lương dự kiến (VNĐ / năm)</label>
+                    <input type="number" class="form-control" id="modal_plan_salaryBudget" placeholder="VD: 1800000000">
+                    <div class="form-note">Tổng hạn mức quỹ lương cấp cho phòng ban trong năm kế hoạch.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú / Quyết định giao chỉ tiêu</label>
+                    <textarea class="form-control" id="modal_plan_notes" rows="3" placeholder="Nhập căn cứ, số quyết định phê duyệt định biên..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('planModal')">Huỷ</button>
+                <button type="button" class="btn-primary" onclick="savePlan()">Lưu Kế Hoạch</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lịch sử Ghi đè & Kiểm toán Headcount -->
+    <div class="modal" id="auditModal">
+        <div class="modal-content modal-content-lg">
+            <div class="modal-header">
+                <h3>Lịch Sử Ghi Đè & Truy Vết Kiểm Toán Headcount</h3>
+                <button class="modal-close" onclick="closeModal('auditModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+                    Nhật ký ghi nhận mọi hành vi đề xuất, phê duyệt hoặc từ chối ghi đè chỉ tiêu headcount vượt định biên phục vụ kiểm toán nội bộ.
+                </p>
+                <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Yêu cầu tuyển dụng</th>
+                                <th>Phòng ban</th>
+                                <th>Hành động</th>
+                                <th>Chỉ tiêu / Đã dùng / YC</th>
+                                <th>Người thực hiện</th>
+                                <th>Lý do giải trình & Kiểm toán</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">Đang tải nhật ký kiểm toán...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('auditModal')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const ROLES_INFO = {
+            'ROLE_CANDIDATE': { name: 'Ứng viên' },
+            'ROLE_RECRUITER': { name: 'Nhân viên tuyển dụng' },
+            'ROLE_HIRING_MANAGER': { name: 'Trưởng bộ phận' },
+            'ROLE_INTERVIEWER': { name: 'Người phỏng vấn' },
+            'ROLE_HR_MANAGER': { name: 'Trưởng phòng Nhân sự' },
+            'ROLE_APPROVER': { name: 'Người duyệt' },
+            'ROLE_ADMIN': { name: 'Quản trị hệ thống' },
+            'ROLE_USER': { name: 'Người dùng' }
+        };
+
+        let currentUser = null;
+        let plansList = [];
+        let departmentsList = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
+
+        async function init() {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return logout();
+
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.status === 401 || res.status === 403) return logout();
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    currentUser = data.data;
+                    document.getElementById('displayUsername').textContent = currentUser.fullName || currentUser.username;
+                    renderUserAvatar(currentUser.avatarUrl, currentUser.fullName || currentUser.username);
+
+                    const userRoles = currentUser.roles || ['ROLE_USER'];
+                    const roleNames = userRoles.map(r => ROLES_INFO[r] ? ROLES_INFO[r].name : r);
+                    document.getElementById('displayRoles').textContent = roleNames.join(', ');
+
+                    renderAppSidebar(userRoles);
+
+                    // Check create permission: HR Manager or Admin
+                    const canManage = userRoles.includes('ROLE_HR_MANAGER') || userRoles.includes('ROLE_ADMIN');
+                    if (!canManage) {
+                        document.getElementById('btnCreatePlan').style.display = 'none';
+                    }
+
+                    await Promise.all([loadDepartments(), loadPlans()]);
+                }
+            } catch (err) {
+                console.error("Lỗi xác thực người dùng", err);
+                showToast("Lỗi khi kết nối với máy chủ", "error");
+            }
+        }
+
+        function renderUserAvatar(avatarUrl, displayName) {
+            const container = document.getElementById('userAvatarContainer');
+            if (!container) return;
+            if (avatarUrl && avatarUrl.trim() !== '') {
+                container.innerHTML = `<img src="${avatarUrl}" alt="Avatar" onerror="this.onerror=null; this.parentNode.innerHTML='<span>${getInitials(displayName)}</span>'">`;
+            } else {
+                container.innerHTML = `<span>${getInitials(displayName)}</span>`;
+            }
+        }
+
+        function getInitials(name) {
+            if (!name) return 'U';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        async function loadDepartments() {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch('/api/departments', { headers: { 'Authorization': 'Bearer ' + token } });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    departmentsList = json.data || [];
+                    const sel = document.getElementById('modal_plan_departmentId');
+                    sel.innerHTML = '<option value="">-- Chọn phòng ban --</option>' + 
+                        departmentsList.map(d => `<option value="${d.id}">${d.name} (${d.code})</option>`).join('');
+                }
+            } catch (e) {
+                console.error("Lỗi tải phòng ban", e);
+            }
+        }
+
+        async function loadPlans() {
+            const token = localStorage.getItem('accessToken');
+            const selectedYear = document.getElementById('yearFilter').value;
+            try {
+                const res = await fetch(`/api/headcount-plans?year=${selectedYear}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    plansList = json.data || [];
+                    updateStats();
+                    filterPlans();
+                } else {
+                    showToast(json.message || "Không thể tải kế hoạch headcount", "error");
+                }
+            } catch (e) {
+                console.error("Lỗi tải kế hoạch", e);
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        function onYearFilterChange() {
+            loadPlans();
+        }
+
+        function updateStats() {
+            let totalTarget = 0;
+            let totalUsed = 0;
+            let totalRemaining = 0;
+            let totalBudget = 0;
+
+            plansList.forEach(p => {
+                totalTarget += (p.targetHeadcount || 0);
+                totalUsed += (p.usedHeadcount || 0);
+                totalRemaining += (p.remainingHeadcount || 0);
+                totalBudget += (p.salaryBudget || 0);
+            });
+
+            document.getElementById('statTotalTarget').textContent = totalTarget;
+            document.getElementById('statTotalUsed').textContent = totalUsed;
+            document.getElementById('statTotalRemaining').textContent = totalRemaining;
+            document.getElementById('statTotalBudget').textContent = formatCurrency(totalBudget);
+        }
+
+        function filterPlans() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const quota = document.getElementById('quotaFilter').value;
+
+            let filtered = plansList.filter(p => {
+                if (quota === 'AVAILABLE' && (p.remainingHeadcount || 0) <= 0) return false;
+                if (quota === 'EXHAUSTED' && (p.remainingHeadcount || 0) > 0) return false;
+
+                if (search) {
+                    const deptName = (p.departmentName || '').toLowerCase();
+                    const deptCode = (p.departmentCode || '').toLowerCase();
+                    const notes = (p.notes || '').toLowerCase();
+                    if (!deptName.includes(search) && !deptCode.includes(search) && !notes.includes(search)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            renderTable(filtered);
+        }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('planTableBody');
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 40px; color: #64748b;">Chưa có kế hoạch headcount nào cho năm này. Hãy ấn "Khai báo Chỉ tiêu Mới".</td></tr>`;
+                return;
+            }
+
+            const canManage = currentUser && (currentUser.roles.includes('ROLE_HR_MANAGER') || currentUser.roles.includes('ROLE_ADMIN'));
+
+            tbody.innerHTML = list.map(p => {
+                const target = p.targetHeadcount || 0;
+                const used = p.usedHeadcount || 0;
+                const remaining = p.remainingHeadcount != null ? p.remainingHeadcount : (target - used);
+                const percent = target > 0 ? Math.min(Math.round((used / target) * 100), 100) : 0;
+
+                let fillClass = 'fill-normal';
+                if (percent >= 100) fillClass = 'fill-full';
+                else if (percent >= 80) fillClass = 'fill-warning';
+
+                let remainingBadge = remaining > 0 ? 
+                    `<span class="badge badge-available">${remaining} còn lại</span>` : 
+                    `<span class="badge badge-exhausted">Hết chỉ tiêu</span>`;
+
+                let actions = '';
+                if (canManage) {
+                    actions = `
+                        <button class="btn-action btn-action-edit" onclick="openEditPlanModal(${p.id})">Sửa</button>
+                        <button class="btn-action btn-action-delete" onclick="deletePlan(${p.id})">Xóa</button>
+                    `;
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight: 700; color: #2563eb;">#${p.id}</td>
+                        <td>
+                            <strong style="color: #0f172a;">${escapeHtml(p.departmentName || 'Phòng ban')}</strong>
+                            <div style="font-size: 12px; color: #64748b;">Mã: ${escapeHtml(p.departmentCode || '--')}</div>
+                        </td>
+                        <td><span style="font-weight: 600;">${p.year}</span></td>
+                        <td style="text-align: center; font-weight: 700; font-size: 15px; color: #0f172a;">${target}</td>
+                        <td style="text-align: center; font-weight: 600; color: #d97706;">${used}</td>
+                        <td style="text-align: center;">${remainingBadge}</td>
+                        <td>
+                            <div class="progress-box">
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                                    <span>${percent}%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill ${fillClass}" style="width: ${percent}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="white-space: nowrap; font-size: 13px; font-weight: 500;">
+                            ${p.salaryBudget ? formatCurrency(p.salaryBudget) : '<span style="color:#94a3b8;">Chưa định mức</span>'}
+                        </td>
+                        <td style="font-size: 13px; color: #64748b; max-width: 200px;">
+                            ${escapeHtml(p.notes || '--')}
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <div style="display: flex; gap: 6px; justify-content: flex-end;">${actions}</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // CREATE / UPDATE / DELETE PLAN
+        // ==========================================
+
+        function openCreatePlanModal() {
+            document.getElementById('modalPlanTitle').textContent = 'Khai Báo Chỉ Tiêu Headcount Mới';
+            document.getElementById('modal_plan_id').value = '';
+            document.getElementById('modal_plan_departmentId').value = '';
+            document.getElementById('modal_plan_departmentId').disabled = false;
+            document.getElementById('modal_plan_year').value = document.getElementById('yearFilter').value || '2026';
+            document.getElementById('modal_plan_targetHeadcount').value = '';
+            document.getElementById('modal_plan_salaryBudget').value = '';
+            document.getElementById('modal_plan_notes').value = '';
+            openModal('planModal');
+        }
+
+        function openEditPlanModal(id) {
+            const plan = plansList.find(p => p.id === id);
+            if (!plan) return;
+
+            document.getElementById('modalPlanTitle').textContent = `Chỉnh Sửa Chỉ Tiêu Headcount #${plan.id}`;
+            document.getElementById('modal_plan_id').value = plan.id;
+            document.getElementById('modal_plan_departmentId').value = plan.departmentId;
+            document.getElementById('modal_plan_departmentId').disabled = true; // Không cho đổi department khi sửa
+            document.getElementById('modal_plan_year').value = plan.year;
+            document.getElementById('modal_plan_targetHeadcount').value = plan.targetHeadcount;
+            document.getElementById('modal_plan_salaryBudget').value = plan.salaryBudget || '';
+            document.getElementById('modal_plan_notes').value = plan.notes || '';
+            openModal('planModal');
+        }
+
+        async function savePlan() {
+            const token = localStorage.getItem('accessToken');
+            const id = document.getElementById('modal_plan_id').value;
+            const departmentId = document.getElementById('modal_plan_departmentId').value;
+            const year = document.getElementById('modal_plan_year').value;
+            const targetHeadcount = document.getElementById('modal_plan_targetHeadcount').value;
+            const salaryBudget = document.getElementById('modal_plan_salaryBudget').value;
+            const notes = document.getElementById('modal_plan_notes').value.trim();
+
+            if (!departmentId) {
+                showToast("Vui lòng chọn phòng ban!", "error");
+                return;
+            }
+            if (!year || parseInt(year) < 2020) {
+                showToast("Vui lòng nhập năm kế hoạch hợp lệ!", "error");
+                return;
+            }
+            if (!targetHeadcount || parseInt(targetHeadcount) <= 0) {
+                showToast("Chỉ tiêu headcount phải lớn hơn 0!", "error");
+                return;
+            }
+
+            const payload = {
+                departmentId: parseInt(departmentId),
+                year: parseInt(year),
+                targetHeadcount: parseInt(targetHeadcount),
+                salaryBudget: salaryBudget ? parseFloat(salaryBudget) : null,
+                notes
+            };
+
+            const url = id ? `/api/headcount-plans/${id}` : `/api/headcount-plans`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    showToast(json.message || "Lưu kế hoạch thành công!", "success");
+                    closeModal('planModal');
+                    await loadPlans();
+                } else {
+                    showToast(json.message || "Không thể lưu kế hoạch", "error");
+                }
+            } catch (e) {
+                console.error("Lỗi lưu kế hoạch", e);
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        async function deletePlan(id) {
+            if (!confirm(`Bạn có chắc chắn muốn xóa kế hoạch headcount #${id} không? Thao tác này không thể hoàn tác.`)) return;
+
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch(`/api/headcount-plans/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    showToast("Đã xóa kế hoạch thành công!", "success");
+                    await loadPlans();
+                } else {
+                    showToast(json.message || "Không thể xóa kế hoạch", "error");
+                }
+            } catch (e) {
+                console.error("Lỗi xóa kế hoạch", e);
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        // ==========================================
+        // AUDIT TRAIL MODAL
+        // ==========================================
+
+        async function openAuditModal() {
+            openModal('auditModal');
+            const tbody = document.getElementById('auditTableBody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">Đang tải nhật ký kiểm toán...</td></tr>`;
+
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch(`/api/headcount-plans/override-audits`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    const audits = json.data || [];
+                    if (audits.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">Chưa có dữ liệu ghi đè chỉ tiêu nào được ghi nhận.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = audits.map(a => {
+                        let actionBadge = '';
+                        if (a.actionType === 'DIRECT_OVERRIDE') {
+                            actionBadge = '<span class="badge badge-direct">Ghi đè trực tiếp</span>';
+                        } else if (a.actionType === 'REQUEST_OVERRIDE') {
+                            actionBadge = '<span class="badge badge-request">Đề xuất ghi đè</span>';
+                        } else if (a.actionType === 'APPROVE_OVERRIDE') {
+                            actionBadge = '<span class="badge badge-approve">Xác nhận duyệt ghi đè</span>';
+                        } else if (a.actionType === 'REJECT_OVERRIDE') {
+                            actionBadge = '<span class="badge badge-reject">Từ chối ghi đè</span>';
+                        }
+
+                        const dateStr = a.createdAt ? new Date(a.createdAt).toLocaleString('vi-VN') : '--';
+                        const quotaInfo = `Chỉ tiêu: ${a.targetHeadcount ?? '--'} | Đã dùng: ${a.usedHeadcount ?? '--'} | YC: ${a.requestedHeadcount ?? '--'}`;
+
+                        return `
+                            <tr>
+                                <td style="white-space: nowrap; font-size: 12px; color: #64748b;">${dateStr}</td>
+                                <td>
+                                    <strong style="color: #2563eb;">#${a.jobRequestId}</strong>
+                                    <div style="font-size: 12px; color: #0f172a;">${escapeHtml(a.jobRequestTitle || '')}</div>
+                                </td>
+                                <td>${escapeHtml(a.departmentName || '--')}</td>
+                                <td>${actionBadge}</td>
+                                <td style="font-size: 12px; white-space: nowrap;">${quotaInfo}</td>
+                                <td>
+                                    <strong style="color: #0f172a; font-size: 13px;">${escapeHtml(a.actionByUserFullName || a.actionByUserName || 'Hệ thống')}</strong>
+                                </td>
+                                <td style="font-size: 13px; color: #334155; max-width: 260px;">
+                                    ${escapeHtml(a.reason || '--')}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 20px;">${json.message || 'Lỗi khi tải nhật ký kiểm toán'}</td></tr>`;
+                }
+            } catch (e) {
+                console.error("Lỗi kiểm toán", e);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 20px;">Lỗi kết nối máy chủ</td></tr>`;
+            }
+        }
+
+        // ==========================================
+        // HELPERS
+        // ==========================================
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function formatCurrency(amount) {
+            if (amount == null) return '0 VNĐ';
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRoles');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

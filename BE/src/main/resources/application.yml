@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: jdbc:sqlserver://localhost\SQLEXPRESS02;databaseName=TTCS_T926_K5S6_N2;encrypt=true;trustServerCertificate=true
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: 123
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dtc245200623@ictu.edu.vn
+    password: syykmjwlzwekgovs
+    properties:
+      mail: 
+        smtp: 
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  # Secret key tối thiểu 256 bits cho HS256
+  secret: mySecretKeyForJwtSigningMustBeVeryLongAndSecure12345678
+  # Thời gian hết hạn của token: 24h = 86400000 ms
+  expiration-ms: 86400000

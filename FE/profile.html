@@ -1,0 +1,1735 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân - Tuyển dụng Nội bộ</title>
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-menu {
+            padding: 16px 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        .header {
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 32px;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        .user-role-badge {
+            font-size: 12px;
+            color: #64748b;
+            text-align: right;
+        }
+
+        .avatar-wrapper {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .header-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-header:hover, .btn-header.active {
+            background: #eff6ff;
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+
+        .btn-logout {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #fecdd3;
+            background: #fff1f2;
+            color: #e11d48;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ffe4e6;
+            color: #be123c;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 36px 60px;
+        }
+
+        .page-container {
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--slate-500);
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb a {
+            color: var(--slate-500);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .breadcrumb span.current {
+            color: var(--slate-800);
+            font-weight: 600;
+        }
+
+        /* Hero Profile Banner */
+        .profile-banner-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .banner-cover {
+            height: 120px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+            position: relative;
+        }
+
+        .banner-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+        }
+
+        .banner-body {
+            padding: 0 32px 24px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+            margin-top: -46px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .banner-avatar-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .profile-avatar-lg {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .profile-avatar-lg:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+        }
+
+        .profile-avatar-camera-btn {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(2px);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .profile-avatar-lg:hover .profile-avatar-camera-btn {
+            opacity: 1;
+        }
+
+        .profile-meta-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--slate-900);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .status-badge-active {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .username-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--slate-500);
+            margin-bottom: 8px;
+        }
+
+        .roles-badges-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .role-pill {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #dbeafe;
+        }
+
+        .btn-change-pwd {
+            background: #ffffff;
+            color: var(--slate-700);
+            border: 1px solid var(--slate-300);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-change-pwd:hover {
+            background: var(--slate-50);
+            color: var(--primary);
+            border-color: #bfdbfe;
+        }
+
+        /* Policy Notice */
+        .info-notice {
+            background: #f0f7ff;
+            border: 1px solid #bae6fd;
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .info-notice svg {
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-notice-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 4px;
+        }
+
+        .info-notice-content p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+            padding: 32px 36px;
+            margin-bottom: 28px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--slate-100);
+            margin-bottom: 24px;
+        }
+
+        .section-icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-icon-wrap.blue {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .section-icon-wrap.amber {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .section-title-wrap h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .section-title-wrap p {
+            font-size: 12.5px;
+            color: var(--slate-500);
+            margin-top: 2px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.col-span-2 {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--slate-700);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .badge-lock {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--slate-400);
+            background: var(--slate-100);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--slate-400);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 44px;
+            padding: 10px 14px 10px 42px;
+            border-radius: 10px;
+            border: 1px solid var(--slate-200);
+            background: #ffffff;
+            font-size: 13.5px;
+            color: var(--slate-800);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .form-control:read-only,
+        .form-control:disabled {
+            background-color: #f8fafc;
+            color: var(--slate-500);
+            border-color: var(--slate-200);
+            cursor: not-allowed;
+        }
+
+        .form-control.is-valid {
+            border-color: var(--success);
+            padding-right: 38px;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger);
+            padding-right: 38px;
+        }
+
+        .form-hint {
+            font-size: 11.5px;
+            color: var(--slate-400);
+            line-height: 1.35;
+        }
+
+        .phone-feedback {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .phone-feedback.valid {
+            color: #059669;
+        }
+
+        .phone-feedback.invalid {
+            color: #dc2626;
+        }
+
+        .form-divider {
+            height: 1px;
+            background: var(--slate-100);
+            margin: 28px 0;
+        }
+
+        .form-footer-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            padding-top: 10px;
+        }
+
+        .btn-submit-save {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-submit-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-submit-save:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Avatar Modal */
+        .avatar-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeInModal 0.2s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .avatar-modal-card {
+            background: #ffffff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .avatar-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .avatar-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: 0.2s;
+        }
+
+        .avatar-modal-close:hover {
+            color: #0f172a;
+            background: #e2e8f0;
+        }
+
+        .avatar-modal-body {
+            padding: 20px;
+        }
+
+        .avatar-preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .avatar-preview-circle-lg {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-size: 40px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #3b82f6;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+
+        .avatar-preview-circle-lg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .avatar-dropzone:hover, .avatar-dropzone.dragover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .avatar-guidelines {
+            margin-top: 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11.5px;
+            color: #475569;
+        }
+
+        .guideline-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar-modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8fafc;
+        }
+
+        .btn-avatar-cancel {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        .btn-avatar-submit {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-avatar-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #2563eb;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            min-width: 300px;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar (Đồng bộ theo app-layout.js) -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                </path>
+            </svg>
+            <h2>Tuyển dụng Nội bộ</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Tự động sinh bởi app-layout.js -->
+        </div>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <div class="header">
+            <div class="user-info">
+                <div style="cursor: pointer;" onclick="window.location.href='profile.html'" title="Xem hồ sơ cá nhân">
+                    <div class="user-name" id="displayUsername">Đang tải...</div>
+                    <div class="user-role-badge" id="displayRoles">...</div>
+                </div>
+
+                <!-- Avatar gần tên người dùng -->
+                <div class="avatar-wrapper" id="headerAvatarBtn" onclick="openAvatarModal()"
+                    title="Nhấp vào để đổi ảnh đại diện (JPG/PNG tối đa 2MB)">
+                    <div class="header-avatar" id="headerAvatar">
+                        <span id="headerAvatarText">U</span>
+                        <img id="headerAvatarImg" src="" alt="Avatar" style="display: none;">
+                    </div>
+                </div>
+
+                <button class="btn-header active" onclick="window.location.href='profile.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Hồ sơ
+                </button>
+                <button class="btn-header" onclick="window.location.href='change-password.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.252l7.5-7.5A6 6 0 0115 7z">
+                        </path>
+                    </svg>
+                    Đổi MK
+                </button>
+                <button class="btn-logout" id="logoutBtn" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-container">
+
+                <!-- Breadcrumb -->
+                <div class="breadcrumb">
+                    <a href="dashboard.html">Tổng quan</a>
+                    <span>/</span>
+                    <span>Tài khoản</span>
+                    <span>/</span>
+                    <span class="current">Hồ sơ cá nhân</span>
+                </div>
+
+                <!-- Hero Profile Banner Card -->
+                <section class="profile-banner-card">
+                    <div class="banner-cover"></div>
+                    <div class="banner-body">
+                        <div class="banner-avatar-wrap">
+                            <div class="profile-avatar-lg" id="profileAvatarLg" onclick="openAvatarModal()" title="Nhấp vào để đổi ảnh đại diện (JPG/PNG tối đa 2MB)">
+                                <span id="profileAvatarLgText">U</span>
+                                <img id="profileAvatarLgImg" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <div class="profile-avatar-camera-btn" title="Đổi ảnh đại diện">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="profile-meta-header">
+                                <h1>
+                                    <span id="heroFullName">Đang tải hồ sơ...</span>
+                                    <span class="status-badge-active">Hoạt động</span>
+                                </h1>
+                                <span class="username-pill">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207">
+                                        </path>
+                                    </svg>
+                                    <span id="heroUsername">@username</span>
+                                </span>
+                                <div class="roles-badges-wrap" id="heroRoles">
+                                    <!-- Role pills will be placed here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="change-password.html" class="btn-change-pwd">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
+                                    </path>
+                                </svg>
+                                Đổi mật khẩu
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Information Policy Alert Banner -->
+                <div class="info-notice">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="info-notice-content">
+                        <h4>Quy định quản lý hồ sơ & phân quyền</h4>
+                        <p>
+                            Bạn có thể cập nhật <strong>Họ và tên</strong>, <strong>Số điện thoại</strong> và <strong>Chức danh hiển thị</strong>. 
+                            Để đảm bảo an ninh thông tin, các trường <strong>Tên đăng nhập</strong>, <strong>Email</strong>, <strong>Phòng ban</strong> và <strong>Vai trò hệ thống</strong> được đồng bộ quản lý bởi Quản trị viên và không thể tự chỉnh sửa.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Profile Form Card -->
+                <section class="form-card">
+                    <form id="profileForm" onsubmit="handleSaveProfile(event)">
+
+                        <!-- SECTION 1: EDITABLE FIELDS -->
+                        <div class="section-header">
+                            <div class="section-icon-wrap blue">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="section-title-wrap">
+                                <h3>Thông tin cá nhân có thể cập nhật</h3>
+                                <p>Cho phép bạn tự chỉnh sửa họ tên, chức danh công tác và số điện thoại di động.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <!-- Họ và tên -->
+                            <div class="form-group">
+                                <label class="form-label" for="fullName">
+                                    Họ và tên
+                                    <span style="color: var(--primary); font-size: 11px;">* Cho phép sửa</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="fullName" class="form-control" placeholder="Nhập họ và tên đầy đủ..." required>
+                                </div>
+                                <span class="form-hint">Họ tên hiển thị công khai trong toàn bộ phân hệ nhân sự.</span>
+                            </div>
+
+                            <!-- Chức danh hiển thị -->
+                            <div class="form-group">
+                                <label class="form-label" for="title">
+                                    Chức danh hiển thị
+                                    <span style="color: var(--primary); font-size: 11px;">* Cho phép sửa</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="title" class="form-control" placeholder="VD: Chuyên viên tuyển dụng, Kỹ sư phần mềm...">
+                                </div>
+                                <span class="form-hint">Vị trí, chức danh hoặc chức vụ chuyên môn trong cơ quan.</span>
+                            </div>
+
+                            <!-- Số điện thoại (Kiểm tra định dạng VN) -->
+                            <div class="form-group col-span-2">
+                                <label class="form-label" for="phoneNumber">
+                                    Số điện thoại liên hệ (Việt Nam)
+                                    <span style="color: var(--primary); font-size: 11px;">* Định dạng 10 chữ số (VN)</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="phoneNumber" class="form-control" placeholder="VD: 0912345678, 0387654321 hoặc +84912345678" oninput="validatePhoneLive()">
+                                </div>
+                                <div id="phoneFeedback" class="phone-feedback" style="display: none;"></div>
+                                <span class="form-hint">Hỗ trợ các đầu số mạng di động Việt Nam: 03x, 05x, 07x, 08x, 09x (10 chữ số) hoặc +84.</span>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: READONLY FIELDS -->
+                        <div class="section-header" style="margin-top: 20px;">
+                            <div class="section-icon-wrap amber">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="section-title-wrap">
+                                <h3>Thông tin do Quản trị viên cấp (Cố định - Không thể tự đổi)</h3>
+                                <p>Các dữ liệu định danh, email liên kết công vụ và phân quyền hệ thống.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <!-- Tên đăng nhập -->
+                            <div class="form-group">
+                                <label class="form-label" for="username">
+                                    Tên đăng nhập
+                                    <span class="badge-lock">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                        Cố định
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="username" class="form-control" readonly disabled>
+                                </div>
+                                <span class="form-hint">Mã tài khoản đăng nhập định danh duy nhất trong hệ thống.</span>
+                            </div>
+
+                            <!-- Email công vụ -->
+                            <div class="form-group">
+                                <label class="form-label" for="email">
+                                    Email công vụ
+                                    <span class="badge-lock">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                        Không thể tự đổi
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="email" id="email" class="form-control" readonly disabled>
+                                </div>
+                                <span class="form-hint">Email nhận mã OTP khôi phục và thông báo quy trình tuyển dụng.</span>
+                            </div>
+
+                            <!-- Phòng ban công tác -->
+                            <div class="form-group">
+                                <label class="form-label" for="department">
+                                    Phòng ban trực thuộc
+                                    <span class="badge-lock">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                        Quản trị viên quản lý
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="department" class="form-control" readonly disabled>
+                                </div>
+                                <span class="form-hint">Đơn vị hành chính hoặc phòng ban nghiệp vụ đang công tác.</span>
+                            </div>
+
+                            <!-- Vai trò hệ thống -->
+                            <div class="form-group">
+                                <label class="form-label" for="rolesDisplay">
+                                    Vai trò & Phân quyền
+                                    <span class="badge-lock">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                        Phân quyền cố định
+                                    </span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <div class="input-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="rolesDisplay" class="form-control" readonly disabled>
+                                </div>
+                                <span class="form-hint">Quyền hạn truy cập các chức năng tuyển dụng và quản trị.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <!-- Form Actions -->
+                        <div class="form-footer-actions">
+                            <button type="submit" class="btn-submit-save" id="saveBtn">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span id="saveBtnText">Lưu thay đổi</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐỔI ẢNH ĐẠI DIỆN -->
+    <div class="avatar-modal-overlay" id="avatarModal" style="display: none;" onclick="if(event.target === this) closeAvatarModal();">
+        <div class="avatar-modal-card">
+            <div class="avatar-modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a;">Đổi ảnh đại diện</h3>
+                        <span style="font-size: 12px; color: #64748b;">Tải lên ảnh nhận diện tài khoản</span>
+                    </div>
+                </div>
+                <button type="button" class="avatar-modal-close" onclick="closeAvatarModal()">&times;</button>
+            </div>
+
+            <div class="avatar-modal-body">
+                <!-- Vùng xem trước ảnh (Preview) -->
+                <div class="avatar-preview-section">
+                    <div class="avatar-preview-circle-lg" id="avatarModalPreviewWrap">
+                        <span id="avatarModalPreviewInitial">U</span>
+                        <img id="avatarModalPreviewImg" src="" alt="Xem trước" style="display: none;">
+                    </div>
+                    <div style="text-align: center; margin-top: 8px;">
+                        <span style="font-size: 12px; font-weight: 600; color: #475569;" id="avatarPreviewLabel">Ảnh đại diện hiện tại</span>
+                    </div>
+                </div>
+
+                <!-- Khu vực kéo thả / chọn file (Dropzone) -->
+                <div class="avatar-dropzone" id="avatarDropzone" onclick="document.getElementById('avatarFileInput').click()">
+                    <input type="file" id="avatarFileInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" style="display: none;" onchange="handleAvatarFileSelect(this.files[0])">
+                    <svg width="30" height="30" fill="none" stroke="#2563eb" stroke-width="1.8" viewBox="0 0 24 24" style="margin-bottom: 6px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <div style="font-size: 13px; font-weight: 600; color: #1e293b;">
+                        Nhấp để chọn tệp hoặc kéo thả vào đây
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                        Chấp nhận: <strong style="color: #2563eb;">JPG, PNG</strong> (Tối đa <strong style="color: #2563eb;">2MB</strong>)
+                    </div>
+                </div>
+
+                <!-- Thông báo kiểm tra định dạng và dung lượng thời gian thực -->
+                <div id="avatarValidationFeedback" style="display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 12px; line-height: 1.4;">
+                </div>
+
+                <!-- Quy định yêu cầu bài toán Jira -->
+                <div class="avatar-guidelines">
+                    <div class="guideline-item">
+                        <svg width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Chấp nhận định dạng ảnh JPG/PNG dung lượng tối đa 2MB.</span>
+                    </div>
+                    <div class="guideline-item">
+                        <svg width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Ảnh tự động cắt vuông tâm và tạo bản thu nhỏ sắc nét.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="avatar-modal-footer">
+                <button type="button" class="btn-avatar-cancel" onclick="closeAvatarModal()">Hủy bỏ</button>
+                <button type="button" class="btn-avatar-submit" id="btnSubmitAvatar" onclick="submitAvatarUpload()" disabled>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Lưu ảnh đại diện</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SCRIPT CHÍNH -->
+    <script>
+        const ROLE_NAMES = {
+            'ROLE_CANDIDATE': 'Ứng viên',
+            'ROLE_RECRUITER': 'Nhân viên tuyển dụng',
+            'ROLE_HIRING_MANAGER': 'Trưởng bộ phận',
+            'ROLE_INTERVIEWER': 'Người phỏng vấn',
+            'ROLE_HR_MANAGER': 'Trưởng phòng Nhân sự',
+            'ROLE_APPROVER': 'Người duyệt',
+            'ROLE_ADMIN': 'Quản trị hệ thống',
+            'ROLE_USER': 'Người dùng'
+        };
+
+        const VN_PHONE_REGEX = /^(\+?84|0)(3|5|7|8|9)[0-9]{8}$/;
+
+        let currentUser = null;
+        let currentSelectedAvatarFile = null;
+
+        function showToast(message, type = 'success', duration = 3500) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success'
+                ? `<svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+                : `<svg width="20" height="20" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        async function init() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html?session=expired';
+                return;
+            }
+
+            try {
+                // Ưu tiên gọi /api/auth/me để lấy profile đầy đủ
+                let res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html?session=expired';
+                    return;
+                }
+
+                let data = await res.json();
+                if (res.ok && data.success) {
+                    currentUser = data.data;
+                } else {
+                    // Fallback sang /api/users/profile nếu cần
+                    const pRes = await fetch('/api/users/profile', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (pRes.ok) {
+                        const pData = await pRes.json();
+                        if (pData.success) currentUser = pData.data;
+                    }
+                }
+
+                if (currentUser) {
+                    renderProfile(currentUser);
+                } else {
+                    showToast('Không thể tải thông tin hồ sơ người dùng', 'error');
+                }
+            } catch (err) {
+                console.error('Lỗi khi tải hồ sơ:', err);
+                showToast('Lỗi kết nối máy chủ khi tải hồ sơ', 'error');
+            }
+        }
+
+        function renderProfile(user) {
+            if (!user) return;
+
+            const displayName = user.fullName || user.username || 'Người dùng';
+            const roles = Array.isArray(user.roles) ? user.roles : (user.roles ? Array.from(user.roles) : ['ROLE_USER']);
+            const viRoles = roles.map(r => ROLE_NAMES[r] || r);
+            const roleNamesStr = viRoles.join(', ');
+
+            // 1. Header user info
+            const displayUsernameEl = document.getElementById('displayUsername');
+            if (displayUsernameEl) displayUsernameEl.textContent = displayName;
+
+            const displayRolesEl = document.getElementById('displayRoles');
+            if (displayRolesEl) displayRolesEl.textContent = roleNamesStr;
+
+            // 2. Avatar
+            renderUserAvatar(user.avatarUrl, displayName);
+
+            // 3. Sidebar
+            if (typeof renderAppSidebar === 'function') {
+                renderAppSidebar(roles);
+            }
+
+            // 4. Các trường cho phép sửa
+            const fullNameEl = document.getElementById('fullName');
+            if (fullNameEl) fullNameEl.value = user.fullName || '';
+
+            const titleEl = document.getElementById('title');
+            if (titleEl) titleEl.value = user.title || '';
+
+            const phoneEl = document.getElementById('phoneNumber');
+            if (phoneEl) {
+                phoneEl.value = user.phoneNumber || '';
+                validatePhoneLive();
+            }
+
+            // 5. Các trường cố định
+            const usernameEl = document.getElementById('username');
+            if (usernameEl) usernameEl.value = user.username || '';
+
+            const emailEl = document.getElementById('email');
+            if (emailEl) emailEl.value = user.email || '';
+
+            const deptEl = document.getElementById('department');
+            if (deptEl) deptEl.value = user.department || '(Chưa phân bổ phòng ban)';
+
+            const rolesDisplayEl = document.getElementById('rolesDisplay');
+            if (rolesDisplayEl) rolesDisplayEl.value = roleNamesStr;
+
+            // 6. Hero Banner Info
+            const heroFullNameEl = document.getElementById('heroFullName');
+            if (heroFullNameEl) heroFullNameEl.textContent = displayName;
+
+            const heroUsernameEl = document.getElementById('heroUsername');
+            if (heroUsernameEl) heroUsernameEl.textContent = '@' + (user.username || '');
+
+            const heroRolesEl = document.getElementById('heroRoles');
+            if (heroRolesEl) {
+                heroRolesEl.innerHTML = roles.map(r => `<span class="role-pill">${ROLE_NAMES[r] || r}</span>`).join('');
+            }
+        }
+
+        function getInitials(name) {
+            if (!name) return 'U';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function renderUserAvatar(avatarUrl, displayName) {
+            const initials = getInitials(displayName);
+
+            // Header Avatar
+            const headerText = document.getElementById('headerAvatarText');
+            const headerImg = document.getElementById('headerAvatarImg');
+            if (headerText) headerText.textContent = initials;
+
+            // Hero Banner Avatar
+            const heroText = document.getElementById('profileAvatarLgText');
+            const heroImg = document.getElementById('profileAvatarLgImg');
+            if (heroText) heroText.textContent = initials;
+
+            if (avatarUrl && avatarUrl.trim() !== '') {
+                const bustUrl = avatarUrl.includes('?') ? avatarUrl : avatarUrl + '?t=' + Date.now();
+                if (headerImg) {
+                    headerImg.src = bustUrl;
+                    headerImg.style.display = 'block';
+                }
+                if (headerText) headerText.style.display = 'none';
+
+                if (heroImg) {
+                    heroImg.src = bustUrl;
+                    heroImg.style.display = 'block';
+                }
+                if (heroText) heroText.style.display = 'none';
+            } else {
+                if (headerImg) {
+                    headerImg.removeAttribute('src');
+                    headerImg.style.display = 'none';
+                }
+                if (headerText) headerText.style.display = 'block';
+
+                if (heroImg) {
+                    heroImg.removeAttribute('src');
+                    heroImg.style.display = 'none';
+                }
+                if (heroText) heroText.style.display = 'block';
+            }
+        }
+
+        // Live validation for VN phone number
+        function validatePhoneLive() {
+            const input = document.getElementById('phoneNumber');
+            const feedback = document.getElementById('phoneFeedback');
+            if (!input || !feedback) return true;
+
+            const rawVal = input.value.trim();
+            if (!rawVal) {
+                input.classList.remove('is-valid', 'is-invalid');
+                feedback.style.display = 'none';
+                return true; // Rỗng được chấp nhận
+            }
+
+            const cleanPhone = rawVal.replace(/[\s\-\.]/g, '');
+            const isValid = VN_PHONE_REGEX.test(cleanPhone);
+
+            feedback.style.display = 'flex';
+            if (isValid) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                feedback.className = 'phone-feedback valid';
+                feedback.innerHTML = `
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Số điện thoại Việt Nam hợp lệ</span>
+                `;
+                return true;
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                feedback.className = 'phone-feedback invalid';
+                feedback.innerHTML = `
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <span>Số điện thoại không đúng định dạng VN (10 chữ số bắt đầu bằng 03, 05, 07, 08, 09 hoặc +84)</span>
+                `;
+                return false;
+            }
+        }
+
+        // Lưu thông tin cá nhân
+        async function handleSaveProfile(event) {
+            if (event) event.preventDefault();
+
+            const phoneVal = document.getElementById('phoneNumber').value.trim();
+            if (phoneVal) {
+                const cleanPhone = phoneVal.replace(/[\s\-\.]/g, '');
+                if (!VN_PHONE_REGEX.test(cleanPhone)) {
+                    showToast('Số điện thoại không đúng định dạng Việt Nam. Vui lòng kiểm tra lại!', 'error');
+                    document.getElementById('phoneNumber').focus();
+                    validatePhoneLive();
+                    return;
+                }
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            const saveBtnText = document.getElementById('saveBtnText');
+            if (saveBtn) saveBtn.disabled = true;
+            if (saveBtnText) saveBtnText.innerHTML = '<span class="spinner"></span> Đang lưu...';
+
+            const payload = {
+                fullName: document.getElementById('fullName').value.trim(),
+                title: document.getElementById('title').value.trim(),
+                phoneNumber: phoneVal ? phoneVal.replace(/[\s\-\.]/g, '') : null
+            };
+
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            try {
+                const res = await fetch('/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Cập nhật thông tin hồ sơ cá nhân thành công!', 'success');
+                    currentUser = data.data;
+                    renderProfile(data.data);
+                } else {
+                    showToast(data.message || 'Cập nhật thất bại. Vui lòng thử lại.', 'error');
+                    if (data.message && (data.message.includes('Số điện thoại') || data.message.includes('số điện thoại'))) {
+                        const input = document.getElementById('phoneNumber');
+                        const feedback = document.getElementById('phoneFeedback');
+                        if (input) {
+                            input.classList.remove('is-valid');
+                            input.classList.add('is-invalid');
+                            input.focus();
+                        }
+                        if (feedback) {
+                            feedback.style.display = 'flex';
+                            feedback.className = 'phone-feedback invalid';
+                            feedback.innerHTML = `
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span>${data.message}</span>
+                            `;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Không thể kết nối máy chủ khi lưu hồ sơ.', 'error');
+            } finally {
+                if (saveBtn) saveBtn.disabled = false;
+                if (saveBtnText) saveBtnText.textContent = 'Lưu thay đổi';
+            }
+        }
+
+        // ==========================================
+        // QUẢN LÝ AVATAR
+        // ==========================================
+        function openAvatarModal() {
+            currentSelectedAvatarFile = null;
+            const modal = document.getElementById('avatarModal');
+            const previewWrap = document.getElementById('avatarModalPreviewWrap');
+            const initialSpan = document.getElementById('avatarModalPreviewInitial');
+            const previewImg = document.getElementById('avatarModalPreviewImg');
+            const submitBtn = document.getElementById('btnSubmitAvatar');
+            const feedback = document.getElementById('avatarValidationFeedback');
+            const label = document.getElementById('avatarPreviewLabel');
+
+            submitBtn.disabled = true;
+            feedback.style.display = 'none';
+            label.textContent = 'Ảnh đại diện hiện tại';
+
+            const displayName = currentUser ? (currentUser.fullName || currentUser.username) : 'U';
+            initialSpan.textContent = getInitials(displayName);
+
+            if (currentUser && currentUser.avatarUrl) {
+                previewImg.src = currentUser.avatarUrl.includes('?') ? currentUser.avatarUrl : currentUser.avatarUrl + '?t=' + Date.now();
+                previewImg.style.display = 'block';
+                initialSpan.style.display = 'none';
+            } else {
+                previewImg.style.display = 'none';
+                previewImg.removeAttribute('src');
+                initialSpan.style.display = 'block';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').style.display = 'none';
+            document.getElementById('avatarFileInput').value = '';
+            currentSelectedAvatarFile = null;
+        }
+
+        function handleAvatarFileSelect(file) {
+            const feedback = document.getElementById('avatarValidationFeedback');
+            const submitBtn = document.getElementById('btnSubmitAvatar');
+            const previewImg = document.getElementById('avatarModalPreviewImg');
+            const initialSpan = document.getElementById('avatarModalPreviewInitial');
+            const label = document.getElementById('avatarPreviewLabel');
+
+            if (!file) return;
+
+            // Kiểm tra định dạng (JPG / PNG)
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            const allowedExts = ['.jpg', '.jpeg', '.png'];
+
+            const isValidType = allowedTypes.includes(file.type) || allowedExts.includes(fileExt);
+            if (!isValidType) {
+                feedback.style.display = 'block';
+                feedback.style.background = '#fef2f2';
+                feedback.style.color = '#dc2626';
+                feedback.style.border = '1px solid #fecdd3';
+                feedback.innerHTML = `<strong>Lỗi định dạng:</strong> Tệp "<em>${file.name}</em>" không được chấp nhận. Hệ thống chỉ cho phép tải lên định dạng ảnh <strong>JPG hoặc PNG</strong>.`;
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // Kiểm tra dung lượng tối đa 2MB
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (file.size > maxSize) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                feedback.style.display = 'block';
+                feedback.style.background = '#fef2f2';
+                feedback.style.color = '#dc2626';
+                feedback.style.border = '1px solid #fecdd3';
+                feedback.innerHTML = `<strong>Lỗi dung lượng:</strong> Tệp có kích thước <strong>${sizeMB} MB</strong> vượt quá giới hạn tối đa <strong>2.00 MB</strong>. Vui lòng chọn tệp nhỏ hơn.`;
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // Tệp hợp lệ -> Đọc và tạo preview
+            currentSelectedAvatarFile = file;
+            feedback.style.display = 'block';
+            feedback.style.background = '#f0fdf4';
+            feedback.style.color = '#15803d';
+            feedback.style.border = '1px solid #bbf7d0';
+            const sizeKB = (file.size / 1024).toFixed(0);
+            feedback.innerHTML = `Tệp hợp lệ: <strong>${file.name}</strong> (${sizeKB} KB). Hệ thống sẽ tự động cắt vuông tâm 1:1 theo chuẩn hệ thống.`;
+            submitBtn.disabled = false;
+            label.textContent = 'Xem trước ảnh mới sẽ lưu';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                initialSpan.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function submitAvatarUpload() {
+            if (!currentSelectedAvatarFile) return;
+
+            const submitBtn = document.getElementById('btnSubmitAvatar');
+            const originalHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+
+            const formData = new FormData();
+            formData.append('file', currentSelectedAvatarFile);
+
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            try {
+                const res = await fetch('/api/users/avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Cập nhật ảnh đại diện thành công!', 'success');
+                    currentUser = data.data;
+                    renderProfile(data.data);
+                    closeAvatarModal();
+                } else {
+                    showToast(data.message || 'Lỗi khi tải ảnh đại diện lên máy chủ', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Không thể kết nối máy chủ khi tải ảnh lên.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHtml;
+            }
+        }
+
+        // Kéo thả Dropzone
+        const dropzone = document.getElementById('avatarDropzone');
+        if (dropzone) {
+            ['dragenter', 'dragover'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dragover');
+                });
+            });
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                if (dt && dt.files && dt.files.length > 0) {
+                    handleAvatarFileSelect(dt.files[0]);
+                }
+            });
+        }
+
+        // Đăng xuất
+        async function logout() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (token) {
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                } catch (e) {}
+            }
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('userRoles');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+
+        // Khởi động khi tải xong DOM
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

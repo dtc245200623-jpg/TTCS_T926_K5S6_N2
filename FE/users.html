@@ -1,0 +1,1636 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tài khoản - Tuyển dụng Nội bộ</title>
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar (Same as dashboard) */
+        .sidebar { width: 280px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
+        .sidebar-header h2 { font-size: 18px; color: #1e3a8a; }
+        .sidebar-menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #475569; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; margin-bottom: 4px; transition: background 0.2s; cursor: pointer; }
+        .menu-item:hover { background: #f1f5f9; color: #1e293b; }
+        .menu-item.active { background: #eff6ff; color: #2563eb; }
+        
+        /* Main Content */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #ffffff; padding: 16px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 16px; }
+        .user-name { font-weight: 600; color: #1e293b; font-size: 14px; text-align: right; }
+        .user-role-badge { display: block; font-size: 12px; color: #64748b; font-weight: 400; margin-top: 2px; }
+        
+        /* Avatar styles */
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .avatar-wrapper:hover { transform: scale(1.06); }
+        .header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .avatar-wrapper:hover .header-avatar {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+        .avatar-badge-edit {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 17px;
+            height: 17px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s;
+        }
+        .avatar-wrapper:hover .avatar-badge-edit { background: #1d4ed8; }
+
+        /* Avatar Modal CSS */
+        .avatar-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+            animation: fadeInModal 0.2s ease;
+        }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        .avatar-modal-card {
+            background: #ffffff; border-radius: 16px; width: 90%; max-width: 440px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0; overflow: hidden;
+        }
+        .avatar-modal-header {
+            padding: 16px 20px; border-bottom: 1px solid #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center; background: #f8fafc;
+        }
+        .avatar-modal-close {
+            background: none; border: none; font-size: 24px; line-height: 1;
+            color: #64748b; cursor: pointer; border-radius: 6px; padding: 4px 8px; transition: 0.2s;
+        }
+        .avatar-modal-close:hover { color: #0f172a; background: #e2e8f0; }
+        .avatar-modal-body { padding: 20px; }
+        .avatar-preview-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; }
+        .avatar-preview-circle-lg {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white; font-size: 42px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            border: 3px solid #3b82f6; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+        .avatar-preview-circle-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar-preview-crop-hint {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.75); color: white; font-size: 10px;
+            text-align: center; padding: 3px 0; letter-spacing: 0.5px; font-weight: 600;
+        }
+        .avatar-dropzone {
+            border: 2px dashed #cbd5e1; background: #f8fafc; border-radius: 12px;
+            padding: 18px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;
+        }
+        .avatar-dropzone:hover, .avatar-dropzone.dragover { border-color: #2563eb; background: #eff6ff; }
+        .avatar-guidelines {
+            margin-top: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;
+        }
+        .avatar-guidelines .guideline-item {
+            display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; color: #475569; margin-bottom: 5px;
+        }
+        .avatar-guidelines .guideline-item:last-child { margin-bottom: 0; }
+        .avatar-modal-footer {
+            padding: 14px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0;
+            display: flex; justify-content: flex-end; gap: 12px;
+        }
+        .btn-avatar-cancel {
+            padding: 9px 18px; background: white; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 13px; font-weight: 600; color: #475569; cursor: pointer; transition: 0.2s;
+        }
+        .btn-avatar-cancel:hover { background: #f1f5f9; border-color: #94a3b8; }
+        .btn-avatar-submit {
+            padding: 9px 20px; background: #2563eb; color: white; border: none;
+            border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+        }
+        .btn-avatar-submit:hover:not(:disabled) { background: #1d4ed8; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); }
+        .btn-avatar-submit:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.7; box-shadow: none; }
+        
+        .btn-header { background: none; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .btn-header:hover { border-color: #2563eb; color: #2563eb; }
+        .btn-logout { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #fca5a5; color: #991b1b; }
+        
+        .content-area { padding: 30px; flex: 1; overflow-y: auto; }
+        .container { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        h1 { color: #1e3a8a; font-size: 24px; }
+        
+        .btn-primary { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 16px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 16px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+        
+        .role-tag { display: inline-block; padding: 4px 10px; background: #e0e7ff; color: #4338ca; border-radius: 20px; font-size: 12px; font-weight: 500; margin-right: 4px; margin-bottom: 4px; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-locked { background: #fee2e2; color: #991b1b; }
+        
+        .action-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 4px; transition: 0.2s; color: #64748b; }
+        .action-btn:hover { background: #f1f5f9; color: #1e293b; }
+        .action-btn.lock:hover { color: #dc2626; background: #fee2e2; }
+        
+        /* Modal Styles */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 50; }
+        .modal { background: white; padding: 32px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-title { font-size: 20px; font-weight: 600; color: #1e293b; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #475569; margin-bottom: 8px; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+        .btn-cancel { padding: 10px 20px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-cancel:hover { background: #f8fafc; }
+        
+        /* Toast */
+        #toast { position: fixed; bottom: -100px; right: 20px; padding: 16px 24px; background: #1e293b; color: white; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        #toast.show { bottom: 20px; }
+        #toast.error { background: #ef4444; }
+        #toast.success { background: #10b981; }
+        
+        /* Filters & Pagination Styles */
+        .filters-container { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        .filter-input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 14px; flex: 1; min-width: 200px; }
+        .filter-select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 14px; background: white; }
+        .btn-search { padding: 8px 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .btn-search:hover { background: #e2e8f0; }
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 14px; color: #64748b; }
+        .pagination-controls { display: flex; gap: 8px; }
+        .page-btn { padding: 6px 12px; border: 1px solid #cbd5e1; background: white; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .page-btn:hover:not(:disabled) { background: #f1f5f9; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Import Modal & Preview Styles */
+        .modal-large { max-width: 960px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-body { overflow-y: auto; flex: 1; padding: 4px 2px; }
+        .upload-dropzone { border: 2px dashed #93c5fd; border-radius: 12px; padding: 28px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.2s; margin-bottom: 20px; }
+        .upload-dropzone:hover, .upload-dropzone.dragover { border-color: #2563eb; background: #eff6ff; }
+        .template-actions { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #f1f5f9; padding: 12px 16px; border-radius: 10px; }
+        .btn-template { background: #ffffff; color: #1e3a8a; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-template:hover { background: #eff6ff; border-color: #3b82f6; }
+        
+        .preview-stats { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .stat-chip { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .stat-total { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .stat-valid { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .stat-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .preview-table-wrapper { border: 1px solid #e2e8f0; border-radius: 10px; max-height: 360px; overflow-y: auto; margin-bottom: 20px; }
+        .preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .preview-table th { background: #f8fafc; position: sticky; top: 0; z-index: 2; padding: 12px 14px; border-bottom: 2px solid #e2e8f0; text-align: left; color: #475569; font-weight: 600; }
+        .preview-table td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .preview-table tr.row-invalid { background: #fff5f5; }
+        .preview-table tr.row-valid { background: #ffffff; }
+
+        .row-status-pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .pill-valid { background: #dcfce7; color: #166534; }
+        .pill-invalid { background: #fee2e2; color: #991b1b; }
+        .error-tag { color: #dc2626; font-size: 12px; display: block; margin-top: 3px; line-height: 1.4; }
+
+        .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 12px; }
+        .summary-card { background: white; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+        .summary-card .number { font-size: 28px; font-weight: 700; margin-top: 4px; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <h2>Tuyển dụng Nội bộ</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="header">
+            <div class="user-info">
+                <div style="cursor: pointer;" onclick="window.location.href='profile.html'" title="Xem hồ sơ cá nhân">
+                    <div class="user-name" id="displayUsername">Đang tải...</div>
+                    <div class="user-role-badge" id="displayRoles">...</div>
+                </div>
+
+                <!-- Avatar gần tên người dùng -->
+                <div class="avatar-wrapper" id="headerAvatarBtn" onclick="openAvatarModal()" title="Nhấp vào để đổi ảnh đại diện (JPG/PNG tối đa 2MB)">
+                    <div class="header-avatar" id="headerAvatar">
+                        <span id="headerAvatarText">U</span>
+                        <img id="headerAvatarImg" src="" alt="Avatar" style="display: none;">
+                    </div>
+                    <div class="avatar-badge-edit" title="Đổi ảnh đại diện">
+                        <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <button class="btn-header" onclick="window.location.href='profile.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Hồ sơ
+                </button>
+                <button class="btn-header" onclick="window.location.href='change-password.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.252l7.5-7.5A6 6 0 0115 7z"></path></svg>
+                    Đổi MK
+                </button>
+                <button class="btn-logout" onclick="logout(true)">Đăng xuất</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Quản lý Tài khoản (Admin)</h1>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn-template" onclick="openImportModal()" style="padding: 10px 18px; border-radius: 8px; font-size: 14px; background: #eff6ff; color: #1e3a8a; border-color: #bfdbfe;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Nhập từ File (Excel/CSV)
+                        </button>
+                        <button class="btn-primary" onclick="openCreateModal()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                            Thêm Tài khoản
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters-container">
+                    <input type="text" id="searchInput" class="filter-input" placeholder="Tìm theo tên, email, phòng ban..." onkeydown="if(event.key === 'Enter') fetchUsers()">
+                    <select id="roleFilter" class="filter-select" onchange="fetchUsers()">
+                        <option value="">Tất cả vai trò</option>
+                        <!-- roles will be loaded here -->
+                    </select>
+                    <select id="statusFilter" class="filter-select" onchange="fetchUsers()">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="false">Hoạt động</option>
+                        <option value="true">Đã khóa</option>
+                    </select>
+                    <button class="btn-search" onclick="fetchUsers()">Tìm kiếm</button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tài khoản</th>
+                            <th>Thông tin</th>
+                            <th>Vai trò / Phân quyền</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align: right">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <tr><td colspan="5" style="text-align:center">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <div id="pageInfo">Hiển thị trang 1 / 1 (Tổng 0)</div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">Trước</button>
+                        <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">Sau</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-title">Tạo Tài khoản mới</div>
+            <div class="form-group">
+                <label>Tên đăng nhập (Username)</label>
+                <input type="text" class="form-control" id="c_username" placeholder="Nhập username...">
+            </div>
+            <div class="form-group">
+                <label>Tên đầy đủ (Họ và tên)</label>
+                <input type="text" class="form-control" id="c_fullname" placeholder="Nhập họ và tên...">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="c_email" placeholder="Nhập email...">
+            </div>
+            <div class="form-group">
+                <label>Phòng ban</label>
+                <input type="text" class="form-control" id="c_department" placeholder="Nhập phòng ban...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <div style="font-size: 13px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    Hệ thống sẽ tự động tạo mật khẩu và gửi kèm link kích hoạt vào Email.
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Phân quyền (Vai trò)</label>
+                <div class="checkbox-grid" id="c_rolesContainer">
+                    <!-- Dynamic checkboxes -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('createModal')">Hủy</button>
+                <button class="btn-primary" onclick="submitCreateUser()">Tạo tài khoản</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Roles Modal -->
+    <div class="modal-overlay" id="editRolesModal">
+        <div class="modal">
+            <div class="modal-title">Cập nhật Phân quyền</div>
+            <input type="hidden" id="e_userId">
+            <div class="form-group">
+                <label>Tài khoản: <span id="e_usernameDisplay" style="color: #2563eb;"></span></label>
+                <div class="checkbox-grid" id="e_rolesContainer">
+                    <!-- Dynamic checkboxes -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('editRolesModal')">Hủy</button>
+                <button class="btn-primary" onclick="submitEditRoles()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal">
+            <div class="modal-title">Đổi Mật Khẩu Người Dùng</div>
+            <input type="hidden" id="cp_userId">
+            <div class="form-group">
+                <div style="background-color: #fffbeb; color: #b45309; padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; border: 1px solid #fef3c7;">
+                    <strong>Lưu ý bảo mật:</strong> Mật khẩu hiện tại đã được mã hóa an toàn (Bcrypt) nên không thể xem được bản rõ. Quản trị viên chỉ có thể cấp lại mật khẩu mới cho người dùng.
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu mới</label>
+                <input type="password" class="form-control" id="cp_newPassword" placeholder="Nhập mật khẩu mới...">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('changePasswordModal')">Hủy</button>
+                <button class="btn-primary" onclick="submitChangePassword()">Đổi mật khẩu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Users Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal modal-large">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="modal-title" style="margin-bottom: 0;">Nhập Danh Sách Tài Khoản từ File</div>
+                <button onclick="closeImportModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1;">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- State 1: Upload & Templates -->
+                <div id="importUploadSection">
+                    <div class="template-actions">
+                        <div style="font-size: 13px; color: #475569;">
+                            <strong>Bước 1:</strong> Tải tệp mẫu chuẩn nếu bạn chưa có file dữ liệu
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-template" onclick="downloadTemplate('xlsx')">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Tệp mẫu Excel (.xlsx)
+                            </button>
+                            <button class="btn-template" onclick="downloadTemplate('csv')">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Tệp mẫu CSV (.csv)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px;">
+                        <strong>Bước 2:</strong> Chọn tệp dữ liệu danh sách người dùng (.xlsx, .xls, .csv)
+                    </div>
+
+                    <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display: none;" onclick="this.value=null" onchange="handleFileSelected(this.files[0])">
+                    
+                    <div class="upload-dropzone" id="uploadDropzone" onclick="document.getElementById('importFileInput').click()">
+                        <svg width="44" height="44" fill="none" stroke="#2563eb" stroke-width="1.8" viewBox="0 0 24 24" style="margin: 0 auto 12px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <div style="font-weight: 600; color: #1e3a8a; font-size: 16px; margin-bottom: 6px;">Kéo & Thả tệp vào đây hoặc Nhấp để chọn tệp</div>
+                        <div style="font-size: 13px; color: #64748b; margin-bottom: 14px;">Hỗ trợ định dạng Excel (.xlsx, .xls) và CSV (.csv)</div>
+                        <button type="button" class="btn-primary" style="padding: 10px 22px; font-size: 13px; pointer-events: none; margin: 0 auto; display: inline-flex; align-items: center; gap: 8px;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Chọn tệp từ máy tính
+                        </button>
+                    </div>
+
+                    <div id="importLoadingState" style="display: none; background: #f8fafc; border: 2px dashed #93c5fd; border-radius: 12px; padding: 36px 20px; text-align: center; margin-bottom: 20px;">
+                        <div class="spinner" style="margin: 0 auto 14px; width: 38px; height: 38px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                        <div id="importLoadingFileName" style="font-weight: 600; color: #1e3a8a; font-size: 15px; margin-bottom: 6px;">Đang tải lên và phân tích tệp dữ liệu...</div>
+                        <div style="font-size: 13px; color: #64748b;">Hệ thống đang kiểm tra tính hợp lệ từng dòng tài khoản, vui lòng đợi trong giây lát.</div>
+                    </div>
+
+                    <div id="selectedFileInfo" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <div>
+                                <div id="selectedFileName" style="font-weight: 600; color: #1e3a8a; font-size: 14px;">filename.xlsx</div>
+                                <div id="selectedFileSize" style="font-size: 12px; color: #64748b;">0 KB</div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="previewImportData()" id="btnStartCheck" style="padding: 8px 16px; font-size: 13px;">
+                            Kiểm tra lại tệp
+                        </button>
+                    </div>
+                </div>
+
+                <!-- State 2: Preview & Validation Table -->
+                <div id="importPreviewSection" style="display: none;">
+                    <div class="preview-stats">
+                        <div class="stat-chip stat-total">
+                            <span>Tổng số dòng:</span>
+                            <span id="statTotalCount">0</span>
+                        </div>
+                        <div class="stat-chip stat-valid">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span>Hợp lệ (sẽ nhập):</span>
+                            <span id="statValidCount">0</span>
+                        </div>
+                        <div class="stat-chip stat-error">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <span>Có lỗi (bị bỏ qua):</span>
+                            <span id="statErrorCount">0</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #92400e; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span><strong>Cơ chế an toàn:</strong> Khi bạn bấm "Xác nhận nhập", các dòng bị lỗi sẽ tự động được bỏ qua. Hệ thống chỉ thêm các dòng hợp lệ vào cơ sở dữ liệu.</span>
+                    </div>
+
+                    <div class="preview-table-wrapper">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Dòng</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Email</th>
+                                    <th>Họ và tên</th>
+                                    <th>Phòng ban</th>
+                                    <th>Vai trò</th>
+                                    <th style="width: 100px;">Trạng thái</th>
+                                    <th style="width: 250px;">Chi tiết lỗi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody">
+                                <!-- Generated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- State 3: Summary Report -->
+                <div id="importSummarySection" style="display: none;">
+                    <div class="summary-box">
+                        <div style="font-size: 16px; font-weight: 700; color: #1e3a8a; display: flex; align-items: center; gap: 8px;">
+                            <svg width="22" height="22" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            BÁO CÁO TỔNG KẾT NHẬP DỮ LIỆU
+                        </div>
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <div style="color: #64748b; font-size: 13px;">Tổng dòng xử lý</div>
+                                <div class="number" id="sumTotal" style="color: #1e293b;">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div style="color: #166534; font-size: 13px;">Nhập thành công</div>
+                                <div class="number" id="sumSuccess" style="color: #16a34a;">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div style="color: #991b1b; font-size: 13px;">Bỏ qua do lỗi</div>
+                                <div class="number" id="sumFailed" style="color: #dc2626;">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="summaryFailedDetails" style="display: none;">
+                        <div style="font-weight: 600; font-size: 14px; color: #991b1b; margin-bottom: 10px;">
+                            Danh sách các dòng bị lỗi đã bỏ qua:
+                        </div>
+                        <div class="preview-table-wrapper" style="max-height: 250px;">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Dòng</th>
+                                        <th>Tài khoản</th>
+                                        <th>Email</th>
+                                        <th>Lý do bỏ qua</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summaryFailedTableBody">
+                                    <!-- Rendered by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button class="btn-cancel" onclick="closeImportModal()">Đóng</button>
+                <button class="btn-cancel" id="btnChooseOtherFile" onclick="resetImportUpload()" style="display: none;">Chọn lại file khác</button>
+                <button class="btn-primary" id="btnExecuteImport" onclick="submitExecuteImport()" style="display: none;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Xác nhận nhập dữ liệu
+                </button>
+                <button class="btn-primary" id="btnFinishImport" onclick="finishImportFlow()" style="display: none;">
+                    Hoàn tất & Cập nhật
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        // Copy ROLES_INFO and logic from dashboard
+        const ROLES_INFO = {
+            'ROLE_CANDIDATE': { name: 'Ứng viên' },
+            'ROLE_RECRUITER': { name: 'Nhân viên tuyển dụng' },
+            'ROLE_HIRING_MANAGER': { name: 'Trưởng bộ phận' },
+            'ROLE_INTERVIEWER': { name: 'Người phỏng vấn' },
+            'ROLE_HR_MANAGER': { name: 'Trưởng phòng Nhân sự' },
+            'ROLE_APPROVER': { name: 'Người duyệt' },
+            'ROLE_ADMIN': { name: 'Quản trị hệ thống' },
+            'ROLE_USER': { name: 'Người dùng' }
+        };
+
+        // Sidebar items managed centrally in app-layout.js
+
+        let usersList = [];
+
+        async function init() {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return logout(false);
+            
+            try {
+                // Fetch me
+                const response = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (response.status === 401 || response.status === 403) return logout(false);
+                
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    const user = data.data;
+                    document.getElementById('displayUsername').textContent = user.fullName || user.username;
+                    renderUserAvatar(user.avatarUrl, user.fullName || user.username);
+                    
+                    if (!user.roles.includes('ROLE_ADMIN')) {
+                        alert("Bạn không có quyền truy cập trang này!");
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+
+                    document.getElementById('displayRoles').textContent = user.roles.map(r => ROLES_INFO[r]?.name || r).join(', ');
+                    renderSidebar(user.roles);
+                    populateRoleFilter();
+                    fetchUsers();
+                    renderRoleCheckboxes('c_rolesContainer', 'c_role_');
+                    renderRoleCheckboxes('e_rolesContainer', 'e_role_');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        function populateRoleFilter() {
+            const select = document.getElementById('roleFilter');
+            Object.keys(ROLES_INFO).forEach(role => {
+                select.innerHTML += `<option value="${role}">${ROLES_INFO[role].name}</option>`;
+            });
+        }
+
+        function renderSidebar(userRoles) {
+            renderAppSidebar(userRoles);
+        }
+
+        let currentPage = 0;
+        let totalPages = 1;
+
+        async function fetchUsers() {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const search = document.getElementById('searchInput').value;
+                const role = document.getElementById('roleFilter').value;
+                const status = document.getElementById('statusFilter').value;
+                
+                let queryParams = new URLSearchParams({ page: currentPage, size: 20 });
+                if(search) queryParams.append('search', search);
+                if(role) queryParams.append('role', role);
+                if(status !== '') queryParams.append('status', status);
+
+                const response = await fetch('/api/users?' + queryParams.toString(), { 
+                    headers: { 'Authorization': 'Bearer ' + token } 
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // API returns a Page object inside data.data
+                    usersList = data.data.content;
+                    totalPages = data.data.totalPages;
+                    document.getElementById('pageInfo').innerText = `Hiển thị trang ${currentPage + 1} / ${totalPages} (Tổng ${data.data.totalElements})`;
+                    
+                    document.getElementById('prevPageBtn').disabled = currentPage === 0;
+                    document.getElementById('nextPageBtn').disabled = currentPage >= totalPages - 1;
+                    
+                    renderUsersTable();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            if (currentPage < 0) currentPage = 0;
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            fetchUsers();
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('userTableBody');
+            if (usersList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Không có dữ liệu</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            usersList.forEach(u => {
+                const rolesHtml = u.roles.map(r => `<span class="role-tag">${ROLES_INFO[r]?.name || r}</span>`).join('');
+                const statusHtml = u.locked 
+                    ? `<span class="status-badge status-locked">Đã Khóa</span>`
+                    : `<span class="status-badge status-active">Hoạt động</span>`;
+                    
+                const lockIcon = u.locked 
+                    ? `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>`
+                    : `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>`;
+
+                html += `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500; color: #1e293b;">${u.username}</div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-top:4px;">Tạo: ${new Date(u.createdAt).toLocaleDateString('vi-VN')}</div>
+                        </td>
+                        <td>
+                            <div style="color: #475569;">${u.email}</div>
+                            ${u.fullName ? `<div style="font-size: 13px; color: #1e293b; margin-top: 4px; font-weight: 500;">${u.fullName}</div>` : ''}
+                            ${u.department ? `<div style="font-size: 12px; color: #64748b; margin-top: 2px;">Phòng ban: ${u.department}</div>` : ''}
+                        </td>
+                        <td style="max-width: 250px;">
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">${rolesHtml}</div>
+                        </td>
+                        <td>${statusHtml}</td>
+                        <td style="text-align: right">
+                            <button class="action-btn" title="Đổi mật khẩu" onclick="openChangePasswordModal(${u.id})">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.252l7.5-7.5A6 6 0 0115 7z"></path></svg>
+                            </button>
+                            <button class="action-btn" title="Phân quyền" onclick="openEditRoles(${u.id})">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </button>
+                            <button class="action-btn lock" title="Khóa/Mở khóa" onclick="toggleLock(${u.id})">
+                                ${lockIcon}
+                            </button>
+                            <button class="action-btn" title="Xóa tài khoản" onclick="deleteUser(${u.id})" style="color: #ef4444;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Generate checkboxes dynamically
+        function renderRoleCheckboxes(containerId, prefixId) {
+            let html = '';
+            Object.keys(ROLES_INFO).forEach(key => {
+                html += `
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="${prefixId}${key}" value="${key}">
+                        ${ROLES_INFO[key].name}
+                    </label>
+                `;
+            });
+            document.getElementById(containerId).innerHTML = html;
+        }
+
+        function getSelectedRoles(prefixId) {
+            const roles = [];
+            Object.keys(ROLES_INFO).forEach(key => {
+                if (document.getElementById(prefixId + key).checked) roles.push(key);
+            });
+            return roles.length > 0 ? roles : ['ROLE_USER'];
+        }
+
+        // Modals
+        function openCreateModal() {
+            document.getElementById('createModal').style.display = 'flex';
+        }
+        
+        function openEditRoles(userId) {
+            const user = usersList.find(u => u.id === userId);
+            if (!user) return;
+            
+            document.getElementById('e_userId').value = userId;
+            document.getElementById('e_usernameDisplay').textContent = user.username;
+            
+            // Set checked based on user roles
+            Object.keys(ROLES_INFO).forEach(key => {
+                document.getElementById('e_role_' + key).checked = user.roles.includes(key);
+            });
+            
+            document.getElementById('editRolesModal').style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // API Calls
+        async function submitCreateUser() {
+            const username = document.getElementById('c_username').value;
+            const email = document.getElementById('c_email').value;
+            const fullname = document.getElementById('c_fullname').value;
+            const department = document.getElementById('c_department').value;
+            const roles = getSelectedRoles('c_role_');
+            
+            if (!username || !email) return showToast('Vui lòng nhập Username và Email', 'error');
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    },
+                    body: JSON.stringify({ 
+                        username, 
+                        email, 
+                        fullName: fullname,
+                        department: department,
+                        roles 
+                    })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    closeModal('createModal');
+                    fetchUsers();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        async function submitEditRoles() {
+            const id = document.getElementById('e_userId').value;
+            const roles = getSelectedRoles('e_role_');
+            
+            try {
+                const response = await fetch(`/api/users/${id}/roles`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    },
+                    body: JSON.stringify(roles)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    closeModal('editRolesModal');
+                    fetchUsers();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        function openChangePasswordModal(id) {
+            document.getElementById('cp_userId').value = id;
+            document.getElementById('cp_newPassword').value = '';
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+
+        async function submitChangePassword() {
+            const id = document.getElementById('cp_userId').value;
+            const newPassword = document.getElementById('cp_newPassword').value;
+            if (!newPassword) {
+                showToast('Vui lòng nhập mật khẩu mới', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/users/${id}/password`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                    },
+                    body: JSON.stringify({ newPassword })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    closeModal('changePasswordModal');
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        async function toggleLock(id) {
+            if (!confirm('Bạn có chắc chắn muốn thay đổi trạng thái khóa tài khoản này?')) return;
+            try {
+                const response = await fetch(`/api/users/${id}/lock`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    fetchUsers();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa tài khoản này? Hành động này không thể hoàn tác.")) return;
+            
+            try {
+                const response = await fetch(`/api/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    fetchUsers();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) { showToast('Lỗi hệ thống', 'error'); }
+        }
+
+        // Utils
+        function showToast(message, type='success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = type + ' show';
+            toast.innerHTML = type === 'success' 
+                ? `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> ${message}`
+                : `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg> ${message}`;
+                
+            setTimeout(() => toast.className = toast.className.replace('show', ''), 3000);
+        }
+
+        function logout(doApiCall = true) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userRoles');
+            window.location.href = 'login.html';
+        }
+
+        // ================= IMPORT USERS LOGIC =================
+        let currentImportFile = null;
+        let previewRowsData = [];
+
+        async function downloadTemplate(format) {
+            const token = localStorage.getItem('accessToken') || '';
+            const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
+            try {
+                const response = await fetch(`${baseUrl}/api/users/template?format=${format}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!response.ok) {
+                    showToast('Không thể tải tệp mẫu', 'error');
+                    return;
+                }
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = format === 'csv' ? 'mau_nhap_tai_khoan.csv' : 'mau_nhap_tai_khoan.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                showToast('Đã tải xuống tệp mẫu thành công!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Lỗi khi tải tệp mẫu', 'error');
+            }
+        }
+
+        function openImportModal() {
+            resetImportUpload();
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+        }
+
+        function resetImportUpload() {
+            currentImportFile = null;
+            previewRowsData = [];
+            const fileInput = document.getElementById('importFileInput');
+            if (fileInput) fileInput.value = '';
+            
+            const loadingState = document.getElementById('importLoadingState');
+            if (loadingState) loadingState.style.display = 'none';
+
+            document.getElementById('selectedFileInfo').style.display = 'none';
+            document.getElementById('uploadDropzone').style.display = 'block';
+            document.getElementById('importUploadSection').style.display = 'block';
+            document.getElementById('importPreviewSection').style.display = 'none';
+            document.getElementById('importSummarySection').style.display = 'none';
+            document.getElementById('btnChooseOtherFile').style.display = 'none';
+            document.getElementById('btnExecuteImport').style.display = 'none';
+            document.getElementById('btnFinishImport').style.display = 'none';
+        }
+
+        function handleFileSelected(file) {
+            if (!file) return;
+
+            // Kiểm tra định dạng tệp hợp lệ
+            const fileNameLower = file.name.toLowerCase();
+            const isValidExt = fileNameLower.endsWith('.xlsx') || fileNameLower.endsWith('.xls') || fileNameLower.endsWith('.csv');
+            if (!isValidExt) {
+                showToast('Chỉ chấp nhận tệp định dạng Excel (.xlsx, .xls) hoặc CSV (.csv)', 'error');
+                return;
+            }
+
+            currentImportFile = file;
+            const sizeInKb = (file.size / 1024).toFixed(1);
+
+            // Cập nhật thông tin tệp
+            document.getElementById('selectedFileName').textContent = file.name;
+            document.getElementById('selectedFileSize').textContent = sizeInKb + ' KB';
+
+            // Hiển thị trạng thái đang tải & kiểm tra tệp
+            document.getElementById('uploadDropzone').style.display = 'none';
+            document.getElementById('selectedFileInfo').style.display = 'none';
+
+            const loadingState = document.getElementById('importLoadingState');
+            if (loadingState) {
+                loadingState.style.display = 'block';
+                document.getElementById('importLoadingFileName').textContent = `Đang tải lên & phân tích: ${file.name} (${sizeInKb} KB)...`;
+            }
+
+            // Tự động phân tích và kiểm tra tệp ngay lập tức
+            previewImportData();
+        }
+
+        // Setup dropzone drag and drop
+        setTimeout(() => {
+            const dropzone = document.getElementById('uploadDropzone');
+            if (dropzone) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.add('dragover');
+                    }, false);
+                });
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.remove('dragover');
+                    }, false);
+                });
+                dropzone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files && files.length > 0) {
+                        handleFileSelected(files[0]);
+                    }
+                }, false);
+            }
+        }, 100);
+
+        async function previewImportData() {
+            if (!currentImportFile) {
+                showToast('Vui lòng chọn tệp để kiểm tra', 'error');
+                return;
+            }
+
+            const loadingState = document.getElementById('importLoadingState');
+            if (loadingState) loadingState.style.display = 'block';
+            document.getElementById('uploadDropzone').style.display = 'none';
+
+            const btn = document.getElementById('btnStartCheck');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Đang kiểm tra...';
+            }
+
+            const formData = new FormData();
+            formData.append('file', currentImportFile);
+
+            const token = localStorage.getItem('accessToken') || '';
+            const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/users/import/preview`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                const res = await response.json();
+                if (response.ok && res.success) {
+                    if (loadingState) loadingState.style.display = 'none';
+                    previewRowsData = res.data || [];
+                    renderPreviewTable(previewRowsData);
+                } else {
+                    if (loadingState) loadingState.style.display = 'none';
+                    document.getElementById('uploadDropzone').style.display = 'block';
+                    document.getElementById('selectedFileInfo').style.display = 'flex';
+                    showToast(res.message || 'Lỗi khi kiểm tra dữ liệu tệp', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                if (loadingState) loadingState.style.display = 'none';
+                document.getElementById('uploadDropzone').style.display = 'block';
+                document.getElementById('selectedFileInfo').style.display = 'flex';
+                showToast('Lỗi kết nối máy chủ khi kiểm tra tệp', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Kiểm tra lại tệp';
+                }
+            }
+        }
+
+        function renderPreviewTable(rows) {
+            document.getElementById('importUploadSection').style.display = 'none';
+            document.getElementById('importPreviewSection').style.display = 'block';
+            document.getElementById('btnChooseOtherFile').style.display = 'inline-block';
+
+            let validCount = 0;
+            let errorCount = 0;
+
+            const tbody = document.getElementById('previewTableBody');
+            let html = '';
+
+            rows.forEach(r => {
+                if (r.valid) validCount++;
+                else errorCount++;
+
+                const statusPill = r.valid
+                    ? `<span class="row-status-pill pill-valid">Hợp lệ</span>`
+                    : `<span class="row-status-pill pill-invalid">Lỗi</span>`;
+
+                const errorsHtml = (r.errors && r.errors.length > 0)
+                    ? r.errors.map(err => `<span class="error-tag">&bull; ${err}</span>`).join('')
+                    : `<span style="color: #16a34a; font-size: 12px; font-weight: 500;">Đạt yêu cầu</span>`;
+
+                const rolesDisplay = (r.roles && r.roles.length > 0)
+                    ? r.roles.map(role => `<span class="role-tag" style="margin-bottom:0;">${ROLES_INFO[role]?.name || role}</span>`).join(' ')
+                    : '<span style="color:#94a3b8;">ROLE_USER</span>';
+
+                html += `
+                    <tr class="${r.valid ? 'row-valid' : 'row-invalid'}">
+                        <td><strong>${r.rowNumber}</strong></td>
+                        <td style="font-weight: 600; color: #1e293b;">${r.username || '<span style="color:#ef4444;">[Trống]</span>'}</td>
+                        <td>${r.email || '<span style="color:#ef4444;">[Trống]</span>'}</td>
+                        <td>${r.fullName || '-'}</td>
+                        <td>${r.department || '-'}</td>
+                        <td>${rolesDisplay}</td>
+                        <td>${statusPill}</td>
+                        <td>${errorsHtml}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            document.getElementById('statTotalCount').textContent = rows.length;
+            document.getElementById('statValidCount').textContent = validCount;
+            document.getElementById('statErrorCount').textContent = errorCount;
+
+            const btnExecute = document.getElementById('btnExecuteImport');
+            if (validCount > 0) {
+                btnExecute.style.display = 'inline-flex';
+                btnExecute.disabled = false;
+                btnExecute.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Nhập ${validCount} tài khoản hợp lệ (${errorCount} dòng lỗi sẽ bỏ qua)`;
+            } else {
+                btnExecute.style.display = 'none';
+            }
+        }
+
+        async function submitExecuteImport() {
+            if (!currentImportFile) return;
+
+            const btn = document.getElementById('btnExecuteImport');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;"><div class="spinner" style="width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></div> Đang tiến hành nhập dữ liệu vào cơ sở dữ liệu...</span>`;
+
+            const formData = new FormData();
+            formData.append('file', currentImportFile);
+
+            const token = localStorage.getItem('accessToken') || '';
+            const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/users/import`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                const res = await response.json();
+                if (response.ok && res.success) {
+                    showToast('Đã hoàn thành quá trình nhập dữ liệu!', 'success');
+                    renderSummaryReport(res.data);
+                    // Tự động tải lại bảng danh sách người dùng
+                    fetchUsers();
+                } else {
+                    showToast(res.message || 'Lỗi khi nhập dữ liệu', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Lỗi kết nối máy chủ', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        function renderSummaryReport(summary) {
+            document.getElementById('importPreviewSection').style.display = 'none';
+            document.getElementById('btnChooseOtherFile').style.display = 'none';
+            document.getElementById('btnExecuteImport').style.display = 'none';
+            document.getElementById('btnFinishImport').style.display = 'inline-block';
+            document.getElementById('importSummarySection').style.display = 'block';
+
+            document.getElementById('sumTotal').textContent = summary.totalRows;
+            document.getElementById('sumSuccess').textContent = summary.successCount;
+            document.getElementById('sumFailed').textContent = summary.failedCount;
+
+            const failedSection = document.getElementById('summaryFailedDetails');
+            const failedTbody = document.getElementById('summaryFailedTableBody');
+
+            if (summary.failedCount > 0 && summary.failedRows && summary.failedRows.length > 0) {
+                failedSection.style.display = 'block';
+                let html = '';
+                summary.failedRows.forEach(f => {
+                    const reasons = (f.errors || []).join('; ');
+                    html += `
+                        <tr class="row-invalid">
+                            <td>${f.rowNumber}</td>
+                            <td>${f.username || '-'}</td>
+                            <td>${f.email || '-'}</td>
+                            <td style="color: #dc2626;">${reasons}</td>
+                        </tr>
+                    `;
+                });
+                failedTbody.innerHTML = html;
+            } else {
+                failedSection.style.display = 'none';
+            }
+        }
+
+        function finishImportFlow() {
+            closeImportModal();
+            fetchUsers();
+            showToast('Danh sách người dùng đã được cập nhật!', 'success');
+        }
+
+        init();
+    </script>
+    <script>
+        // Idle timeout script (90 seconds)
+        (function() {
+            let idleTime = 0;
+            const maxIdleTime = 90; // seconds
+
+            function resetTimer() {
+                idleTime = 0;
+            }
+
+            document.addEventListener('mousemove', resetTimer);
+            document.addEventListener('keypress', resetTimer);
+            document.addEventListener('scroll', resetTimer);
+            document.addEventListener('click', resetTimer);
+
+            setInterval(function() {
+                idleTime++;
+                if (idleTime >= maxIdleTime) {
+                    if (typeof logout === 'function') {
+                        logout(false);
+                    } else {
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        window.location.href = 'login.html?session=expired';
+                    }
+                }
+            }, 1000); // 1 second
+        })();
+    </script>
+    <!-- MODAL ĐỔI ẢNH ĐẠI DIỆN -->
+    <div class="avatar-modal-overlay" id="avatarModal" style="display: none;" onclick="if(event.target === this) closeAvatarModal();">
+        <div class="avatar-modal-card">
+            <div class="avatar-modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a;">Đổi ảnh đại diện</h3>
+                        <span style="font-size: 12px; color: #64748b;">Tải lên ảnh nhận diện tài khoản</span>
+                    </div>
+                </div>
+                <button type="button" class="avatar-modal-close" onclick="closeAvatarModal()">&times;</button>
+            </div>
+
+            <div class="avatar-modal-body">
+                <!-- Vùng xem trước ảnh (Preview) -->
+                <div class="avatar-preview-section">
+                    <div class="avatar-preview-circle-lg" id="avatarModalPreviewWrap">
+                        <span id="avatarModalPreviewInitial">U</span>
+                        <img id="avatarModalPreviewImg" src="" alt="Xem trước" style="display: none;">
+                        <div class="avatar-preview-crop-hint">Cắt vuông 1:1</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 8px;">
+                        <span style="font-size: 12px; font-weight: 600; color: #475569;" id="avatarPreviewLabel">Ảnh đại diện hiện tại</span>
+                    </div>
+                </div>
+
+                <!-- Khu vực kéo thả / chọn file (Dropzone) -->
+                <div class="avatar-dropzone" id="avatarDropzone" onclick="document.getElementById('avatarFileInput').click()">
+                    <input type="file" id="avatarFileInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" style="display: none;" onchange="handleAvatarFileSelect(this.files[0])">
+                    <svg width="30" height="30" fill="none" stroke="#2563eb" stroke-width="1.8" viewBox="0 0 24 24" style="margin-bottom: 6px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <div style="font-size: 13px; font-weight: 600; color: #1e293b;">
+                        Nhấp để chọn tệp hoặc kéo thả vào đây
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                        Chấp nhận: <strong style="color: #2563eb;">JPG, PNG</strong> (Tối đa <strong style="color: #2563eb;">2MB</strong>)
+                    </div>
+                </div>
+
+                <!-- Thông báo kiểm tra định dạng và dung lượng thời gian thực -->
+                <div id="avatarValidationFeedback" style="display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 12px; line-height: 1.4;">
+                </div>
+
+                <!-- Quy định yêu cầu bài toán Jira -->
+                <div class="avatar-guidelines">
+                    <div class="guideline-item">
+                        <svg width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Chấp nhận định dạng ảnh JPG/PNG dung lượng tối đa 2MB.</span>
+                    </div>
+                    <div class="guideline-item">
+                        <svg width="14" height="14" fill="none" stroke="#10b981" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Ảnh tự động cắt vuông tâm và tạo bản thu nhỏ sắc nét.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="avatar-modal-footer">
+                <button type="button" class="btn-avatar-cancel" onclick="closeAvatarModal()">Hủy bỏ</button>
+                <button type="button" class="btn-avatar-submit" id="btnSubmitAvatar" onclick="submitAvatarUpload()" disabled>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Lưu ảnh đại diện</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script xử lý Avatar -->
+    <script>
+        let currentSelectedAvatarFile = null;
+        let currentUserAvatarUrl = null;
+
+        function getInitials(name) {
+            if (!name) return 'U';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function renderUserAvatar(avatarUrl, displayName) {
+            const avatarImg = document.getElementById('headerAvatarImg');
+            const avatarText = document.getElementById('headerAvatarText');
+            const initials = getInitials(displayName);
+
+            if (avatarText) avatarText.textContent = initials;
+            currentUserAvatarUrl = avatarUrl;
+
+            if (avatarUrl && avatarUrl.trim() !== '') {
+                const bustUrl = avatarUrl.includes('?') ? avatarUrl : avatarUrl + '?t=' + Date.now();
+                if (avatarImg) {
+                    avatarImg.src = bustUrl;
+                    avatarImg.style.display = 'block';
+                }
+                if (avatarText) avatarText.style.display = 'none';
+            } else {
+                if (avatarImg) {
+                    avatarImg.removeAttribute('src');
+                    avatarImg.style.display = 'none';
+                }
+                if (avatarText) avatarText.style.display = 'inline';
+            }
+        }
+
+        function openAvatarModal() {
+            const modal = document.getElementById('avatarModal');
+            if (!modal) return;
+
+            currentSelectedAvatarFile = null;
+            const btnSubmit = document.getElementById('btnSubmitAvatar');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Lưu ảnh đại diện</span>
+                `;
+            }
+
+            const feedback = document.getElementById('avatarValidationFeedback');
+            if (feedback) {
+                feedback.style.display = 'none';
+                feedback.innerHTML = '';
+            }
+
+            const fileInput = document.getElementById('avatarFileInput');
+            if (fileInput) fileInput.value = '';
+
+            const previewImg = document.getElementById('avatarModalPreviewImg');
+            const previewInitial = document.getElementById('avatarModalPreviewInitial');
+            const previewLabel = document.getElementById('avatarPreviewLabel');
+            if (previewLabel) previewLabel.textContent = 'Ảnh đại diện hiện tại';
+
+            const currentName = document.getElementById('displayUsername') ? document.getElementById('displayUsername').textContent : 'U';
+            if (previewInitial) previewInitial.textContent = getInitials(currentName);
+
+            if (currentUserAvatarUrl && currentUserAvatarUrl.trim() !== '') {
+                if (previewImg) {
+                    previewImg.src = currentUserAvatarUrl + '?t=' + Date.now();
+                    previewImg.style.display = 'block';
+                }
+                if (previewInitial) previewInitial.style.display = 'none';
+            } else {
+                if (previewImg) {
+                    previewImg.removeAttribute('src');
+                    previewImg.style.display = 'none';
+                }
+                if (previewInitial) previewInitial.style.display = 'inline';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeAvatarModal() {
+            const modal = document.getElementById('avatarModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            currentSelectedAvatarFile = null;
+        }
+
+        function handleAvatarFileSelect(file) {
+            if (!file) return;
+
+            const feedback = document.getElementById('avatarValidationFeedback');
+            const btnSubmit = document.getElementById('btnSubmitAvatar');
+            const previewImg = document.getElementById('avatarModalPreviewImg');
+            const previewInitial = document.getElementById('avatarModalPreviewInitial');
+            const previewLabel = document.getElementById('avatarPreviewLabel');
+
+            // Kiểm tra định dạng JPG/PNG
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            const fileName = file.name.toLowerCase();
+            const hasValidExt = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png');
+
+            if (!validTypes.includes(file.type) && !hasValidExt) {
+                currentSelectedAvatarFile = null;
+                if (btnSubmit) btnSubmit.disabled = true;
+                if (feedback) {
+                    feedback.style.display = 'block';
+                    feedback.style.background = '#fef2f2';
+                    feedback.style.color = '#dc2626';
+                    feedback.style.border = '1px solid #fecaca';
+                    feedback.innerHTML = `<strong>Lỗi định dạng:</strong> Tệp "<em>${file.name}</em>" không hợp lệ. Chỉ chấp nhận định dạng JPG hoặc PNG theo quy định.`;
+                }
+                return;
+            }
+
+            // Kiểm tra dung lượng tối đa 2MB
+            const maxSizeBytes = 2 * 1024 * 1024; // 2MB
+            if (file.size > maxSizeBytes) {
+                currentSelectedAvatarFile = null;
+                if (btnSubmit) btnSubmit.disabled = true;
+                const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                if (feedback) {
+                    feedback.style.display = 'block';
+                    feedback.style.background = '#fef2f2';
+                    feedback.style.color = '#dc2626';
+                    feedback.style.border = '1px solid #fecaca';
+                    feedback.innerHTML = `<strong>Dung lượng quá tải:</strong> Tệp có dung lượng <strong>${sizeMb} MB</strong>, vượt quá giới hạn tối đa <strong>2MB</strong> theo quy định.`;
+                }
+                return;
+            }
+
+            // File hợp lệ
+            currentSelectedAvatarFile = file;
+            if (btnSubmit) btnSubmit.disabled = false;
+
+            const sizeKb = (file.size / 1024).toFixed(1);
+            if (feedback) {
+                feedback.style.display = 'block';
+                feedback.style.background = '#f0fdf4';
+                feedback.style.color = '#15803d';
+                feedback.style.border = '1px solid #bbf7d0';
+                feedback.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <svg width="15" height="15" fill="none" stroke="#15803d" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        <span><strong>Ảnh hợp lệ:</strong> ${file.name} (${sizeKb} KB) - Sẵn sàng cập nhật!</span>
+                    </div>
+                `;
+            }
+
+            if (previewLabel) previewLabel.textContent = 'Xem trước ảnh mới sẽ cắt vuông:';
+
+            // Preview ảnh
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                }
+                if (previewInitial) previewInitial.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Kéo thả ảnh (Drag & drop)
+        (function setupAvatarDropzone() {
+            const dropzone = document.getElementById('avatarDropzone');
+            if (!dropzone) return;
+
+            ['dragenter', 'dragover'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                if (dt && dt.files && dt.files.length > 0) {
+                    handleAvatarFileSelect(dt.files[0]);
+                }
+            }, false);
+        })();
+
+        async function submitAvatarUpload() {
+            if (!currentSelectedAvatarFile) return;
+            const token = localStorage.getItem('accessToken');
+            if (!token) return logout(false);
+
+            const btnSubmit = document.getElementById('btnSubmitAvatar');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `
+                    <svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0110 10" stroke-linecap="round"></path></svg>
+                    <span>Đang cắt ảnh & lưu...</span>
+                `;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentSelectedAvatarFile);
+
+                const response = await fetch('/api/users/avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    const newAvatarUrl = result.data.avatarUrl;
+                    currentUserAvatarUrl = newAvatarUrl;
+
+                    const displayName = document.getElementById('displayUsername') ? document.getElementById('displayUsername').textContent : 'User';
+                    renderUserAvatar(newAvatarUrl, displayName);
+
+                    closeAvatarModal();
+                    alert('Cập nhật ảnh đại diện thành công!');
+                } else {
+                    const feedback = document.getElementById('avatarValidationFeedback');
+                    if (feedback) {
+                        feedback.style.display = 'block';
+                        feedback.style.background = '#fef2f2';
+                        feedback.style.color = '#dc2626';
+                        feedback.style.border = '1px solid #fecaca';
+                        feedback.innerHTML = `<strong>Lỗi:</strong> ${result.message || 'Không thể tải ảnh lên'}`;
+                    }
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = `<span>Lưu ảnh đại diện</span>`;
+                    }
+                }
+            } catch (err) {
+                console.error('Lỗi upload avatar:', err);
+                const feedback = document.getElementById('avatarValidationFeedback');
+                if (feedback) {
+                    feedback.style.display = 'block';
+                    feedback.style.background = '#fef2f2';
+                    feedback.style.color = '#dc2626';
+                    feedback.innerHTML = `<strong>Lỗi kết nối:</strong> Không thể gửi ảnh lên máy chủ.`;
+                }
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = `<span>Lưu ảnh đại diện</span>`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

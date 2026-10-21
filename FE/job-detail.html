@@ -1,0 +1,1306 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Tin Tuyển Dụng - TTCS Careers</title>
+    <!-- Modern Typography: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="api-config.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-glow: rgba(37, 99, 235, 0.25);
+            --accent: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            --dark: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-full: 9999px;
+            --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+            --shadow-hover: 0 20px 30px -8px rgba(15, 23, 42, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.06);
+            --shadow-glow: 0 10px 25px -4px rgba(37, 99, 235, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, .job-title, .section-title {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            letter-spacing: -0.025em;
+        }
+
+        body {
+            background-color: var(--slate-50);
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 90px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navigation */
+        .public-navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            z-index: 100;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .nav-logo-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 19px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .nav-logo {
+            height: 38px;
+            max-width: 140px;
+            object-fit: contain;
+        }
+
+        .nav-brand-text h1 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .nav-brand-text span {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            border: 1px solid transparent;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--slate-700);
+            border-color: var(--slate-200);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .btn-outline:hover {
+            background: var(--slate-100);
+            border-color: var(--slate-400);
+            color: var(--dark);
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Container & Grid Layout */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: var(--slate-500);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-row a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s;
+        }
+
+        .breadcrumb-row a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: var(--slate-400);
+            font-size: 11px;
+        }
+
+        /* Job Header Card */
+        .job-header-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-header-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-gradient);
+        }
+
+        .job-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .job-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.25;
+            letter-spacing: -0.6px;
+        }
+
+        .job-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .job-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .job-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            background: var(--slate-100);
+            color: var(--slate-700);
+        }
+
+        .badge-salary {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+        }
+
+        .badge-deadline {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .badge-expired {
+            background: #fff1f2;
+            color: #e11d48;
+            font-weight: 700;
+            border: 1px solid #fecdd3;
+        }
+
+        .job-posted-info {
+            font-size: 13.5px;
+            color: var(--slate-500);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid var(--slate-100);
+            padding-top: 16px;
+        }
+
+        /* Hết hạn Alert Box */
+        .expired-alert-banner {
+            display: none;
+            background: #fff1f2;
+            border: 1.5px solid #fecdd3;
+            border-left: 6px solid #e11d48;
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            color: #9f1239;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .expired-alert-banner h4 {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .expired-alert-banner p {
+            font-size: 14.5px;
+            color: #881337;
+            line-height: 1.6;
+        }
+
+        /* 2-Column Content Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.05fr;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Main Details Card */
+        .details-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .detail-section h3 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid var(--slate-100);
+        }
+
+        .detail-section h3 .section-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .detail-section p, .detail-section div {
+            font-size: 15.5px;
+            color: var(--slate-700);
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        /* Sidebar Apply Box */
+        .sidebar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 90px;
+        }
+
+        .apply-sidebar-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .apply-sidebar-header {
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--slate-100);
+            padding-bottom: 16px;
+        }
+
+        .apply-sidebar-card h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .apply-sidebar-card p {
+            font-size: 13.5px;
+            color: var(--slate-500);
+            line-height: 1.5;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--slate-700);
+            margin-bottom: 6px;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--slate-300);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+            color: var(--dark);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--slate-500);
+            margin-top: 5px;
+        }
+
+        /* CV Drag & Drop Area */
+        .file-upload-box {
+            border: 2px dashed #93c5fd;
+            border-radius: var(--radius-md);
+            padding: 24px 18px;
+            text-align: center;
+            background: var(--primary-light);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .file-upload-box:hover, .file-upload-box.dragover {
+            border-color: var(--primary);
+            background: #dbeafe;
+            transform: scale(1.01);
+        }
+
+        .file-upload-icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+            margin-bottom: 10px;
+        }
+
+        .file-name-preview {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            word-break: break-all;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            display: inline-block;
+        }
+
+        .security-badge-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--slate-500);
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 14px;
+            line-height: 1.4;
+        }
+
+        /* Overview Info Sidebar Card */
+        .overview-sidebar-card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .overview-sidebar-card h4 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .overview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .overview-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13.5px;
+        }
+
+        .overview-item-icon {
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .overview-item-label {
+            color: var(--slate-500);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .overview-item-value {
+            color: var(--dark);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        /* Mobile Sticky CTA Bar */
+        .mobile-sticky-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--slate-200);
+            padding: 12px 20px;
+            z-index: 99;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-sticky-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-sticky-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mobile-sticky-salary {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .public-navbar { padding: 14px 20px; }
+            .mobile-sticky-bar { display: flex; }
+            .job-title { font-size: 24px; }
+            .job-header-card { padding: 24px 20px; }
+            .details-card { padding: 24px 20px; }
+            .apply-sidebar-card { padding: 24px 20px; }
+            .job-header-top { flex-direction: column; }
+            .job-header-actions { width: 100%; justify-content: flex-start; }
+        }
+
+        /* Modal Success */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 560px;
+            padding: 40px 36px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px) scale(0.98); }
+            to { transform: translateY(0) scale(1); }
+        }
+
+        .success-icon-box {
+            width: 72px;
+            height: 72px;
+            background: var(--success-light);
+            color: var(--success);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 36px;
+            border: 2px solid #a7f3d0;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+        }
+
+        .tracking-code-box {
+            background: var(--slate-100);
+            border: 2px dashed #93c5fd;
+            border-radius: var(--radius-md);
+            padding: 18px 22px;
+            margin: 22px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tracking-code-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1.5px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: white;
+            border: 1px solid #bfdbfe;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="public-navbar">
+        <a href="careers.html" class="nav-brand">
+            <div class="nav-logo-box">
+                <span id="navLogoFallback">T</span>
+                <img id="navLogo" src="images/logo-company.png" alt="Company Logo" class="nav-logo" style="display: none;" onload="this.style.display='block'; document.getElementById('navLogoFallback').style.display='none';" onerror="this.style.display='none'; document.getElementById('navLogoFallback').style.display='block';">
+            </div>
+            <div class="nav-brand-text">
+                <h1 id="navCompanyName">TTCS Group</h1>
+                <span>Careers Portal</span>
+            </div>
+        </a>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="careers.html" class="btn btn-outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Tất cả việc làm
+            </a>
+            <button type="button" class="btn btn-primary" onclick="scrollToApplyForm()">
+                Ứng tuyển ngay
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-row">
+            <a href="careers.html">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Cổng Tuyển Dụng
+            </a>
+            <span class="breadcrumb-separator">/</span>
+            <span id="breadcrumbDept" style="color: var(--slate-600); font-weight: 500;">Khối Kỹ Thuật</span>
+            <span class="breadcrumb-separator">/</span>
+            <span id="breadcrumbJobTitle" style="color: var(--dark); font-weight: 700;">Đang tải...</span>
+        </div>
+
+        <!-- Job Header Banner Card -->
+        <div class="job-header-card">
+            <div class="job-header-top">
+                <div>
+                    <h2 class="job-title" id="jobTitle">Đang tải thông tin vị trí...</h2>
+                </div>
+                <div class="job-header-actions">
+                    <button type="button" class="btn btn-outline" onclick="shareJob()" title="Chia sẻ tin tuyển dụng này">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Chia sẻ
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="scrollToApplyForm()">
+                        Ứng tuyển ngay
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Badges Row -->
+            <div class="job-badges" id="jobBadges">
+                <span class="job-badge">Đang tải...</span>
+            </div>
+
+            <div class="job-posted-info">
+                <span id="jobPublishedDate">📅 Ngày đăng tuyển: --/--/----</span>
+                <span>•</span>
+                <span style="color: var(--success); font-weight: 600;">⚡ Đang tiếp nhận hồ sơ trực tuyến</span>
+            </div>
+        </div>
+
+        <!-- Hết hạn Alert Box -->
+        <div class="expired-alert-banner" id="expiredBanner">
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Thông báo: Tin tuyển dụng này đã hết hạn nhận hồ sơ
+            </h4>
+            <p>
+                Rất tiếc, thời hạn nộp hồ sơ cho vị trí này đã kết thúc. Vui lòng quay lại Cổng tuyển dụng để tham khảo các cơ hội nghề nghiệp hấp dẫn khác đang mở.
+            </p>
+            <div style="margin-top: 14px;">
+                <a href="careers.html" class="btn btn-primary" style="font-size: 13px;">Khám phá các vị trí khác</a>
+            </div>
+        </div>
+
+        <!-- 2-Column Main Content -->
+        <div class="content-grid">
+            <!-- Left Column: Job Details Content -->
+            <div class="details-card">
+                <!-- Mô tả công việc -->
+                <div class="detail-section">
+                    <h3>
+                        <span class="section-icon-box">📌</span>
+                        Mô Tả Công Việc
+                    </h3>
+                    <div id="jobDescription">Đang tải dữ liệu...</div>
+                </div>
+
+                <!-- Yêu cầu ứng viên -->
+                <div class="detail-section">
+                    <h3>
+                        <span class="section-icon-box">🎯</span>
+                        Yêu Cầu Tuyển Dụng
+                    </h3>
+                    <div id="jobRequirements">Đang tải dữ liệu...</div>
+                </div>
+
+                <!-- Quyền lợi đãi ngộ -->
+                <div class="detail-section">
+                    <h3>
+                        <span class="section-icon-box">🎁</span>
+                        Quyền Lợi & Chế Độ Đãi Ngộ
+                    </h3>
+                    <div id="jobBenefits">Đang tải dữ liệu...</div>
+                </div>
+
+                <!-- Địa điểm làm việc -->
+                <div class="detail-section">
+                    <h3>
+                        <span class="section-icon-box">🏢</span>
+                        Địa Điểm & Môi Trường Làm Việc
+                    </h3>
+                    <div id="jobLocationDetail">Đang tải dữ liệu...</div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar Application Form -->
+            <div class="sidebar-container">
+                <div class="apply-sidebar-card" id="applyCard">
+                    <!-- Form Container (Visible when active) -->
+                    <div id="applyFormContainer">
+                        <div class="apply-sidebar-header">
+                            <h3>
+                                <span>📝 Ứng tuyển vị trí này</span>
+                            </h3>
+                            <p>Điền thông tin và đính kèm CV của bạn (PDF/DOCX <= 10MB). Không cần tạo tài khoản.</p>
+                        </div>
+
+                        <form id="applyForm" onsubmit="handleApplySubmit(event)">
+                            <input type="hidden" id="applyJobId">
+
+                            <div class="form-group">
+                                <label class="form-label" for="applyFullName">Họ và tên ứng viên <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="applyFullName" placeholder="Ví dụ: Nguyễn Văn An" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="applyEmail">Địa chỉ Email <span class="required">*</span></label>
+                                <input type="email" class="form-control" id="applyEmail" placeholder="nguyenvanan@example.com" required>
+                                <div class="form-hint">Email nhận thông báo kết quả và mã tra cứu</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="applyPhone">Số điện thoại liên hệ <span class="required">*</span></label>
+                                <input type="tel" class="form-control" id="applyPhone" placeholder="Ví dụ: 0912345678" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="applySource">Kênh biết thông tin tuyển dụng</label>
+                                <select class="form-control" id="applySource">
+                                    <option value="">-- Chọn nguồn biết tin --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="applyCoverLetter">Thư giới thiệu / Lời nhắn (Cover Letter)</label>
+                                <textarea class="form-control" id="applyCoverLetter" rows="3" placeholder="Chia sẻ ngắn gọn điểm mạnh hoặc lý do bạn phù hợp với vị trí này..."></textarea>
+                            </div>
+
+                            <!-- CV Upload Area -->
+                            <div class="form-group">
+                                <label class="form-label">Tệp CV ứng tuyển <span class="required">*</span></label>
+                                <div class="file-upload-box" id="dropZoneBox" onclick="document.getElementById('applyCvFile').click()">
+                                    <div class="file-upload-icon-circle">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 2px;">Bấm để chọn hoặc kéo thả tệp CV vào đây</div>
+                                    <div class="form-hint">Hỗ trợ định dạng PDF hoặc DOCX (Dung lượng tối đa 10MB)</div>
+                                    <div class="file-name-preview" id="fileNamePreview" style="display: none;"></div>
+                                </div>
+                                <input type="file" id="applyCvFile" accept=".pdf,.docx,.doc" style="display: none;" onchange="handleFileSelected(this)" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="btnSubmitApply" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700;">
+                                🚀 Gửi hồ sơ ứng tuyển ngay
+                            </button>
+
+                            <div class="security-badge-strip">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <span>Hệ thống bảo vệ chống spam (tối đa 5 lần/giờ). Thông tin được bảo mật chuẩn ISO.</span>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Expired Notice instead of form -->
+                    <div id="applyExpiredContainer" style="display: none; text-align: center; padding: 24px 10px;">
+                        <div style="font-size: 46px; margin-bottom: 14px;">⏳</div>
+                        <h3 style="color: var(--danger); font-size: 19px; font-weight: 800; margin-bottom: 8px;">Đã hết hạn nhận hồ sơ</h3>
+                        <p style="color: var(--slate-500); font-size: 14px; margin-bottom: 22px; line-height: 1.6;">
+                            Vị trí tuyển dụng này hiện đã đóng cổng tiếp nhận hồ sơ. Cảm ơn bạn đã quan tâm đến TTCS Group.
+                        </p>
+                        <a href="careers.html" class="btn btn-primary" style="width: 100%;">Khám phá các vị trí khác</a>
+                    </div>
+                </div>
+
+                <!-- Quick Overview Card -->
+                <div class="overview-sidebar-card">
+                    <h4>Tổng Quan Vị Trí</h4>
+                    <div class="overview-list">
+                        <div class="overview-item">
+                            <div class="overview-item-icon">💰</div>
+                            <div>
+                                <div class="overview-item-label">Mức lương đề xuất</div>
+                                <div class="overview-item-value" id="sideSalary">Thương lượng</div>
+                            </div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-item-icon">🏢</div>
+                            <div>
+                                <div class="overview-item-label">Phòng ban</div>
+                                <div class="overview-item-value" id="sideDept">Khối Công Nghệ</div>
+                            </div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-item-icon">📍</div>
+                            <div>
+                                <div class="overview-item-label">Địa điểm làm việc</div>
+                                <div class="overview-item-value" id="sideLocation">Hà Nội</div>
+                            </div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-item-icon">⏰</div>
+                            <div>
+                                <div class="overview-item-label">Hạn nộp hồ sơ</div>
+                                <div class="overview-item-value" id="sideDeadline">Đang mở</div>
+                            </div>
+                        </div>
+                        <div class="overview-item">
+                            <div class="overview-item-icon">⚡</div>
+                            <div>
+                                <div class="overview-item-label">Thời gian phản hồi</div>
+                                <div class="overview-item-value">Cam kết 3 - 5 ngày làm việc</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sticky CTA Bar -->
+    <div class="mobile-sticky-bar" id="mobileStickyBar">
+        <div class="mobile-sticky-info">
+            <div class="mobile-sticky-title" id="mobileTitle">Senior Developer</div>
+            <div class="mobile-sticky-salary" id="mobileSalary">Thương lượng</div>
+        </div>
+        <button class="btn btn-primary" id="btnMobileApply" onclick="scrollToApplyForm()">Ứng tuyển ngay</button>
+    </div>
+
+    <!-- Success Modal with Tracking Code -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon-box">✓</div>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 10px;">Ứng Tuyển Thành Công!</h2>
+            <p style="font-size: 15px; color: var(--slate-600); line-height: 1.6;">
+                Hồ sơ ứng tuyển của bạn đã được chuyển tới Bộ phận Tuyển dụng TTCS. Email xác nhận đã được gửi vào hòm thư của bạn.
+            </p>
+
+            <div class="tracking-code-box">
+                <div style="text-align: left;">
+                    <div style="font-size: 11.5px; font-weight: 800; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.5px;">Mã tra cứu hồ sơ của bạn:</div>
+                    <div class="tracking-code-text" id="resultTrackingCode">APP-2026-XXXXXX</div>
+                </div>
+                <button type="button" class="copy-btn" onclick="copyTrackingCode()">Sao chép mã</button>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--slate-500); margin-bottom: 26px; line-height: 1.5;">
+                Vui lòng lưu lại Mã tra cứu này để tra cứu trực tiếp tiến trình xét duyệt hồ sơ tại Cổng Tuyển Dụng bất kỳ lúc nào.
+            </p>
+
+            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                <a href="careers.html" class="btn btn-outline" style="min-width: 160px;">Về danh sách việc làm</a>
+                <button type="button" class="btn btn-primary" onclick="openTrackingFromSuccess()" style="min-width: 170px;">
+                    Tra cứu tiến độ ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.API_BASE_URL || 'http://localhost:8080/api';
+        let currentJob = null;
+        let generatedTrackingCode = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('id');
+
+            if (!jobId) {
+                alert('Không tìm thấy mã vị trí tuyển dụng.');
+                window.location.href = 'careers.html';
+                return;
+            }
+
+            document.getElementById('applyJobId').value = jobId;
+            setupDragAndDrop();
+            await loadPortalConfig();
+            await loadCategories();
+            await loadJobDetail(jobId);
+        });
+
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('dropZoneBox');
+            const fileInput = document.getElementById('applyCvFile');
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelected(fileInput);
+                }
+            }, false);
+        }
+
+        async function loadPortalConfig() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/config`);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    const cfg = result.data;
+                    document.getElementById('navCompanyName').textContent = cfg.companyName || 'TTCS Careers';
+                    if (cfg.logoUrl) {
+                        const img = document.getElementById('navLogo');
+                        img.src = cfg.logoUrl;
+                        img.style.display = 'block';
+                        document.getElementById('navLogoFallback').style.display = 'none';
+                    }
+                }
+            } catch (err) {
+                console.error("Lỗi tải config:", err);
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/categories`);
+                const result = await res.json();
+                if (res.ok && result.data && result.data.sources) {
+                    const sel = document.getElementById('applySource');
+                    result.data.sources.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s.id;
+                        opt.textContent = s.name;
+                        sel.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error("Lỗi lấy danh mục:", err);
+            }
+        }
+
+        async function loadJobDetail(jobId) {
+            try {
+                const res = await fetch(`${API_BASE}/portal/public-jobs/${jobId}`);
+                const result = await res.json();
+                if (!res.ok || !result.data) {
+                    alert('Tin tuyển dụng này không tồn tại hoặc chưa được công khai.');
+                    window.location.href = 'careers.html';
+                    return;
+                }
+
+                currentJob = result.data;
+                renderJobDetail(currentJob);
+            } catch (err) {
+                console.error("Lỗi tải chi tiết:", err);
+                alert('Không thể kết nối đến máy chủ.');
+            }
+        }
+
+        function renderJobDetail(job) {
+            document.title = `${job.title} - Cơ hội nghề nghiệp tại TTCS`;
+            document.getElementById('jobTitle').textContent = job.title;
+            document.getElementById('breadcrumbJobTitle').textContent = job.title;
+            document.getElementById('mobileTitle').textContent = job.title;
+
+            const salText = job.isSalaryVisible !== false ? (job.salaryDisplay || 'Thương lượng') : 'Thương lượng';
+            document.getElementById('mobileSalary').textContent = salText;
+            document.getElementById('sideSalary').textContent = salText;
+
+            const locName = job.locationName || 'Trụ sở chính';
+            const empType = job.employmentTypeName || 'Toàn thời gian';
+            const dept = job.departmentName || 'Khối Công Nghệ';
+
+            document.getElementById('breadcrumbDept').textContent = dept;
+            document.getElementById('sideDept').textContent = dept;
+            document.getElementById('sideLocation').textContent = locName;
+
+            let badgesHtml = `
+                <span class="job-badge badge-salary">💰 ${salText}</span>
+                <span class="job-badge">🏢 ${dept}</span>
+                <span class="job-badge">📍 ${locName}</span>
+                <span class="job-badge">💼 ${empType}</span>
+                <span class="job-badge">👥 Cần tuyển: ${job.headcount || 1} người</span>
+            `;
+
+            if (job.applicationDeadline) {
+                const dStr = new Date(job.applicationDeadline).toLocaleDateString('vi-VN');
+                document.getElementById('sideDeadline').textContent = dStr;
+                if (job.isExpired) {
+                    badgesHtml += `<span class="job-badge badge-expired">⚠️ Đã hết hạn (${dStr})</span>`;
+                } else {
+                    badgesHtml += `<span class="job-badge badge-deadline">⏰ Hạn nộp: ${dStr}</span>`;
+                }
+            } else {
+                document.getElementById('sideDeadline').textContent = 'Tuyển liên tục';
+            }
+
+            document.getElementById('jobBadges').innerHTML = badgesHtml;
+
+            const pubDateStr = job.publishedAt ? new Date(job.publishedAt).toLocaleDateString('vi-VN') : 'Mới đăng';
+            document.getElementById('jobPublishedDate').textContent = `📅 Ngày đăng tuyển: ${pubDateStr}`;
+
+            // Content sections
+            document.getElementById('jobDescription').textContent = job.description || 'Theo trao đổi chi tiết trong buổi phỏng vấn trực tiếp.';
+            document.getElementById('jobRequirements').textContent = job.requirements || 'Trao đổi cụ thể theo từng chuyên môn trong buổi phỏng vấn.';
+            document.getElementById('jobBenefits').textContent = job.benefits || 'Môi trường làm việc chuẩn Agile, xét tăng lương định kỳ, bảo hiểm cao cấp, đào tạo chứng chỉ chuyên môn quốc tế.';
+            document.getElementById('jobLocationDetail').textContent = `• Địa điểm: ${locName}\n• Hình thức làm việc: ${empType}\n• Thời gian làm việc: Giờ hành chính từ Thứ 2 đến Thứ 6.`;
+
+            // Expired Job State
+            if (job.isExpired) {
+                document.getElementById('expiredBanner').style.display = 'block';
+                document.getElementById('applyFormContainer').style.display = 'none';
+                document.getElementById('applyExpiredContainer').style.display = 'block';
+
+                const btnMobile = document.getElementById('btnMobileApply');
+                btnMobile.disabled = true;
+                btnMobile.textContent = 'Đã hết hạn';
+                btnMobile.style.background = '#94a3b8';
+            } else {
+                document.getElementById('expiredBanner').style.display = 'none';
+                document.getElementById('applyFormContainer').style.display = 'block';
+                document.getElementById('applyExpiredContainer').style.display = 'none';
+            }
+        }
+
+        function handleFileSelected(input) {
+            const preview = document.getElementById('fileNamePreview');
+            if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (!['pdf', 'docx', 'doc'].includes(ext)) {
+                    alert('Chỉ chấp nhận file CV định dạng PDF hoặc DOCX!');
+                    input.value = '';
+                    preview.style.display = 'none';
+                    preview.textContent = '';
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Dung lượng tệp CV vượt quá giới hạn 10MB! Vui lòng chọn tệp nhỏ hơn.');
+                    input.value = '';
+                    preview.style.display = 'none';
+                    preview.textContent = '';
+                    return;
+                }
+                preview.style.display = 'inline-block';
+                preview.textContent = `✓ Đã chọn: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+            } else {
+                preview.style.display = 'none';
+                preview.textContent = '';
+            }
+        }
+
+        function scrollToApplyForm() {
+            const card = document.getElementById('applyCard');
+            card.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                document.getElementById('applyFullName').focus();
+            }, 400);
+        }
+
+        function shareJob() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: `Ứng tuyển vị trí ${currentJob ? currentJob.title : ''} tại TTCS Group`,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Đã sao chép liên kết tin tuyển dụng vào bộ nhớ tạm!');
+            }
+        }
+
+        async function handleApplySubmit(e) {
+            e.preventDefault();
+
+            if (currentJob && currentJob.isExpired) {
+                alert('Vị trí tuyển dụng này đã hết hạn nhận hồ sơ!');
+                return;
+            }
+
+            const fullName = document.getElementById('applyFullName').value.trim();
+            const email = document.getElementById('applyEmail').value.trim();
+            const phone = document.getElementById('applyPhone').value.trim();
+            const sourceId = document.getElementById('applySource').value;
+            const coverLetter = document.getElementById('applyCoverLetter').value.trim();
+            const fileInput = document.getElementById('applyCvFile');
+
+            // Input validation
+            if (!fullName) {
+                alert('Vui lòng nhập họ và tên của bạn');
+                return;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Vui lòng nhập địa chỉ email hợp lệ');
+                return;
+            }
+            if (!phone || !/^(0|\+84)[0-9]{9,10}$/.test(phone)) {
+                alert('Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số)');
+                return;
+            }
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Vui lòng đính kèm tệp CV ứng tuyển của bạn');
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitApply');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Đang tải lên và gửi hồ sơ...';
+
+            const formData = new FormData();
+            formData.append('jobRequestId', currentJob.id);
+            formData.append('fullName', fullName);
+            formData.append('email', email);
+            formData.append('phone', phone);
+            if (sourceId) formData.append('sourceId', sourceId);
+            if (coverLetter) formData.append('coverLetter', coverLetter);
+            formData.append('cvFile', fileInput.files[0]);
+
+            try {
+                const res = await fetch(`${API_BASE}/portal/apply`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (res.ok && result.success && result.data) {
+                    generatedTrackingCode = result.data.trackingCode;
+                    document.getElementById('resultTrackingCode').textContent = generatedTrackingCode;
+                    document.getElementById('successModal').style.display = 'flex';
+                    document.getElementById('applyForm').reset();
+                    document.getElementById('fileNamePreview').style.display = 'none';
+                    document.getElementById('fileNamePreview').textContent = '';
+                } else {
+                    alert('Lỗi nộp hồ sơ: ' + (result.message || 'Không thể gửi hồ sơ. Vui lòng thử lại.'));
+                }
+            } catch (err) {
+                console.error("Lỗi khi nộp hồ sơ:", err);
+                alert('Lỗi kết nối máy chủ khi nộp hồ sơ. Vui lòng thử lại sau giây lát.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🚀 Gửi hồ sơ ứng tuyển ngay';
+            }
+        }
+
+        function copyTrackingCode() {
+            if (generatedTrackingCode) {
+                navigator.clipboard.writeText(generatedTrackingCode);
+                alert('Đã sao chép mã tra cứu: ' + generatedTrackingCode);
+            }
+        }
+
+        function openTrackingFromSuccess() {
+            window.location.href = `careers.html?tracking=${encodeURIComponent(generatedTrackingCode)}#trackingModal`;
+        }
+    </script>
+</body>
+</html>

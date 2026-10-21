@@ -1,0 +1,931 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chức danh & Dải lương - Tuyển dụng Nội bộ</title>
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 280px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
+        .sidebar-header h2 { font-size: 18px; color: #1e3a8a; font-weight: 700; }
+        .sidebar-menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #475569; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; margin-bottom: 4px; transition: background 0.2s, color 0.2s; cursor: pointer; }
+        .menu-item:hover { background: #f1f5f9; color: #1e293b; }
+        .menu-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+        /* Main Wrapper */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #ffffff; padding: 16px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 16px; }
+        .user-name { font-weight: 600; color: #1e293b; font-size: 14px; text-align: right; }
+        .user-role-badge { display: block; font-size: 12px; color: #64748b; font-weight: 400; margin-top: 2px; }
+
+        .avatar-wrapper { position: relative; cursor: pointer; display: inline-block; transition: transform 0.2s; user-select: none; }
+        .avatar-wrapper:hover { transform: scale(1.06); }
+        .header-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white; font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #e2e8f0; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+        }
+        .header-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .btn-header { background: none; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .btn-header:hover { border-color: #2563eb; color: #2563eb; }
+        .btn-logout { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #fca5a5; color: #991b1b; }
+
+        /* Content Area */
+        .content-area { flex: 1; overflow-y: auto; padding: 28px 36px; }
+        .container { max-width: 1320px; margin: 0 auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        .page-header p { font-size: 14px; color: #64748b; }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-primary { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); transition: 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-blue { background: #eff6ff; color: #2563eb; }
+        .stat-green { background: #ecfdf5; color: #059669; }
+        .stat-purple { background: #f5f3ff; color: #7c3aed; }
+        .stat-amber { background: #fffbeb; color: #d97706; }
+        .stat-info h3 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+        .stat-info span { font-size: 13px; color: #64748b; }
+
+        /* Security Notice Banner */
+        .security-banner {
+            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .security-banner.restricted {
+            background: linear-gradient(135deg, #fffbeb, #fef2f2);
+            border-color: #fed7aa;
+        }
+        .security-banner-text { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #1e3a8a; }
+        .security-banner.restricted .security-banner-text { color: #9a3412; }
+
+        /* Filter Toolbar */
+        .toolbar { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .toolbar-left { display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px; flex-wrap: wrap; }
+        .search-input { width: 100%; max-width: 320px; padding: 9px 14px 9px 38px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") no-repeat 12px center; }
+        .search-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .filter-select { padding: 9px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; outline: none; cursor: pointer; color: #334155; }
+
+        /* Data Table */
+        .table-container { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { background: #f8fafc; padding: 14px 18px; font-size: 13px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        .data-table td { padding: 14px 18px; font-size: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .data-table tr:hover { background: #f8fafc; }
+
+        /* Badges */
+        .tag-code { background: #f1f5f9; color: #1e293b; font-weight: 700; font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: monospace; }
+        .tag-level { display: inline-block; padding: 3px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; }
+        .level-junior { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .level-middle { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .level-senior { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+        .level-lead { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .level-manager { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
+        .level-default { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* Salary Band Style */
+        .salary-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
+            padding: 5px 12px; border-radius: 8px; font-weight: 600; font-size: 13px;
+        }
+        .salary-masked-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f8fafc; border: 1px dashed #cbd5e1; color: #64748b;
+            padding: 5px 12px; border-radius: 8px; font-weight: 500; font-size: 12px;
+        }
+
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .pill-active { background: #dcfce7; color: #166534; }
+        .pill-inactive { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dot-active { background: #22c55e; }
+        .dot-inactive { background: #94a3b8; }
+
+        .btn-action {
+            width: 32px; height: 32px; border-radius: 6px; border: 1px solid #e2e8f0;
+            background: white; color: #64748b; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; transition: 0.15s;
+        }
+        .btn-action:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        .btn-action.btn-action-delete:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9999; animation: fadeInModal 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: white; border-radius: 16px; width: 90%; max-width: 580px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0; overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
+        }
+        .modal-header { padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .modal-close { background: none; border: none; font-size: 24px; line-height: 1; color: #64748b; cursor: pointer; border-radius: 6px; padding: 4px 8px; }
+        .modal-close:hover { color: #0f172a; background: #e2e8f0; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc; }
+
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .form-group label .required { color: #dc2626; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.15s; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-hint { font-size: 12px; color: #64748b; margin-top: 4px; display: block; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: #ffffff; border-radius: 10px; padding: 14px 20px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-left: 4px solid #2563eb; display: flex; align-items: center; gap: 12px;
+            font-size: 14px; font-weight: 500; min-width: 320px; max-width: 450px;
+            animation: slideInRight 0.3s ease;
+        }
+        .toast.success { border-left-color: #16a34a; }
+        .toast.error { border-left-color: #dc2626; }
+        .toast.warning { border-left-color: #f59e0b; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <h2>Tuyển dụng Nội bộ</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <div class="header">
+            <div class="user-info">
+                <div style="cursor: pointer;" onclick="window.location.href='profile.html'" title="Xem hồ sơ cá nhân">
+                    <div class="user-name" id="displayUsername">Đang tải...</div>
+                    <div class="user-role-badge" id="displayRoles">...</div>
+                </div>
+
+                <div class="avatar-wrapper" onclick="window.location.href='profile.html'">
+                    <div class="header-avatar" id="headerAvatar">
+                        <span id="headerAvatarText">U</span>
+                        <img id="headerAvatarImg" src="" alt="Avatar" style="display: none;">
+                    </div>
+                </div>
+
+                <button class="btn-header" onclick="window.location.href='profile.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Hồ sơ
+                </button>
+                <button class="btn-header" onclick="window.location.href='change-password.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.252l7.5-7.5A6 6 0 0115 7z"></path></svg>
+                    Đổi MK
+                </button>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1>Danh mục Chức danh & Dải lương</h1>
+                        <p>Quản lý chức danh theo cấp bậc, dải lương min/max, làm hạn mức duyệt offer và bảo mật dải lương cho HR Manager</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="loadPositions()" title="Tải lại dữ liệu">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Làm mới
+                        </button>
+                        <button class="btn-primary" id="btnOpenCreate" onclick="openCreateModal()" style="display: none;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                            Thêm Chức danh mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Security Banner -->
+                <div class="security-banner" id="securityBanner">
+                    <div class="security-banner-text">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span id="securityBannerMsg">Đang kiểm tra quyền xem dải lương...</span>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-blue">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalPositions">0</h3>
+                            <span>Tổng số chức danh</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-green">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statActivePositions">0</h3>
+                            <span>Đang áp dụng</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-purple">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statLevelsCount">0</h3>
+                            <span>Phân cấp bậc</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-amber">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statHighestMaxSalary">—</h3>
+                            <span>Lương trần tối đa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Tìm theo mã, tên chức danh, cấp bậc..." oninput="filterPositions()">
+                        <select id="levelFilter" class="filter-select" onchange="filterPositions()">
+                            <option value="">Tất cả cấp bậc</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Middle">Middle</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Director">Director</option>
+                        </select>
+                        <select id="statusFilter" class="filter-select" onchange="filterPositions()">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="true">Đang áp dụng</option>
+                            <option value="false">Ngừng áp dụng</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã chức danh</th>
+                                <th>Tên chức danh</th>
+                                <th>Cấp bậc</th>
+                                <th>Phòng ban</th>
+                                <th>Khung năng lực</th>
+                                <th>Dải lương tham chiếu</th>
+                                <th>Hạn mức Offer</th>
+                                <th>Trạng thái</th>
+                                <th style="text-align: right;" id="thActions">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Thêm / Sửa Chức danh & Dải lương -->
+    <div class="modal-overlay" id="positionModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm Chức danh mới</h3>
+                <button class="modal-close" onclick="closeModal('positionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="positionForm" onsubmit="savePosition(event)">
+                    <input type="hidden" id="editPositionId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mã chức danh <span class="required">*</span></label>
+                            <input type="text" id="m_code" class="form-control" placeholder="VD: DEV-SR, HR-MGR, BA-MID" required>
+                            <span class="form-hint">Mã định danh duy nhất (tự động viết hoa).</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Cấp bậc chức danh <span class="required">*</span></label>
+                            <select id="m_level" class="form-control" required>
+                                <option value="Junior">Junior</option>
+                                <option value="Middle">Middle</option>
+                                <option value="Senior">Senior</option>
+                                <option value="Lead">Team Lead / Tech Lead</option>
+                                <option value="Manager">Manager / Trưởng phòng</option>
+                                <option value="Director">Director / Giám đốc khối</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tên chức danh <span class="required">*</span></label>
+                        <input type="text" id="m_name" class="form-control" placeholder="VD: Kỹ sư Phần mềm Senior, Chuyên viên Tuyển dụng..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phòng ban trực thuộc (Tùy chọn)</label>
+                        <select id="m_departmentId" class="form-control">
+                            <option value="">(Không giới hạn phòng ban cụ thể)</option>
+                            <!-- Rendered by JS -->
+                        </select>
+                    </div>
+
+                    <!- & Khung năng lực áp dụng -->
+                    <div class="form-group">
+                        <label>Khung năng lực đánh giá</label>
+                        <select id="m_frameworkId" class="form-control">
+                            <option value="">(Chưa gán khung năng lực)</option>
+                            <!-- Rendered by JS -->
+                        </select>
+                        <span class="form-hint">Bộ tiêu chí đánh giá phỏng vấn và trọng số sẽ được tham chiếu từ khung năng lực này.</span>
+                    </div>
+
+                    <!-- Dải lương tối thiểu / tối đa -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 18px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <strong style="font-size: 13px; color: #1e3a8a; display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Quản lý Dải lương tham chiếu
+                            </strong>
+                            <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Hạn mức duyệt offer</span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Lương tối thiểu (VND)</label>
+                                <input type="number" id="m_minSalary" class="form-control" placeholder="VD: 15000000" min="0" step="500000">
+                                <span class="form-hint" id="hintMinSalary">0 đ</span>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Lương tối đa (VND)</label>
+                                <input type="number" id="m_maxSalary" class="form-control" placeholder="VD: 25000000" min="0" step="500000">
+                                <span class="form-hint" id="hintMaxSalary">0 đ</span>
+                            </div>
+                        </div>
+                        <span class="form-hint" style="margin-top: 8px;">Dải lương tối đa sẽ là hạn mức trần khi tạo và duyệt Offer. Mức offer vượt quá số này bắt buộc phải có phê duyệt từ Ban Giám Đốc.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả tiêu chuẩn chức danh</label>
+                        <textarea id="m_description" class="form-control" rows="3" placeholder="Mô tả tiêu chuẩn năng lực, trách nhiệm chính của chức danh..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="m_active" style="width: 18px; height: 18px; cursor: pointer;" checked>
+                        <label for="m_active" style="margin-bottom: 0; cursor: pointer; font-weight: 500;">
+                            Kích hoạt áp dụng chức danh cho tuyển dụng
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('positionModal')">Hủy</button>
+                <button type="submit" form="positionForm" class="btn-primary">Lưu chức danh</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Sidebar items managed centrally in app-layout.js
+
+        const ROLES_INFO = {
+            'ROLE_CANDIDATE': { name: 'Ứng viên' },
+            'ROLE_RECRUITER': { name: 'Nhân viên tuyển dụng' },
+            'ROLE_HIRING_MANAGER': { name: 'Trưởng bộ phận' },
+            'ROLE_INTERVIEWER': { name: 'Người phỏng vấn' },
+            'ROLE_HR_MANAGER': { name: 'Trưởng phòng Nhân sự' },
+            'ROLE_APPROVER': { name: 'Người duyệt' },
+            'ROLE_ADMIN': { name: 'Quản trị hệ thống' },
+            'ROLE_USER': { name: 'Người dùng' }
+        };
+
+        let currentUser = null;
+        let positionsList = [];
+        let departmentsList = [];
+        let canManagePositions = false;
+        let canViewSalary = false;
+
+        async function init() {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return logout();
+
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.status === 401 || res.status === 403) return logout();
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    currentUser = data.data;
+                    document.getElementById('displayUsername').textContent = currentUser.fullName || currentUser.username;
+                    
+                    const roleNames = currentUser.roles.map(r => ROLES_INFO[r]?.name || r).join(', ');
+                    document.getElementById('displayRoles').textContent = roleNames;
+
+                    if (currentUser.avatarUrl) {
+                        const img = document.getElementById('headerAvatarImg');
+                        img.src = currentUser.avatarUrl;
+                        img.style.display = 'block';
+                        document.getElementById('headerAvatarText').style.display = 'none';
+                    } else {
+                        const firstChar = (currentUser.fullName || currentUser.username || 'U').charAt(0).toUpperCase();
+                        document.getElementById('headerAvatarText').textContent = firstChar;
+                    }
+
+                    canManagePositions = currentUser.roles.includes('ROLE_HR_MANAGER') || currentUser.roles.includes('ROLE_ADMIN');
+                    canViewSalary = canManagePositions;
+
+                    if (canManagePositions) {
+                        document.getElementById('btnOpenCreate').style.display = 'flex';
+                        document.getElementById('securityBanner').className = 'security-banner';
+                        document.getElementById('securityBannerMsg').innerHTML = `
+                            <strong>Quyền truy cập đặc quyền (Trưởng phòng Nhân sự / Admin):</strong> Bạn có toàn quyền cấu hình dải lương và xem mức lương của tất cả các chức danh.
+                        `;
+                    } else {
+                        document.getElementById('securityBanner').className = 'security-banner restricted';
+                        document.getElementById('securityBannerMsg').innerHTML = `
+                            <strong>Bảo mật thông tin lương:</strong> Theo chính sách bảo mật nội bộ, thông tin dải lương chỉ được hiển thị cho Trưởng phòng Nhân sự. Các cột dải lương đã được tự động che để đảm bảo tính bảo mật.
+                        `;
+                    }
+
+                    renderSidebar(currentUser.roles);
+                    await loadDepartments();
+                    await loadCompetencyFrameworks();
+                    await loadPositions();
+
+                    // Gắn listener format tiền tệ tự động
+                    document.getElementById('m_minSalary').addEventListener('input', e => {
+                        document.getElementById('hintMinSalary').textContent = formatCurrency(e.target.value);
+                    });
+                    document.getElementById('m_maxSalary').addEventListener('input', e => {
+                        document.getElementById('hintMaxSalary').textContent = formatCurrency(e.target.value);
+                    });
+                } else {
+                    logout();
+                }
+            } catch (err) {
+                console.error("Lỗi khởi tạo:", err);
+                logout();
+            }
+        }
+
+        function renderSidebar(userRoles) {
+            renderAppSidebar(userRoles);
+        }
+
+        let frameworksList = [];
+        async function loadCompetencyFrameworks() {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch('/api/competencies?activeOnly=true', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    frameworksList = data.data || [];
+                    const select = document.getElementById('m_frameworkId');
+                    let opts = '<option value="">(Chưa gán khung năng lực)</option>';
+                    frameworksList.forEach(f => {
+                        opts += `<option value="${f.id}">[${f.code}] ${escapeHtml(f.name)} (${f.totalWeight}% trọng số)</option>`;
+                    });
+                    select.innerHTML = opts;
+                }
+            } catch (e) {
+                console.error("Lỗi tải khung năng lực:", e);
+            }
+        }
+
+        async function loadDepartments() {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch('/api/departments?activeOnly=true', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    departmentsList = data.data || [];
+                    const select = document.getElementById('m_departmentId');
+                    let opts = '<option value="">(Không giới hạn phòng ban cụ thể)</option>';
+                    departmentsList.forEach(d => {
+                        opts += `<option value="${d.id}">${escapeHtml(d.name)}${d.code ? ` [${d.code}]` : ''}</option>`;
+                    });
+                    select.innerHTML = opts;
+                }
+            } catch (e) {
+                console.error("Lỗi tải phòng ban:", e);
+            }
+        }
+
+        async function loadPositions() {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch('/api/positions', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    positionsList = data.data || [];
+                    updateStats();
+                    renderPositionsTable();
+                } else {
+                    showToast(data.message || 'Lỗi khi tải danh mục chức danh', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối máy chủ: ' + e.message, 'error');
+            }
+        }
+
+        function updateStats() {
+            const total = positionsList.length;
+            const activeCount = positionsList.filter(p => p.active).length;
+            const distinctLevels = new Set(positionsList.map(p => p.level)).size;
+            
+            // Tìm lương trần cao nhất
+            let maxSal = 0;
+            positionsList.forEach(p => {
+                if (p.maxSalary && p.maxSalary > maxSal) maxSal = p.maxSalary;
+            });
+
+            document.getElementById('statTotalPositions').textContent = total;
+            document.getElementById('statActivePositions').textContent = activeCount;
+            document.getElementById('statLevelsCount').textContent = distinctLevels;
+            document.getElementById('statHighestMaxSalary').textContent = maxSal > 0 ? formatCurrency(maxSal) : '—';
+        }
+
+        function filterPositions() {
+            renderPositionsTable();
+        }
+
+        function renderPositionsTable() {
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const levelVal = document.getElementById('levelFilter').value;
+            const statusVal = document.getElementById('statusFilter').value;
+
+            const filtered = positionsList.filter(p => {
+                const matchSearch = !search ||
+                    (p.name && p.name.toLowerCase().includes(search)) ||
+                    (p.code && p.code.toLowerCase().includes(search)) ||
+                    (p.level && p.level.toLowerCase().includes(search));
+                const matchLevel = !levelVal || p.level === levelVal;
+                const matchStatus = statusVal === '' || String(p.active) === statusVal;
+                return matchSearch && matchLevel && matchStatus;
+            });
+
+            const tbody = document.getElementById('tableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 48px; color: #64748b;">
+                            Không tìm thấy chức danh nào phù hợp với điều kiện tìm kiếm
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const levelClass = getLevelClass(p.level);
+
+                // Dải lương hiển thị theo quyền
+                let salaryHtml = '';
+                if (p.isSalaryMasked) {
+                    salaryHtml = `
+                        <span class="salary-masked-pill" title="Dải lương được bảo mật theo quy định bảo mật">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            🔒 Bảo mật (Chỉ HR Manager)
+                        </span>
+                    `;
+                } else if (p.minSalary || p.maxSalary) {
+                    const minStr = p.minSalary ? formatCurrency(p.minSalary) : '0 đ';
+                    const maxStr = p.maxSalary ? formatCurrency(p.maxSalary) : 'Không giới hạn';
+                    salaryHtml = `
+                        <div class="salary-pill">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${minStr} – ${maxStr}
+                        </div>
+                    `;
+                } else {
+                    salaryHtml = `<span style="color: #94a3b8; font-style: italic;">Chưa thiết lập</span>`;
+                }
+
+                // Hạn mức offer
+                let limitHtml = '';
+                if (p.maxSalary && !p.isSalaryMasked) {
+                    limitHtml = `<span style="font-size: 13px; font-weight: 600; color: #0369a1;">≤ ${formatCurrency(p.maxSalary)}</span>`;
+                } else if (p.isSalaryMasked) {
+                    limitHtml = `<span style="color: #94a3b8; font-size: 12px;">🔒 Theo hạn mức HR</span>`;
+                } else {
+                    limitHtml = `<span style="color: #94a3b8; font-size: 12px;">Theo thỏa thuận</span>`;
+                }
+
+                const statusHtml = p.active
+                    ? `<span class="status-pill pill-active"><span class="status-dot dot-active"></span> Áp dụng</span>`
+                    : `<span class="status-pill pill-inactive"><span class="status-dot dot-inactive"></span> Ngừng</span>`;
+
+                const deptStr = p.departmentName
+                    ? `<span style="color: #2563eb; font-weight: 500;">${escapeHtml(p.departmentName)}</span>`
+                    : `<span style="color: #94a3b8;">(Toàn công ty)</span>`;
+
+                const fwHtml = p.competencyFrameworkName
+                    ? `<span class="tag-level level-lead" style="cursor: pointer;" onclick="window.location.href='competencies.html'" title="${escapeHtml(p.competencyFrameworkName)}">${escapeHtml(p.competencyFrameworkCode || p.competencyFrameworkName)}</span>`
+                    : `<span style="color: #94a3b8; font-size: 12px; font-style: italic;">Chưa gán</span>`;
+
+                const actionButtons = canManagePositions
+                    ? `
+                        <div style="display: inline-flex; gap: 6px;">
+                            <button class="btn-action" title="Phiếu đánh giá phỏng vấn" onclick="window.location.href='competencies.html'">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            </button>
+                            <button class="btn-action" title="Chỉnh sửa chức danh & dải lương" onclick="openEditModal(${p.id})">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <button class="btn-action" title="${p.active ? 'Ngừng áp dụng' : 'Kích hoạt lại'}" onclick="togglePositionStatus(${p.id}, ${!p.active})">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            </button>
+                            <button class="btn-action btn-action-delete" title="Xóa chức danh" onclick="deletePosition(${p.id}, '${escapeHtml(p.name)}')">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    `
+                    : `<span style="color: #94a3b8; font-size: 12px;">Chỉ xem</span>`;
+
+                return `
+                    <tr>
+                        <td><span class="tag-code">${escapeHtml(p.code)}</span></td>
+                        <td>
+                            <div style="font-weight: 600; color: #0f172a;">${escapeHtml(p.name)}</div>
+                            <div style="font-size: 12px; color: #64748b;">${escapeHtml(p.description || '')}</div>
+                        </td>
+                        <td><span class="tag-level ${levelClass}">${escapeHtml(p.level)}</span></td>
+                        <td>${deptStr}</td>
+                        <td>${fwHtml}</td>
+                        <td>${salaryHtml}</td>
+                        <td>${limitHtml}</td>
+                        <td>${statusHtml}</td>
+                        <td style="text-align: right;">${actionButtons}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getLevelClass(level) {
+            const l = (level || '').toLowerCase();
+            if (l.includes('junior')) return 'level-junior';
+            if (l.includes('middle') || l.includes('mid')) return 'level-middle';
+            if (l.includes('senior')) return 'level-senior';
+            if (l.includes('lead')) return 'level-lead';
+            if (l.includes('manager') || l.includes('director')) return 'level-manager';
+            return 'level-default';
+        }
+
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Thêm Chức danh & Thiết lập Dải lương';
+            document.getElementById('editPositionId').value = '';
+            document.getElementById('m_code').value = '';
+            document.getElementById('m_name').value = '';
+            document.getElementById('m_level').value = 'Junior';
+            document.getElementById('m_departmentId').value = '';
+            document.getElementById('m_frameworkId').value = '';
+            document.getElementById('m_minSalary').value = '';
+            document.getElementById('m_maxSalary').value = '';
+            document.getElementById('hintMinSalary').textContent = '0 đ';
+            document.getElementById('hintMaxSalary').textContent = '0 đ';
+            document.getElementById('m_description').value = '';
+            document.getElementById('m_active').checked = true;
+
+            openModal('positionModal');
+        }
+
+        async function openEditModal(id) {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch(`/api/positions/${id}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    showToast(data.message || 'Lỗi khi tải thông tin chức danh', 'error');
+                    return;
+                }
+
+                const p = data.data;
+                document.getElementById('modalTitle').textContent = `Chỉnh sửa: ${p.name}`;
+                document.getElementById('editPositionId').value = p.id;
+                document.getElementById('m_code').value = p.code || '';
+                document.getElementById('m_name').value = p.name || '';
+                document.getElementById('m_level').value = p.level || 'Junior';
+                document.getElementById('m_departmentId').value = p.departmentId || '';
+                document.getElementById('m_frameworkId').value = p.competencyFrameworkId || '';
+                document.getElementById('m_minSalary').value = p.minSalary || '';
+                document.getElementById('m_maxSalary').value = p.maxSalary || '';
+                document.getElementById('hintMinSalary').textContent = p.minSalary ? formatCurrency(p.minSalary) : '0 đ';
+                document.getElementById('hintMaxSalary').textContent = p.maxSalary ? formatCurrency(p.maxSalary) : '0 đ';
+                document.getElementById('m_description').value = p.description || '';
+                document.getElementById('m_active').checked = p.active !== false;
+
+                openModal('positionModal');
+            } catch (e) {
+                showToast('Lỗi khi mở modal: ' + e.message, 'error');
+            }
+        }
+
+        async function savePosition(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('accessToken');
+            const editId = document.getElementById('editPositionId').value;
+
+            const code = document.getElementById('m_code').value.trim().toUpperCase();
+            const name = document.getElementById('m_name').value.trim();
+            const level = document.getElementById('m_level').value.trim();
+            const departmentId = document.getElementById('m_departmentId').value;
+            const frameworkId = document.getElementById('m_frameworkId').value;
+            const minSalaryVal = document.getElementById('m_minSalary').value;
+            const maxSalaryVal = document.getElementById('m_maxSalary').value;
+            const description = document.getElementById('m_description').value.trim();
+            const active = document.getElementById('m_active').checked;
+
+            const minSalary = minSalaryVal !== '' ? parseFloat(minSalaryVal) : null;
+            const maxSalary = maxSalaryVal !== '' ? parseFloat(maxSalaryVal) : null;
+
+            if (minSalary !== null && maxSalary !== null && minSalary > maxSalary) {
+                showToast('Lương tối thiểu không được lớn hơn lương tối đa!', 'warning');
+                return;
+            }
+
+            const payload = {
+                code: code,
+                name: name,
+                level: level,
+                departmentId: departmentId ? parseInt(departmentId) : null,
+                competencyFrameworkId: frameworkId ? parseInt(frameworkId) : null,
+                minSalary: minSalary,
+                maxSalary: maxSalary,
+                description: description || null,
+                active: active
+            };
+
+            const url = editId ? `/api/positions/${editId}` : '/api/positions';
+            const method = editId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showToast(editId ? 'Cập nhật chức danh thành công!' : 'Tạo mới chức danh & dải lương thành công!', 'success');
+                    closeModal('positionModal');
+                    await loadPositions();
+                } else {
+                    showToast(data.message || 'Lỗi khi lưu chức danh', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        async function togglePositionStatus(id, newStatus) {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch(`/api/positions/${id}/status?active=${newStatus}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(data.message || 'Cập nhật trạng thái thành công', 'success');
+                    await loadPositions();
+                } else {
+                    showToast(data.message || 'Lỗi cập nhật', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        async function deletePosition(id, name) {
+            if (!confirm(`Bạn có chắc chắn muốn xóa chức danh "${name}"?`)) return;
+
+            const token = localStorage.getItem('accessToken');
+            try {
+                const res = await fetch(`/api/positions/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Đã xóa chức danh thành công', 'success');
+                    await loadPositions();
+                } else {
+                    showToast(data.message || 'Không thể xóa chức danh', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi khi xóa: ' + e.message, 'error');
+            }
+        }
+
+        function formatCurrency(val) {
+            if (!val || isNaN(val)) return '0 đ';
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div style="flex: 1;">${escapeHtml(message)}</div>
+                <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; color:#94a3b8; font-size:16px;">&times;</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4500);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

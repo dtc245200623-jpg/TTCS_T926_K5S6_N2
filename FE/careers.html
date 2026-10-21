@@ -1,0 +1,1856 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cơ hội Nghề nghiệp & Việc làm - TTCS Careers</title>
+    <!-- Modern Typography: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="api-config.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-glow: rgba(37, 99, 235, 0.25);
+            --accent: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            --hero-bg: linear-gradient(140deg, #090d16 0%, #0f172a 45%, #1e1b4b 100%);
+            --dark: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-full: 9999px;
+            --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+            --shadow-hover: 0 20px 30px -8px rgba(15, 23, 42, 0.12), 0 8px 12px -4px rgba(15, 23, 42, 0.06);
+            --shadow-glow: 0 10px 25px -4px rgba(37, 99, 235, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, .brand-title, .hero-title, .job-title, .section-title {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            letter-spacing: -0.025em;
+        }
+
+        body {
+            background-color: var(--slate-50);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* =========================================================================
+           TOP NAVIGATION BAR
+           ========================================================================= */
+        .public-navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            z-index: 100;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-brand:hover {
+            transform: scale(1.01);
+        }
+
+        .nav-logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .nav-logo {
+            height: 40px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+
+        .nav-brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-brand-text h1 {
+            font-size: 17.5px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .nav-brand-text span {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--slate-600);
+            text-decoration: none;
+            font-size: 14.5px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 6px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            border: 1px solid transparent;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1.5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--slate-700);
+            border-color: var(--slate-200);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .btn-outline:hover {
+            background: var(--slate-100);
+            color: var(--dark);
+            border-color: var(--slate-400);
+        }
+
+        .btn-tracking {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: #bfdbfe;
+            font-weight: 600;
+        }
+
+        .btn-tracking:hover {
+            background: #dbeafe;
+            color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* =========================================================================
+           HERO SECTION (High-Tech Mesh Glow)
+           ========================================================================= */
+        .hero-banner {
+            position: relative;
+            background: var(--hero-bg);
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 90px 24px 100px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Dynamic Mesh Glow Accents */
+        .hero-glow-1 {
+            position: absolute;
+            top: -20%;
+            left: 15%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        .hero-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: 15%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, transparent 70%);
+            filter: blur(70px);
+            pointer-events: none;
+            animation: pulseGlow 10s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.9) translateY(0); opacity: 0.6; }
+            100% { transform: scale(1.15) translateY(20px); opacity: 1; }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(15, 23, 42, 0.6) 0%, rgba(9, 13, 22, 0.95) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid rgba(147, 197, 253, 0.35);
+            color: #93c5fd;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 7px 20px;
+            border-radius: var(--radius-full);
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #60a5fa;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #60a5fa;
+            animation: dotPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes dotPing {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 14px #93c5fd; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .hero-title {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 18px;
+            letter-spacing: -1.2px;
+            background: linear-gradient(135deg, #ffffff 20%, #bfdbfe 80%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 17.5px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            margin-bottom: 38px;
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+
+        /* Stats Strip */
+        .hero-stats-strip {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-stat-item svg {
+            color: #60a5fa;
+        }
+
+        /* =========================================================================
+           SEARCH & MULTI-FILTER BOX (Elevated Floating Card)
+           ========================================================================= */
+        .search-container {
+            background: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.35);
+            max-width: 980px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+            position: relative;
+            z-index: 5;
+        }
+
+        .search-top-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            transition: all 0.2s ease;
+        }
+
+        .search-top-row:focus-within {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .search-top-row svg {
+            color: var(--slate-400);
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .search-top-row:focus-within svg {
+            color: var(--primary);
+        }
+
+        .search-top-row input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15.5px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .search-top-row input::placeholder {
+            color: var(--slate-400);
+        }
+
+        .search-shortcut-badge {
+            background: #e2e8f0;
+            color: var(--slate-600);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .search-filters-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-select-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 11px 34px 11px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--slate-700);
+            outline: none;
+            background: #ffffff;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .filter-select-icon {
+            position: absolute;
+            right: 12px;
+            pointer-events: none;
+            color: var(--slate-400);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Quick Filter Tags (Chips) */
+        .quick-chips-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+            border-top: 1px dashed var(--slate-200);
+        }
+
+        .quick-chips-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 4px;
+        }
+
+        .chip-tag {
+            padding: 5px 12px;
+            border-radius: var(--radius-full);
+            background: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            color: var(--slate-700);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .chip-tag:hover {
+            background: var(--primary-light);
+            border-color: #bfdbfe;
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .chip-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        /* =========================================================================
+           SECTIONS & LAYOUT
+           ========================================================================= */
+        .section-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 50px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+            display: inline-block;
+            background: var(--primary-light);
+            padding: 5px 14px;
+            border-radius: var(--radius-full);
+            border: 1px solid #bfdbfe;
+        }
+
+        .section-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.8px;
+            margin-bottom: 14px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--slate-500);
+            line-height: 1.6;
+        }
+
+        /* Pillars & Culture Grid */
+        .culture-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 36px;
+        }
+
+        .pillar-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 26px 22px;
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-4px);
+            border-color: #bfdbfe;
+            box-shadow: var(--shadow-card);
+        }
+
+        .pillar-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .pillar-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .pillar-card p {
+            font-size: 13.5px;
+            color: var(--slate-600);
+            line-height: 1.6;
+        }
+
+        .culture-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 38px 42px;
+            box-shadow: var(--shadow-card);
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--slate-700);
+            white-space: pre-line;
+            border-left: 6px solid var(--primary);
+            position: relative;
+        }
+
+        .culture-card::before {
+            content: '“';
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 80px;
+            color: #e2e8f0;
+            font-family: serif;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+        }
+
+        .benefit-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .benefit-card:hover {
+            border-color: #93c5fd;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .benefit-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+        }
+
+        .benefit-text {
+            font-size: 15px;
+            color: var(--slate-700);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* =========================================================================
+           OPEN JOBS SECTION & JOB CARDS
+           ========================================================================= */
+        .jobs-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: #ffffff;
+            padding: 16px 22px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .jobs-count {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .jobs-count .count-pill {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-size: 13.5px;
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 26px;
+        }
+
+        .job-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: var(--shadow-card);
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .job-card:hover {
+            border-color: #93c5fd;
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .job-card:hover::before {
+            opacity: 1;
+        }
+
+        .job-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .job-avatar-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .job-card-header h3 {
+            font-size: 18.5px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.35;
+            transition: color 0.2s;
+        }
+
+        .job-card:hover .job-card-header h3 {
+            color: var(--primary);
+        }
+
+        .job-meta-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+
+        .job-meta-badge {
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 6px;
+            background: var(--slate-100);
+            color: var(--slate-700);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-salary {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+        }
+
+        .badge-deadline {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .job-desc-snippet {
+            font-size: 14px;
+            color: var(--slate-600);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .job-card-footer {
+            border-top: 1px solid var(--slate-100);
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .job-date {
+            font-size: 12.5px;
+            color: var(--slate-400);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-view-job {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid #bfdbfe;
+        }
+
+        .btn-view-job:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        /* =========================================================================
+           STATUS TRACKING MODAL
+           ========================================================================= */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 620px;
+            max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px) scale(0.98); }
+            to { transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            padding: 22px 28px;
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+        }
+
+        .modal-header h3 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--slate-100);
+            border: none;
+            font-size: 16px;
+            color: var(--slate-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--slate-200);
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-footer {
+            padding: 18px 28px;
+            border-top: 1px solid var(--slate-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--slate-50);
+        }
+
+        /* Status Visual Timeline */
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 26px 0 16px;
+        }
+
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 36px;
+            right: 36px;
+            height: 4px;
+            background: var(--slate-200);
+            z-index: 1;
+            border-radius: 2px;
+        }
+
+        .status-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 90px;
+            text-align: center;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: white;
+            border: 2.5px solid var(--slate-300);
+            color: var(--slate-400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14.5px;
+            font-weight: 800;
+            transition: all 0.25s ease;
+        }
+
+        .step-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--slate-500);
+            transition: all 0.25s ease;
+        }
+
+        .status-step.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 5px var(--primary-glow);
+            transform: scale(1.08);
+        }
+
+        .status-step.active .step-label {
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .status-step.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .status-step.completed .step-label {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        /* Result Box */
+        .tracking-result-card {
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .privacy-guarantee-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--slate-500);
+            margin-top: 8px;
+        }
+
+        /* =========================================================================
+           PUBLIC FOOTER
+           ========================================================================= */
+        .public-footer {
+            background: #090d16;
+            color: #94a3b8;
+            padding: 80px 40px 36px;
+            font-size: 14.5px;
+            border-top: 1px solid #1e293b;
+        }
+
+        .footer-grid {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 48px;
+            margin-bottom: 32px;
+        }
+
+        .footer-brand h4 {
+            color: white;
+            font-size: 21px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .footer-col h5 {
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-col ul a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-col ul a:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        @media (max-width: 992px) {
+            .culture-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+            .search-filters-row { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .public-navbar { padding: 14px 20px; }
+            .nav-links { display: none; }
+            .hero-title { font-size: 32px; }
+            .hero-desc { font-size: 15px; }
+            .search-filters-row { grid-template-columns: 1fr; }
+            .culture-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+            .hero-stats-strip { gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Glowing Accents -->
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="public-navbar">
+        <a href="careers.html" class="nav-brand">
+            <div class="nav-logo-box">
+                <span id="navLogoFallback">T</span>
+                <img id="navLogo" src="images/logo-company.png" alt="Company Logo" class="nav-logo" style="display: none;" onload="this.style.display='block'; document.getElementById('navLogoFallback').style.display='none';" onerror="this.style.display='none'; document.getElementById('navLogoFallback').style.display='block';">
+            </div>
+            <div class="nav-brand-text">
+                <h1 id="navCompanyName">TTCS Group</h1>
+                <span>Careers Portal</span>
+            </div>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#aboutSection">Về chúng tôi</a>
+            <a href="#benefitsSection">Chế độ đãi ngộ</a>
+            <a href="#jobsSection">Vị trí tuyển dụng</a>
+            <a href="#contactSection">Liên hệ</a>
+        </nav>
+
+        <div class="nav-actions" id="navActions">
+            <button type="button" class="btn btn-tracking" onclick="openTrackingModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Tra cứu hồ sơ
+            </button>
+            <a href="login.html" class="btn btn-outline" style="font-size: 13px;" title="Cổng dành cho Quản trị viên & HR Tuyển dụng">
+                🔐 HR Portal
+            </a>
+            <a href="#jobsSection" class="btn btn-primary">
+                Xem việc làm
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Banner Section -->
+    <section class="hero-banner" id="heroBanner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                <span>CƠ HỘI NGHỀ NGHIỆP CÔNG NGHỆ CHÍNH THỨC</span>
+            </div>
+            <h2 class="hero-title" id="heroTagline">Kiến Tạo Tương Lai Số - Khởi Đầu Sự Nghiệp Đột Phá</h2>
+            <p class="hero-desc" id="heroIntro">
+                Khám phá các vị trí công nghệ cao và kinh doanh hấp dẫn tại TTCS Group. Không cần đăng nhập, ứng tuyển siêu tốc chỉ với tệp CV.
+            </p>
+
+            <!-- Quick Trust Proof Strip -->
+            <div class="hero-stats-strip">
+                <div class="hero-stat-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Môi trường chuẩn Agile</span>
+                </div>
+                <div class="hero-stat-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>Thu nhập cạnh tranh & Thưởng KPI</span>
+                </div>
+                <div class="hero-stat-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>Phản hồi hồ sơ trong 3-5 ngày</span>
+                </div>
+            </div>
+
+            <!-- Multi-field Search & Filter Container (Image 1, ) -->
+            <div class="search-container">
+                <div class="search-top-row">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="jobSearchInput" placeholder="Tìm kiếm theo từ khoá chức danh hoặc mô tả (ví dụ: Java Backend, React, BA, AI Engineer...)" onkeyup="if(event.key==='Enter') executeSearch()">
+                    <span class="search-shortcut-badge">Nhấn Enter ↵</span>
+                </div>
+
+                <div class="search-filters-row">
+                    <!-- Filter: Phòng ban -->
+                    <div class="filter-select-wrapper">
+                        <select id="deptFilter" class="filter-select" onchange="executeSearch()">
+                            <option value="">🏢 Tất cả phòng ban</option>
+                        </select>
+                        <div class="filter-select-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Địa điểm -->
+                    <div class="filter-select-wrapper">
+                        <select id="locationFilter" class="filter-select" onchange="executeSearch()">
+                            <option value="">📍 Tất cả địa điểm</option>
+                        </select>
+                        <div class="filter-select-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Hình thức làm việc -->
+                    <div class="filter-select-wrapper">
+                        <select id="empTypeFilter" class="filter-select" onchange="executeSearch()">
+                            <option value="">💼 Mọi hình thức</option>
+                        </select>
+                        <div class="filter-select-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Dải lương -->
+                    <div class="filter-select-wrapper">
+                        <select id="salaryFilter" class="filter-select" onchange="executeSearch()">
+                            <option value="ALL">💰 Mọi mức lương</option>
+                            <option value="UNDER_15">Dưới 15 triệu</option>
+                            <option value="15_30">15 - 30 triệu</option>
+                            <option value="OVER_30">Trên 30 triệu</option>
+                        </select>
+                        <div class="filter-select-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="executeSearch()" style="height: 44px; padding: 0 22px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        Tìm kiếm
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="resetFilters()" style="height: 44px; padding: 0 16px;" title="Xoá bộ lọc">
+                        Đặt lại
+                    </button>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="quick-chips-row">
+                    <span class="quick-chips-label">Gợi ý nhanh:</span>
+                    <span class="chip-tag active" onclick="applyQuickTag('', this)">Tất cả</span>
+                    <span class="chip-tag" onclick="applyQuickTag('Java', this)">Java</span>
+                    <span class="chip-tag" onclick="applyQuickTag('Frontend', this)">Frontend / React</span>
+                    <span class="chip-tag" onclick="applyQuickTag('Backend', this)">Backend</span>
+                    <span class="chip-tag" onclick="applyQuickTag('AI', this)">AI / Data</span>
+                    <span class="chip-tag" onclick="applyQuickTag('Trưởng phòng', this)">Quản lý / Lead</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About & Culture Section -->
+    <section class="section-wrapper" id="aboutSection">
+        <div class="section-header">
+            <span class="section-tag">VĂN HÓA DOANH NGHIỆP</span>
+            <h2 class="section-title">Môi Trường Làm Việc & Giá Trị Cốt Lõi</h2>
+            <p class="section-subtitle">Nơi mỗi ý tưởng đột phá đều được lắng nghe và tài năng được trao quyền làm chủ tương lai số</p>
+        </div>
+
+        <!-- 4 Key Pillars -->
+        <div class="culture-grid">
+            <div class="pillar-card">
+                <div class="pillar-icon-box">🚀</div>
+                <h4>Đổi Mới Không Giới Hạn</h4>
+                <p>Khuyến khích thử nghiệm công nghệ mới, ứng dụng AI và chuyển đổi số trong mọi quy trình làm việc.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon-box">🎯</div>
+                <h4>Trao Quyền & Tự Chủ</h4>
+                <p>Tin tưởng nhân sự tự đưa ra quyết định, làm chủ sản phẩm và chịu trách nhiệm với mục tiêu của mình.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon-box">🌱</div>
+                <h4>Phát Triển Bền Vững</h4>
+                <p>Lộ trình đào tạo chuẩn quốc tế, tài trợ chứng chỉ công nghệ và cơ hội thăng tiến rộng mở.</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon-box">🤝</div>
+                <h4>Văn Hóa Cởi Mở</h4>
+                <p>Giao tiếp minh bạch, bình đẳng, không rào cản cấp bậc, cùng nhau tạo nên một tập thể đoàn kết.</p>
+            </div>
+        </div>
+
+        <!-- Culture Statement -->
+        <div class="culture-card" id="cultureContent">
+            Đang tải thông tin văn hóa doanh nghiệp...
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="section-wrapper" id="benefitsSection" style="background: #ffffff; border-top: 1px solid var(--slate-200); border-bottom: 1px solid var(--slate-200);">
+        <div class="section-header">
+            <span class="section-tag">QUYỀN LỢI ĐÃI NGỘ</span>
+            <h2 class="section-title">Tại Sao Bạn Nên Chọn Đồng Hành Cùng TTCS?</h2>
+            <p class="section-subtitle">Chế độ đãi ngộ vượt trội được thiết kế toàn diện vì sức khỏe, tài chính và sự thịnh vượng của bạn</p>
+        </div>
+        <div class="benefits-grid" id="benefitsGrid">
+            <!-- Dynamically populated -->
+        </div>
+    </section>
+
+    <!-- Open Jobs Section -->
+    <section class="section-wrapper" id="jobsSection">
+        <div class="section-header">
+            <span class="section-tag">CƠ HỘI NGHỀ NGHIỆP</span>
+            <h2 class="section-title">Vị Trí Tuyển Dụng Đang Mở</h2>
+            <p class="section-subtitle">Chỉ hiển thị các vị trí đã xuất bản và còn thời hạn nhận hồ sơ ứng tuyển trực tuyến</p>
+        </div>
+
+        <div class="jobs-toolbar">
+            <div class="jobs-count" id="jobsCountText">
+                <span>Đang tải danh sách cơ hội nghề nghiệp...</span>
+            </div>
+            <button type="button" class="btn btn-outline" onclick="openTrackingModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Tra cứu tiến độ hồ sơ đã nộp
+            </button>
+        </div>
+
+        <div class="jobs-grid" id="jobsGrid">
+            <!-- Dynamically populated -->
+        </div>
+    </section>
+
+    <!-- Modal Tra Cứu Trạng Thái Ứng Tuyển -->
+    <div class="modal" id="trackingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Tra cứu tiến độ hồ sơ ứng tuyển
+                </h3>
+                <button type="button" class="modal-close" onclick="closeTrackingModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 14px; color: var(--slate-600); line-height: 1.6;">
+                    Nhập <strong>Mã tra cứu</strong> (nhận qua email hoặc màn hình nộp đơn) và <strong>Email</strong> bạn đã sử dụng để ứng tuyển.
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px; display: block;">Mã tra cứu hồ sơ (Tracking Code) *</label>
+                        <input type="text" id="trackCodeInput" class="filter-select" style="text-transform: uppercase; font-family: monospace; font-size: 15px; font-weight: 700; letter-spacing: 1px;" placeholder="VÍ DỤ: APP-2026-X8M2K1">
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; font-weight: 700; color: var(--slate-700); margin-bottom: 6px; display: block;">Email đã đăng ký ứng tuyển *</label>
+                        <input type="email" id="trackEmailInput" class="filter-select" placeholder="candidate@example.com">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btnDoTrack" onclick="executeTrackStatus()" style="width: 100%; height: 44px; margin-top: 4px; font-size: 14.5px;">
+                        Tra cứu trạng thái ngay
+                    </button>
+                </div>
+
+                <!-- Result Card -->
+                <div id="trackingResultBox" style="display: none;" class="tracking-result-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span id="trackResultCode" style="font-size: 13.5px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 5px 12px; border-radius: 6px; font-family: monospace;">APP-2026</span>
+                        <span id="trackResultBadge" style="font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 20px; background: var(--primary-light); color: var(--primary);">Đã nhận</span>
+                    </div>
+
+                    <h4 id="trackResultJob" style="font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 6px;">Vị trí tuyển dụng</h4>
+                    <div id="trackResultMeta" style="font-size: 13.5px; color: var(--slate-500); margin-bottom: 18px;">Ứng viên: Nguyễn Văn An • Ngày nộp: 20/10/2026</div>
+
+                    <!-- 4 General Statuses Timeline -->
+                    <div class="status-timeline">
+                        <div class="status-step" id="step_RECEIVED">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">Đã nhận</div>
+                        </div>
+                        <div class="status-step" id="step_REVIEWING">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">Đang xem xét</div>
+                        </div>
+                        <div class="status-step" id="step_INTERVIEWING">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">Mời PV</div>
+                        </div>
+                        <div class="status-step" id="step_COMPLETED">
+                            <div class="step-circle">4</div>
+                            <div class="step-label">Kết thúc</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 10px; padding: 16px; margin-top: 18px;">
+                        <div style="font-size: 11.5px; font-weight: 800; color: var(--slate-500); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">Thông điệp từ Bộ phận Nhân sự:</div>
+                        <div id="trackResultDesc" style="font-size: 14px; color: var(--slate-700); line-height: 1.6;">Đang tải thông điệp...</div>
+                    </div>
+
+                    <div class="privacy-guarantee-note">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>Thông tin ứng tuyển của bạn được bảo mật tuyệt đối theo chính sách tuyển dụng TTCS.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeTrackingModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public Footer -->
+    <footer class="public-footer" id="contactSection">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h4 id="footerCompanyName">Tập đoàn Công nghệ TTCS</h4>
+                <p id="footerTagline" style="margin-bottom: 18px; color: #94a3b8; line-height: 1.6;">Đồng hành cùng nhân tài - Kiến tạo tương lai số.</p>
+                <p style="margin-bottom: 6px;"><strong style="color: white;">Trụ sở chính:</strong> <span id="footerAddress">Tòa nhà TTCS Tower, Hà Nội</span></p>
+                <p><strong style="color: white;">Thời gian làm việc:</strong> <span id="footerHours">Thứ 2 - Thứ 6: 08:30 - 17:30</span></p>
+            </div>
+            <div class="footer-col">
+                <h5>Liên hệ tuyển dụng</h5>
+                <ul>
+                    <li>Email: <a id="footerEmail" href="mailto:recruitment@ttcs-group.vn">recruitment@ttcs-group.vn</a></li>
+                    <li>Hotline: <strong id="footerPhone" style="color: white;">024.3888.9999</strong></li>
+                    <li>Website: <a id="footerWebsite" href="#" target="_blank">https://ttcs-group.vn</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Dành cho ứng viên</h5>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="openTrackingModal()">Tra cứu hồ sơ ứng tuyển</a></li>
+                    <li><a href="#jobsSection">Danh sách việc làm</a></li>
+                    <li><a href="#benefitsSection">Chế độ đãi ngộ & Phúc lợi</a></li>
+                    <li><a href="#aboutSection">Văn hóa doanh nghiệp</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Hệ thống</h5>
+                <ul>
+                    <li><a href="login.html">Đăng nhập Quản trị viên</a></li>
+                    <li><a href="login.html">Cổng HR Recruiter</a></li>
+                    <li><a href="javascript:void(0)">Chính sách bảo mật dữ liệu</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2026 <span id="footerCopyName">TTCS Group</span>. Bản quyền thuộc về Bộ phận Nhân sự & Tuyển dụng.</div>
+            <div>Hệ Thống Quản Trị Nhân Sự Chuẩn Hóa Doanh Nghiệp</div>
+        </div>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        const API_BASE = window.API_BASE_URL || 'http://localhost:8080/api';
+        let allJobs = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPortalConfig();
+            await loadFilterCategories();
+            await executeSearch();
+
+            // Check if user came with tracking code param e.g. careers.html?tracking=APP-2026-X
+            const urlParams = new URLSearchParams(window.location.search);
+            const tracking = urlParams.get('tracking');
+            if (tracking) {
+                document.getElementById('trackCodeInput').value = tracking;
+                openTrackingModal();
+            }
+        });
+
+        async function loadPortalConfig() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/config`);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    const cfg = result.data;
+                    document.title = `${cfg.companyName || 'Tuyển dụng'} - Cổng việc làm chính thức`;
+
+                    document.getElementById('navCompanyName').textContent = cfg.companyName || 'TTCS Group';
+                    document.getElementById('heroTagline').textContent = cfg.tagline || 'Kiến Tạo Tương Lai Số - Khởi Đầu Sự Nghiệp Đột Phá';
+                    if (cfg.introduction) {
+                        document.getElementById('heroIntro').textContent = cfg.introduction;
+                    }
+
+                    if (cfg.logoUrl) {
+                        const img = document.getElementById('navLogo');
+                        img.src = cfg.logoUrl;
+                        img.style.display = 'block';
+                        document.getElementById('navLogoFallback').style.display = 'none';
+                    }
+                    if (cfg.bannerUrl) {
+                        document.getElementById('heroBanner').style.backgroundImage = `url('${cfg.bannerUrl}')`;
+                    }
+
+                    document.getElementById('cultureContent').textContent = cfg.aboutCulture || 'Tại TTCS Group, chúng tôi tin tưởng vào sức mạnh của sự sáng tạo, tinh thần học hỏi không ngừng và văn hóa trao quyền. Mỗi nhân sự là một đại sứ cùng nhau kiến tạo các sản phẩm công nghệ có tầm ảnh hưởng lớn.';
+                    renderBenefits(cfg.benefits);
+
+                    document.getElementById('footerCompanyName').textContent = cfg.companyName || 'TTCS Group';
+                    document.getElementById('footerTagline').textContent = cfg.tagline || 'Đồng hành cùng nhân tài - Kiến tạo tương lai số.';
+                    document.getElementById('footerAddress').textContent = cfg.address || 'Tòa nhà TTCS Tower, Hà Nội';
+                    document.getElementById('footerHours').textContent = cfg.workingHours || 'Thứ 2 - Thứ 6: 08:30 - 17:30';
+                    document.getElementById('footerEmail').textContent = cfg.email || 'recruitment@ttcs-group.vn';
+                    document.getElementById('footerEmail').href = `mailto:${cfg.email || 'recruitment@ttcs-group.vn'}`;
+                    document.getElementById('footerPhone').textContent = cfg.phone || '024.3888.9999';
+                    document.getElementById('footerWebsite').textContent = cfg.website || 'https://ttcs-group.vn';
+                    document.getElementById('footerWebsite').href = cfg.website || '#';
+                    document.getElementById('footerCopyName').textContent = cfg.companyName || 'TTCS Group';
+                }
+            } catch (err) {
+                console.error("Lỗi tải cấu hình:", err);
+            }
+        }
+
+        async function loadFilterCategories() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/categories`);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    // Populate Dept
+                    const deptSelect = document.getElementById('deptFilter');
+                    (result.data.departments || []).forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.id;
+                        opt.textContent = `🏢 ${d.name}`;
+                        deptSelect.appendChild(opt);
+                    });
+
+                    // Populate Location
+                    const locSelect = document.getElementById('locationFilter');
+                    (result.data.locations || []).forEach(l => {
+                        const opt = document.createElement('option');
+                        opt.value = l.id;
+                        opt.textContent = `📍 ${l.name}`;
+                        locSelect.appendChild(opt);
+                    });
+
+                    // Populate Employment Type
+                    const empSelect = document.getElementById('empTypeFilter');
+                    (result.data.employmentTypes || []).forEach(e => {
+                        const opt = document.createElement('option');
+                        opt.value = e.id;
+                        opt.textContent = `💼 ${e.name}`;
+                        empSelect.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error("Lỗi tải danh mục:", err);
+            }
+        }
+
+        function renderBenefits(rawBenefits) {
+            const container = document.getElementById('benefitsGrid');
+            const defaultBenefits = [
+                "Lương thưởng cạnh tranh, xét tăng lương 2 lần/năm theo hiệu quả công việc",
+                "Gói bảo hiểm sức khỏe cao cấp TTCS Care cho cá nhân và người thân",
+                "Máy tính xách tay cấu hình cao, màn hình 4K và trang thiết bị hiện đại",
+                "Hỗ trợ 100% kinh phí thi các chứng chỉ quốc tế chuyên môn (AWS, PMP, Scrum...)",
+                "Du lịch hàng năm, teambuilding định kỳ và các câu lạc bộ thể thao",
+                "Chính sách làm việc linh hoạt (Flexible hours & Hybrid working)"
+            ];
+
+            const benefits = (rawBenefits && rawBenefits.trim() !== '') 
+                ? rawBenefits.split('\n').filter(l => l.trim() !== '').map(l => l.replace(/^[•\-\*]\s*/, ''))
+                : defaultBenefits;
+
+            const icons = ['💰', '🏥', '💻', '🎓', '🏖️', '⚡', '🏆', '🎯'];
+            let html = '';
+            benefits.forEach((text, idx) => {
+                const icon = icons[idx % icons.length];
+                html += `
+                    <div class="benefit-card">
+                        <div class="benefit-icon">${icon}</div>
+                        <div class="benefit-text">${text}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Search API call with all criteria (Image 1, )
+        async function executeSearch() {
+            const keyword = document.getElementById('jobSearchInput').value.trim();
+            const deptId = document.getElementById('deptFilter').value;
+            const locId = document.getElementById('locationFilter').value;
+            const empTypeId = document.getElementById('empTypeFilter').value;
+            const salaryFilter = document.getElementById('salaryFilter').value;
+
+            let url = `${API_BASE}/portal/public-jobs?`;
+            const params = [];
+            if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
+            if (deptId) params.push(`departmentId=${deptId}`);
+            if (locId) params.push(`locationId=${locId}`);
+            if (empTypeId) params.push(`employmentTypeId=${empTypeId}`);
+
+            url += params.join('&');
+
+            try {
+                const res = await fetch(url);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    allJobs = result.data;
+                    
+                    // Filter salary on client if chosen
+                    let filtered = allJobs;
+                    if (salaryFilter === 'UNDER_15') {
+                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && j.maxSalary && j.maxSalary < 15000000);
+                    } else if (salaryFilter === '15_30') {
+                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && ((j.minSalary >= 15000000 || j.maxSalary >= 15000000) && (j.minSalary <= 30000000)));
+                    } else if (salaryFilter === 'OVER_30') {
+                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && j.maxSalary && j.maxSalary >= 30000000);
+                    }
+
+                    renderJobs(filtered);
+                } else {
+                    document.getElementById('jobsGrid').innerHTML = '<p style="text-align: center; color: red;">Không thể tải danh sách việc làm.</p>';
+                }
+            } catch (err) {
+                console.error("Lỗi tìm kiếm:", err);
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('jobSearchInput').value = '';
+            document.getElementById('deptFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('empTypeFilter').value = '';
+            document.getElementById('salaryFilter').value = 'ALL';
+            
+            // Reset chip active state
+            document.querySelectorAll('.chip-tag').forEach(c => c.classList.remove('active'));
+            const firstChip = document.querySelector('.chip-tag');
+            if (firstChip) firstChip.classList.add('active');
+
+            executeSearch();
+        }
+
+        function applyQuickTag(tag, element) {
+            document.querySelectorAll('.chip-tag').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('jobSearchInput').value = tag;
+            executeSearch();
+        }
+
+        function renderJobs(jobs) {
+            const grid = document.getElementById('jobsGrid');
+            const countText = document.getElementById('jobsCountText');
+            countText.innerHTML = `<span>Tìm thấy <strong style="color: var(--primary);">${jobs.length}</strong> cơ hội nghề nghiệp đang mở</span>`;
+
+            if (jobs.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: var(--radius-lg); border: 1.5px dashed var(--slate-300); box-shadow: var(--shadow-subtle);">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--slate-100); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--slate-400)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </div>
+                        <h3 style="color: var(--dark); font-size: 20px; font-weight: 800; margin-bottom: 8px;">Không tìm thấy vị trí tuyển dụng phù hợp</h3>
+                        <p style="color: var(--slate-500); font-size: 14.5px; max-width: 480px; margin: 0 auto 20px;">Vui lòng thử tìm kiếm với từ khóa khác, xoá bớt các điều kiện lọc hoặc liên hệ với bộ phận nhân sự để được hỗ trợ.</p>
+                        <button type="button" class="btn btn-primary" onclick="resetFilters()">Xem tất cả việc làm đang mở</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            jobs.forEach(job => {
+                const sal = job.isSalaryVisible !== false ? (job.salaryDisplay || 'Thương lượng') : 'Thương lượng';
+                const loc = job.locationName || 'Trụ sở chính';
+                const empType = job.employmentTypeName || 'Toàn thời gian';
+                const dept = job.departmentName || 'Khối Công Nghệ';
+                const deadlineStr = job.applicationDeadline 
+                    ? `⏰ Hạn nộp: ${new Date(job.applicationDeadline).toLocaleDateString('vi-VN')}` 
+                    : '';
+                const createdDate = job.publishedAt ? new Date(job.publishedAt).toLocaleDateString('vi-VN') : 'Mới đăng';
+
+                // Initial for avatar box
+                const initial = (job.title || 'J').trim().charAt(0).toUpperCase();
+
+                html += `
+                    <div class="job-card">
+                        <div>
+                            <div class="job-card-top">
+                                <div class="job-avatar-icon">${initial}</div>
+                                <div class="job-card-header">
+                                    <h3>${job.title}</h3>
+                                    <div style="font-size: 13px; color: var(--slate-500); font-weight: 500; margin-top: 2px;">${dept}</div>
+                                </div>
+                            </div>
+
+                            <div class="job-meta-badges">
+                                <span class="job-meta-badge badge-salary">💰 ${sal}</span>
+                                <span class="job-meta-badge">📍 ${loc}</span>
+                                <span class="job-meta-badge">💼 ${empType}</span>
+                                ${deadlineStr ? `<span class="job-meta-badge badge-deadline">${deadlineStr}</span>` : ''}
+                            </div>
+
+                            <p class="job-desc-snippet">${job.requirements || job.description || 'Trao đổi chi tiết quyền lợi và mô tả công việc khi phỏng vấn...'}</p>
+                        </div>
+
+                        <div class="job-card-footer">
+                            <span class="job-date">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                ${createdDate}
+                            </span>
+                            <a href="job-detail.html?id=${job.id}" class="btn-view-job">
+                                Chi tiết & Ứng tuyển
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        // ========================== MODAL TRA CỨU HỒ SƠ ==========================
+        function openTrackingModal() {
+            document.getElementById('trackingModal').style.display = 'flex';
+        }
+
+        function closeTrackingModal() {
+            document.getElementById('trackingModal').style.display = 'none';
+        }
+
+        async function executeTrackStatus() {
+            const trackingCode = document.getElementById('trackCodeInput').value.trim();
+            const email = document.getElementById('trackEmailInput').value.trim();
+
+            if (!trackingCode || !email) {
+                alert('Vui lòng nhập cả Mã tra cứu và Email ứng tuyển!');
+                return;
+            }
+
+            const btn = document.getElementById('btnDoTrack');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Đang kiểm tra...';
+
+            try {
+                const res = await fetch(`${API_BASE}/portal/track-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trackingCode, email })
+                });
+                const result = await res.json();
+
+                if (res.ok && result.success && result.data) {
+                    const data = result.data;
+                    document.getElementById('trackingResultBox').style.display = 'block';
+                    document.getElementById('trackResultCode').textContent = data.trackingCode;
+                    document.getElementById('trackResultJob').textContent = data.jobTitle;
+                    document.getElementById('trackResultBadge').textContent = data.generalStatus;
+
+                    const dateStr = data.appliedAt ? new Date(data.appliedAt).toLocaleDateString('vi-VN') : '';
+                    document.getElementById('trackResultMeta').textContent = `Ứng viên: ${data.candidateName} • Phòng ban: ${data.departmentName} • Ngày nộp: ${dateStr}`;
+                    document.getElementById('trackResultDesc').textContent = data.statusDescription;
+
+                    // Update visual timeline
+                    updateStatusTimeline(data.statusCode);
+                } else {
+                    document.getElementById('trackingResultBox').style.display = 'none';
+                    alert('Lỗi tra cứu: ' + (result.message || 'Không tìm thấy hồ sơ khớp với thông tin cung cấp'));
+                }
+            } catch (err) {
+                console.error("Lỗi tra cứu:", err);
+                alert('Không thể kết nối máy chủ để tra cứu.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Tra cứu trạng thái ngay';
+            }
+        }
+
+        function updateStatusTimeline(code) {
+            const steps = ['RECEIVED', 'REVIEWING', 'INTERVIEWING', 'COMPLETED'];
+            const targetIdx = steps.indexOf(code);
+
+            steps.forEach((s, idx) => {
+                const el = document.getElementById(`step_${s}`);
+                if (!el) return;
+                el.className = 'status-step';
+                if (idx < targetIdx) {
+                    el.classList.add('completed');
+                } else if (idx === targetIdx) {
+                    el.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

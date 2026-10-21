@@ -1,0 +1,1954 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soạn & Xuất bản Trang việc làm công khai - TTCS HRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles (Unified across admin pages) */
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sidebar-header .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .sidebar-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-menu {
+            padding: 16px 12px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .menu-group { margin-bottom: 16px; }
+        .menu-group-header {
+            padding: 12px 14px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .menu-group-header:hover { color: #2563eb; }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .menu-item:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .menu-item.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .menu-item svg { flex-shrink: 0; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        /* Top Header (Unified Avatar / Profile Bar) */
+        .top-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .header-title-box h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-title-box p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-text {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 14px;
+        }
+
+        .user-role-badge {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .avatar-wrapper:hover { transform: scale(1.06); }
+
+        .header-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .avatar-wrapper:hover .header-avatar {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .avatar-badge-edit {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #2563eb;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .avatar-badge-edit svg { width: 9px; height: 9px; }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-header-link {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-profile {
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-profile:hover {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-change-pwd {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+
+        .btn-change-pwd:hover {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-logout {
+            background-color: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-logout:hover {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Action bar */
+        .action-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-preview {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+        }
+
+        .btn-preview:hover {
+            background: linear-gradient(135deg, #0369a1, #075985);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        /* Content Container */
+        .content-scroll {
+            flex: 1;
+            padding: 24px 28px;
+            overflow-y: auto;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Banner info alert */
+        .info-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .info-card-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .info-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 2px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: #3b82f6;
+        }
+
+        /* Form Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-grid.single-col {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 14px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header-badge {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        /* Image Uploaders */
+        .media-uploader-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .media-uploader-box:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .media-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-preview-img {
+            max-width: 140px;
+            max-height: 70px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            padding: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .banner-preview-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .uploader-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+
+        .btn-upload-sub {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #334155;
+            transition: 0.15s;
+        }
+
+        .btn-upload-sub:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        /* Switch Toggle */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .toggle-label-box strong {
+            display: block;
+            font-size: 13.5px;
+            color: #0f172a;
+        }
+
+        .toggle-label-box span {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #2563eb;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* FULLSCREEN LIVE PREVIEW MODAL */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .preview-bar {
+            background: #0f172a;
+            color: white;
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .preview-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .preview-bar-left h3 {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-switcher {
+            display: flex;
+            background: #1e293b;
+            padding: 3px;
+            border-radius: 8px;
+            gap: 2px;
+        }
+
+        .device-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .device-btn:hover { color: white; }
+        .device-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+
+        .preview-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-preview-close {
+            background: #334155;
+            color: #f1f5f9;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-preview-close:hover { background: #475569; }
+
+        .preview-viewport-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            background: #e2e8f0;
+        }
+
+        .preview-viewport {
+            background: #ffffff;
+            width: 100%;
+            max-width: 1140px;
+            min-height: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .preview-viewport.tablet { max-width: 768px; }
+        .preview-viewport.mobile { max-width: 390px; }
+
+        /* Public Page Simulation Inside Preview (WYSIWYG) */
+        .sim-header {
+            background: white;
+            padding: 16px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .sim-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sim-logo {
+            height: 42px;
+            max-width: 140px;
+            object-fit: contain;
+        }
+
+        .sim-company-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .sim-nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .sim-nav a {
+            color: #475569;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sim-hero {
+            position: relative;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .sim-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.92) 100%);
+            backdrop-filter: blur(2px);
+        }
+
+        .sim-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .sim-hero-badge {
+            display: inline-block;
+            background: rgba(37,99,235,0.3);
+            border: 1px solid rgba(147,197,253,0.3);
+            color: #bfdbfe;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .sim-hero-tagline {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.25;
+            background: linear-gradient(135deg, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sim-hero-intro {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .sim-section {
+            padding: 48px 40px;
+        }
+
+        .sim-section.gray {
+            background: #f8fafc;
+        }
+
+        .sim-section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .sim-section-title h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .sim-section-title p {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .sim-culture-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            font-size: 14.5px;
+            line-height: 1.7;
+            color: #334155;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            white-space: pre-line;
+        }
+
+        .sim-benefits-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .sim-benefit-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .sim-benefit-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: #ecfdf5;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .sim-benefit-text {
+            font-size: 13.5px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .sim-jobs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .sim-job-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .sim-job-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .sim-job-header h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .sim-job-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sim-job-badge {
+            font-size: 11.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .sim-footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 40px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .sim-footer h5 {
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .sim-footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 32px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">TT</div>
+            <h2>Hệ thống TTCS HRM</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Dynamic menu loaded via script -->
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Unified Header -->
+        <header class="top-header">
+            <div class="header-title-box">
+                <h1>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Soạn & Xuất bản Trang việc làm công khai
+                </h1>
+                <p>Thiết lập nội dung giới thiệu, hình ảnh nhận diện và xem trước trang tuyển dụng công khai.</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-text">
+                        <div class="user-name" id="displayUsername">Đang tải...</div>
+                        <span class="user-role-badge" id="displayRoles">Trưởng phòng Nhân sự</span>
+                    </div>
+                    <div class="avatar-wrapper" onclick="window.location.href='profile.html'" title="Nhấn để cập nhật ảnh đại diện & hồ sơ">
+                        <div class="header-avatar" id="headerAvatar">--</div>
+                        <div class="avatar-badge-edit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <a href="profile.html" class="btn-header-link btn-profile" title="Xem hồ sơ cá nhân">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Hồ sơ
+                    </a>
+                    <a href="change-password.html" class="btn-header-link btn-change-pwd" title="Đổi mật khẩu">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Đổi MK
+                    </a>
+                    <a href="javascript:void(0)" onclick="handleLogout()" class="btn-header-link btn-logout" title="Đăng xuất">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Secondary Action Bar -->
+        <div class="action-bar">
+            <div class="breadcrumb">
+                <a href="dashboard.html">Tổng quan</a>
+                <span>/</span>
+                <span>Tuyển dụng</span>
+                <span>/</span>
+                <strong>Trang việc làm công khai</strong>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-preview" onclick="openLivePreview()" id="btnOpenPreview">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Xem trước giao diện công khai
+                </button>
+                <a href="careers.html" target="_blank" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Trang thực tế (careers.html)
+                </a>
+                <button type="button" class="btn btn-primary" onclick="savePortalConfig()" id="btnSaveConfig">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Lưu & Xuất bản ngay
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Form Area -->
+        <div class="content-scroll">
+            <div class="page-container">
+
+                <!-- Alert card -->
+                <div class="info-card">
+                    <div class="info-card-left">
+                        <div class="info-card-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        </div>
+                        <div>
+                            <h4>Màn soạn thảo thông tin Cổng việc làm tuyển dụng công khai</h4>
+                            <p>Thay đổi tại đây sẽ trực tiếp xuất hiện trên trang tuyển dụng ngoài công khai khi ứng viên truy cập. Nhấn <strong>"Xem trước"</strong> để kiểm tra chính xác giao diện thực tế trước khi lưu.</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 12.5px; color: #1e40af; text-align: right;" id="lastUpdatedInfo">
+                        Cập nhật lần cuối: Đang tải...
+                    </div>
+                </div>
+
+                <!-- Form Section 1: Brand & Visuals -->
+                <div class="form-grid">
+                    <!-- Logo Upload -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                Logo thương hiệu
+                            </h3>
+                            <span class="card-header-badge">Định dạng JPG, PNG, WEBP, SVG</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="media-uploader-box" onclick="document.getElementById('inputLogoFile').click()">
+                                <input type="file" id="inputLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display: none;" onchange="handleLogoSelect(event)">
+                                <div class="media-preview-container">
+                                    <img id="previewLogoImg" src="images/logo-company.png" alt="Logo preview" class="logo-preview-img" onerror="this.src='https://via.placeholder.com/140x60?text=TTCS+Logo'">
+                                    <div>
+                                        <div style="font-size: 13.5px; font-weight: 600; color: #0f172a;">Kéo thả hoặc nhấn để chọn Logo mới</div>
+                                        <div class="form-hint" id="logoFileStatus">Kích thước tối đa: 5MB. Nền trong suốt (PNG/SVG) hiển thị đẹp nhất.</div>
+                                    </div>
+                                    <div class="uploader-actions" onclick="event.stopPropagation()">
+                                        <button type="button" class="btn-upload-sub" onclick="document.getElementById('inputLogoFile').click()">Chọn tệp khác</button>
+                                        <button type="button" class="btn-upload-sub" onclick="resetDefaultLogo()">Đặt lại logo mặc định</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="logoUrlField" value="images/logo-company.png">
+                        </div>
+                    </div>
+
+                    <!-- Banner Hero Upload -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                                Ảnh bìa / Banner quảng bá
+                            </h3>
+                            <span class="card-header-badge">Tối đa 10MB (Khuyến nghị 1920x600px)</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="media-uploader-box" onclick="document.getElementById('inputBannerFile').click()">
+                                <input type="file" id="inputBannerFile" accept="image/png,image/jpeg,image/webp" style="display: none;" onchange="handleBannerSelect(event)">
+                                <div class="media-preview-container">
+                                    <img id="previewBannerImg" src="images/banner-career.jpg" alt="Banner preview" class="banner-preview-img" onerror="this.src='images/bg-interview.jpg'">
+                                    <div>
+                                        <div style="font-size: 13.5px; font-weight: 600; color: #0f172a;">Kéo thả hoặc nhấn để thay ảnh bìa Banner</div>
+                                        <div class="form-hint" id="bannerFileStatus">Tỷ lệ ngang 16:5 hoặc 16:6 tạo cảm giác hiện đại và hoành tráng.</div>
+                                    </div>
+                                    <div class="uploader-actions" onclick="event.stopPropagation()">
+                                        <button type="button" class="btn-upload-sub" onclick="document.getElementById('inputBannerFile').click()">Chọn ảnh khác</button>
+                                        <button type="button" class="btn-upload-sub" onclick="resetDefaultBanner()">Sử dụng ảnh nền có sẵn</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="bannerUrlField" value="images/banner-career.jpg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Section 2: General & Introduction Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            Soạn nội dung giới thiệu tin và trang việc làm
+                        </h3>
+                        <span class="card-header-badge">Thông tin chính</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="companyName">
+                                Tên doanh nghiệp / Tập đoàn <span class="required">*</span>
+                            </label>
+                            <input type="text" id="companyName" class="form-input" placeholder="Ví dụ: Tập đoàn Công nghệ TTCS Group">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="tagline">
+                                Khẩu hiệu / Slogan tuyển dụng (Tagline)
+                            </label>
+                            <input type="text" id="tagline" class="form-input" placeholder="Ví dụ: Đồng hành cùng nhân tài - Kiến tạo tương lai số">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="introduction">
+                            Lời chào mừng & Giới thiệu tổng quan doanh nghiệp <span class="required">*</span>
+                            <span class="form-hint">Xuất hiện ngay phần mở đầu trang việc làm công khai</span>
+                        </label>
+                        <textarea id="introduction" class="form-textarea" rows="4" placeholder="Nhập tóm tắt giới thiệu về quy mô, sứ mệnh và lời kêu gọi ứng tuyển..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="aboutCulture">
+                            Văn hóa doanh nghiệp & Môi trường làm việc
+                            <span class="form-hint">Mô tả giá trị cốt lõi, tinh thần đồng đội, phong cách làm việc</span>
+                        </label>
+                        <textarea id="aboutCulture" class="form-textarea" rows="3" placeholder="Ví dụ: Môi trường làm việc cởi mở, minh bạch, đề cao tinh thần đổi mới sáng tạo và trao quyền cho từng thành viên..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="benefits">
+                            Chế độ đãi ngộ & Quyền lợi vượt trội (Mỗi dòng một quyền lợi)
+                            <span class="form-hint">Nhập mỗi quyền lợi bắt đầu bằng dấu gạch ngang hoặc dấu chấm tròn</span>
+                        </label>
+                        <textarea id="benefits" class="form-textarea" rows="5" placeholder="• Thu nhập cạnh tranh theo năng lực, thưởng hiệu quả dự án
+• Lộ trình thăng tiến rõ ràng, đánh giá năng lực định kỳ 2 lần/năm
+• Bảo hiểm sức khỏe cao cấp, khám sức khỏe tổng quát
+• Đào tạo chuyên sâu và tài trợ chứng chỉ quốc tế
+• Du lịch thường niên, teambuilding sôi nổi"></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Section 3: Contact & Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            Thông tin liên hệ & Cấu hình xuất bản
+                        </h3>
+                        <span class="card-header-badge">Liên hệ & Hiển thị</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email phòng nhân sự / Tuyển dụng</label>
+                            <input type="email" id="email" class="form-input" placeholder="recruitment@ttcs-group.vn">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Hotline tuyển dụng</label>
+                            <input type="text" id="phone" class="form-input" placeholder="024.3888.9999">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="address">Địa chỉ trụ sở / Văn phòng làm việc</label>
+                            <input type="text" id="address" class="form-input" placeholder="Tòa nhà TTCS Tower, Khu Công nghệ cao, Hà Nội">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="website">Website chính thức công ty</label>
+                            <input type="text" id="website" class="form-input" placeholder="https://ttcs-group.vn">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="workingHours">Thời gian làm việc</label>
+                            <input type="text" id="workingHours" class="form-input" placeholder="Thứ Hai - Thứ Sáu: 08:30 - 17:30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái phát hành trang việc làm</label>
+                            <div class="toggle-wrapper">
+                                <div class="toggle-label-box">
+                                    <strong id="publishStatusText">Đang công khai trang việc làm</strong>
+                                    <span>Cho phép người tìm việc bên ngoài truy cập và ứng tuyển</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="isPublished" checked onchange="togglePublishStatus(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN LIVE PREVIEW MODAL -->
+    <div class="preview-modal" id="previewModal">
+        <!-- Top Toolbar -->
+        <div class="preview-bar">
+            <div class="preview-bar-left">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Chế độ xem trước giao diện công khai
+                </h3>
+                <div class="device-switcher">
+                    <button type="button" class="device-btn active" id="btnDeviceDesktop" onclick="setPreviewDevice('desktop')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Máy tính (Desktop)
+                    </button>
+                    <button type="button" class="device-btn" id="btnDeviceTablet" onclick="setPreviewDevice('tablet')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        Máy tính bảng (Tablet)
+                    </button>
+                    <button type="button" class="device-btn" id="btnDeviceMobile" onclick="setPreviewDevice('mobile')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        Điện thoại (Mobile)
+                    </button>
+                </div>
+            </div>
+            <div class="preview-bar-right">
+                <button type="button" class="btn btn-primary" onclick="savePortalConfig(); closeLivePreview();">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                    Lưu & Xuất bản ngay
+                </button>
+                <button type="button" class="btn-preview-close" onclick="closeLivePreview()">✕ Đóng xem trước</button>
+            </div>
+        </div>
+
+        <!-- Viewport Container -->
+        <div class="preview-viewport-wrapper">
+            <div class="preview-viewport" id="previewViewport">
+                <!-- Sim Header -->
+                <header class="sim-header">
+                    <div class="sim-brand">
+                        <img id="simLogo" src="images/logo-company.png" alt="Company Logo" class="sim-logo" onerror="this.src='https://via.placeholder.com/120x40?text=TTCS+Logo'">
+                        <div class="sim-company-name" id="simCompanyName">Tập đoàn Công nghệ TTCS</div>
+                    </div>
+                    <nav class="sim-nav">
+                        <a href="#simAbout">Về chúng tôi</a>
+                        <a href="#simCulture">Văn hóa</a>
+                        <a href="#simBenefits">Phúc lợi</a>
+                        <a href="#simJobs">Vị trí tuyển dụng</a>
+                        <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="alert('Đây là bản xem trước mô phỏng!')">Nộp CV ngay</button>
+                    </nav>
+                </header>
+
+                <!-- Sim Hero Section -->
+                <section class="sim-hero" id="simHeroSection">
+                    <div class="sim-hero-overlay"></div>
+                    <div class="sim-hero-content">
+                        <span class="sim-hero-badge">CƠ HỘI NGHỀ NGHIỆP TẠI TTCS GROUP</span>
+                        <h1 class="sim-hero-tagline" id="simTagline">Đồng hành cùng nhân tài - Kiến tạo tương lai số</h1>
+                        <p class="sim-hero-intro" id="simIntro">
+                            Chào mừng bạn đến với Cổng tuyển dụng và cơ hội nghề nghiệp của chúng tôi. Hãy gia nhập đội ngũ tinh hoa để cùng kiến tạo những giá trị khác biệt.
+                        </p>
+                        <a href="#simJobs" class="btn btn-primary" style="padding: 12px 28px; font-size: 15px; border-radius: 30px;">
+                            Khám phá các vị trí đang tuyển 🔥
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Sim Culture Section -->
+                <section class="sim-section" id="simCulture">
+                    <div class="sim-section-title">
+                        <h3>Văn hóa & Môi trường làm việc</h3>
+                        <p>Nơi trao quyền, khuyến khích sáng tạo và cùng nhau phát triển bền vững</p>
+                    </div>
+                    <div class="sim-culture-box" id="simCultureText">
+                        Đang cập nhật nội dung văn hóa doanh nghiệp...
+                    </div>
+                </section>
+
+                <!-- Sim Benefits Section -->
+                <section class="sim-section gray" id="simBenefits">
+                    <div class="sim-section-title">
+                        <h3>Chế độ Đãi ngộ & Quyền lợi vượt trội</h3>
+                        <p>Chúng tôi trân trọng và đền đáp xứng đáng mọi đóng góp của bạn</p>
+                    </div>
+                    <div class="sim-benefits-list" id="simBenefitsList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- Sim Jobs Section -->
+                <section class="sim-section" id="simJobs">
+                    <div class="sim-section-title">
+                        <h3>Cơ hội nghề nghiệp đang mở</h3>
+                        <p>Khám phá các cơ hội phù hợp và ứng tuyển ngay hôm nay</p>
+                    </div>
+                    <div class="sim-jobs-grid" id="simJobsGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- Sim Footer -->
+                <footer class="sim-footer">
+                    <div class="sim-footer-grid">
+                        <div>
+                            <h5 id="simFooterCompany">Tập đoàn Công nghệ TTCS</h5>
+                            <p id="simFooterIntro" style="margin-bottom: 12px;">Đồng hành cùng nhân tài - Kiến tạo tương lai số.</p>
+                            <p><strong>Địa chỉ:</strong> <span id="simFooterAddress">Tòa nhà TTCS Tower, Hà Nội</span></p>
+                            <p><strong>Thời gian làm việc:</strong> <span id="simFooterHours">Thứ 2 - Thứ 6: 08:30 - 17:30</span></p>
+                        </div>
+                        <div>
+                            <h5>Liên hệ Tuyển dụng</h5>
+                            <p><strong>Email:</strong> <span id="simFooterEmail">recruitment@ttcs-group.vn</span></p>
+                            <p><strong>Hotline:</strong> <span id="simFooterPhone">024.3888.9999</span></p>
+                            <p><strong>Website:</strong> <span id="simFooterWebsite">https://ttcs-group.vn</span></p>
+                        </div>
+                        <div>
+                            <h5>Bản quyền</h5>
+                            <p>© 2026 Bản quyền thuộc về TTCS Group. Bảo lưu mọi quyền.</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastBox">
+        <svg id="toastIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span id="toastMessage">Thông báo</span>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        const API_BASE = window.API_BASE_URL || 'http://localhost:8080/api';
+        let currentConfig = null;
+        let selectedLogoFile = null;
+        let selectedBannerFile = null;
+        let publicJobsList = [];
+
+        // Roles Navigation definition
+        const ROLES_INFO = {
+            'ROLE_HR_MANAGER': {
+                name: 'Trưởng phòng Nhân sự',
+                tasks: [
+                    { title: 'Cơ cấu Phòng ban', link: 'departments.html' },
+                    { title: 'Chức danh & Dải lương', link: 'positions.html' },
+                    { title: 'Khung năng lực & Đánh giá', link: 'competencies.html' },
+                    { title: 'Ngân hàng câu hỏi', link: 'questions.html' },
+                    { title: 'Danh mục tham chiếu', link: 'categories.html' },
+                    { title: 'Yêu cầu Tuyển dụng', link: 'jobs.html' },
+                    { title: 'Trang việc làm công khai', link: 'career-portal.html' },
+                    { title: 'Hồ sơ cá nhân', link: 'profile.html' }
+                ]
+            },
+            'ROLE_ADMIN': {
+                name: 'Quản trị hệ thống',
+                tasks: [
+                    { title: 'Quản lý Tài khoản', link: 'users.html' },
+                    { title: 'Cơ cấu Phòng ban', link: 'departments.html' },
+                    { title: 'Chức danh & Dải lương', link: 'positions.html' },
+                    { title: 'Khung năng lực & Đánh giá', link: 'competencies.html' },
+                    { title: 'Ngân hàng câu hỏi', link: 'questions.html' },
+                    { title: 'Danh mục tham chiếu', link: 'categories.html' },
+                    { title: 'Yêu cầu Tuyển dụng', link: 'jobs.html' },
+                    { title: 'Trang việc làm công khai', link: 'career-portal.html' },
+                    { title: 'Hồ sơ cá nhân', link: 'profile.html' },
+                    { title: 'Đổi mật khẩu', link: 'change-password.html' }
+                ]
+            }
+        };
+
+        // Authentication & Role Check
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            if (!token) {
+                alert('Vui lòng đăng nhập để tiếp tục.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await fetchUserInfo(token);
+            renderSidebar();
+            await loadPortalConfig();
+            await loadPublicJobs();
+        });
+
+        async function fetchUserInfo(token) {
+            try {
+                const res = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    const user = result.data;
+                    document.getElementById('displayUsername').textContent = user.fullName || user.username;
+                    
+                    const roles = user.roles || [];
+                    localStorage.setItem('userRoles', JSON.stringify(roles));
+
+                    // Permission check
+                    const hasAccess = roles.includes('ROLE_HR_MANAGER') || roles.includes('ROLE_ADMIN');
+                    if (!hasAccess) {
+                        alert('Bạn không có quyền Trưởng phòng Nhân sự hoặc Quản trị viên để truy cập trang này.');
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+
+                    const roleNames = roles.map(r => ROLES_INFO[r] ? ROLES_INFO[r].name : r);
+                    document.getElementById('displayRoles').textContent = roleNames.join(', ');
+
+                    renderHeaderAvatar(user.avatarUrl, user.fullName || user.username);
+                } else {
+                    // Fallback to localStorage
+                    const savedRoles = JSON.parse(localStorage.getItem('userRoles') || '[]');
+                    const username = localStorage.getItem('username') || 'Người dùng';
+                    document.getElementById('displayUsername').textContent = username;
+                    renderHeaderAvatar(null, username);
+                }
+            } catch (err) {
+                console.error("Lỗi xác thực người dùng:", err);
+            }
+        }
+
+        function renderHeaderAvatar(avatarUrl, displayName) {
+            const container = document.getElementById('headerAvatar');
+            if (!container) return;
+            if (avatarUrl && avatarUrl.trim() !== '') {
+                const cleanUrl = avatarUrl.startsWith('http') ? avatarUrl : (avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl);
+                container.innerHTML = `<img src="${cleanUrl}" alt="Avatar" onerror="this.onerror=null; this.parentElement.textContent='${getInitials(displayName)}';">`;
+            } else {
+                container.textContent = getInitials(displayName);
+            }
+        }
+
+        function getInitials(name) {
+            if (!name) return 'U';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function renderSidebar() {
+            renderAppSidebar();
+            return;
+            const menuContainer = document.getElementById('sidebarMenu');
+            let html = `
+                <a class="menu-item" href="dashboard.html">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Tổng quan Dashboard
+                </a>
+            `;
+
+            for (const [roleCode, roleInfo] of Object.entries(ROLES_INFO)) {
+                html += `
+                    <div class="menu-group">
+                        <div class="menu-group-header">
+                            Nghiệp vụ ${roleInfo.name}
+                        </div>
+                        <div>
+                `;
+                roleInfo.tasks.forEach(task => {
+                    const isActive = task.link === 'career-portal.html';
+                    html += `
+                        <a class="menu-item ${isActive ? 'active' : ''}" href="${task.link}">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                            ${task.title}
+                        </a>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+
+            menuContainer.innerHTML = html;
+        }
+
+        // Load Career Portal Configuration
+        async function loadPortalConfig() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/config`);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    currentConfig = result.data;
+                    populateForm(currentConfig);
+                } else {
+                    showToast(result.message || 'Không thể tải cấu hình', 'error');
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải cấu hình portal:", err);
+                showToast('Lỗi kết nối máy chủ', 'error');
+            }
+        }
+
+        function populateForm(data) {
+            document.getElementById('companyName').value = data.companyName || '';
+            document.getElementById('tagline').value = data.tagline || '';
+            document.getElementById('introduction').value = data.introduction || '';
+            document.getElementById('aboutCulture').value = data.aboutCulture || '';
+            document.getElementById('benefits').value = data.benefits || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('address').value = data.address || '';
+            document.getElementById('website').value = data.website || '';
+            document.getElementById('workingHours').value = data.workingHours || '';
+
+            const isPublished = data.isPublished !== false;
+            document.getElementById('isPublished').checked = isPublished;
+            document.getElementById('publishStatusText').textContent = isPublished ? 'Đang công khai trang việc làm' : 'Đang tạm dừng công khai';
+
+            if (data.logoUrl) {
+                document.getElementById('logoUrlField').value = data.logoUrl;
+                document.getElementById('previewLogoImg').src = data.logoUrl;
+            }
+            if (data.bannerUrl) {
+                document.getElementById('bannerUrlField').value = data.bannerUrl;
+                document.getElementById('previewBannerImg').src = data.bannerUrl;
+            }
+
+            if (data.updatedAt) {
+                const dt = new Date(data.updatedAt).toLocaleString('vi-VN');
+                document.getElementById('lastUpdatedInfo').innerHTML = `Cập nhật lần cuối: <strong>${dt}</strong> bởi <strong>${data.updatedBy || 'HR Manager'}</strong>`;
+            }
+        }
+
+        function togglePublishStatus(checkbox) {
+            document.getElementById('publishStatusText').textContent = checkbox.checked
+                ? 'Đang công khai trang việc làm'
+                : 'Đang tạm dừng công khai';
+        }
+
+        // Handle Image Select
+        function handleLogoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Dung lượng ảnh logo vượt quá 5MB!', 'error');
+                return;
+            }
+
+            selectedLogoFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewLogoImg').src = e.target.result;
+                document.getElementById('logoFileStatus').textContent = `Đã chọn: ${file.name} (${(file.size/1024).toFixed(1)} KB) - Nhấn Lưu để cập nhật.`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleBannerSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Dung lượng ảnh banner vượt quá 10MB!', 'error');
+                return;
+            }
+
+            selectedBannerFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewBannerImg').src = e.target.result;
+                document.getElementById('bannerFileStatus').textContent = `Đã chọn: ${file.name} (${(file.size/1024).toFixed(1)} KB) - Nhấn Lưu để cập nhật.`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetDefaultLogo() {
+            selectedLogoFile = null;
+            document.getElementById('logoUrlField').value = 'images/logo-company.png';
+            document.getElementById('previewLogoImg').src = 'images/logo-company.png';
+            document.getElementById('logoFileStatus').textContent = 'Đã đặt lại logo mặc định.';
+            showToast('Đã đặt lại Logo mặc định', 'success');
+        }
+
+        function resetDefaultBanner() {
+            selectedBannerFile = null;
+            document.getElementById('bannerUrlField').value = 'images/banner-career.jpg';
+            document.getElementById('previewBannerImg').src = 'images/banner-career.jpg';
+            document.getElementById('bannerFileStatus').textContent = 'Đã đặt lại ảnh bìa mặc định.';
+            showToast('Đã đặt lại Banner mặc định', 'success');
+        }
+
+        // Load Public Jobs for live preview simulation
+        async function loadPublicJobs() {
+            try {
+                const res = await fetch(`${API_BASE}/portal/public-jobs`);
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    publicJobsList = result.data;
+                }
+            } catch (err) {
+                console.error("Lỗi lấy danh sách việc làm mở:", err);
+            }
+        }
+
+        // Save Configuration
+        async function savePortalConfig() {
+            const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+            const btnSave = document.getElementById('btnSaveConfig');
+            const originalSaveHtml = btnSave.innerHTML;
+            btnSave.disabled = true;
+            btnSave.innerHTML = `Đang lưu dữ liệu...`;
+
+            try {
+                let logoUrl = document.getElementById('logoUrlField').value;
+                let bannerUrl = document.getElementById('bannerUrlField').value;
+
+                // 1. Upload Logo if selected
+                if (selectedLogoFile) {
+                    const logoData = new FormData();
+                    logoData.append('file', selectedLogoFile);
+                    const resLogo = await fetch(`${API_BASE}/portal/upload-logo`, {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: logoData
+                    });
+                    const resJson = await resLogo.json();
+                    if (resLogo.ok && resJson.data && resJson.data.logoUrl) {
+                        logoUrl = resJson.data.logoUrl;
+                        document.getElementById('logoUrlField').value = logoUrl;
+                        selectedLogoFile = null;
+                    } else {
+                        throw new Error(resJson.message || 'Lỗi khi tải lên logo');
+                    }
+                }
+
+                // 2. Upload Banner if selected
+                if (selectedBannerFile) {
+                    const bannerData = new FormData();
+                    bannerData.append('file', selectedBannerFile);
+                    const resBanner = await fetch(`${API_BASE}/portal/upload-banner`, {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: bannerData
+                    });
+                    const resJson = await resBanner.json();
+                    if (resBanner.ok && resJson.data && resJson.data.bannerUrl) {
+                        bannerUrl = resJson.data.bannerUrl;
+                        document.getElementById('bannerUrlField').value = bannerUrl;
+                        selectedBannerFile = null;
+                    } else {
+                        throw new Error(resJson.message || 'Lỗi khi tải lên banner');
+                    }
+                }
+
+                // 3. Update Text Content
+                const payload = {
+                    companyName: document.getElementById('companyName').value.trim(),
+                    tagline: document.getElementById('tagline').value.trim(),
+                    introduction: document.getElementById('introduction').value.trim(),
+                    aboutCulture: document.getElementById('aboutCulture').value.trim(),
+                    benefits: document.getElementById('benefits').value.trim(),
+                    logoUrl: logoUrl,
+                    bannerUrl: bannerUrl,
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    website: document.getElementById('website').value.trim(),
+                    workingHours: document.getElementById('workingHours').value.trim(),
+                    isPublished: document.getElementById('isPublished').checked
+                };
+
+                if (!payload.companyName) {
+                    showToast('Vui lòng nhập tên công ty!', 'error');
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = originalSaveHtml;
+                    return;
+                }
+                if (!payload.introduction) {
+                    showToast('Vui lòng nhập nội dung giới thiệu!', 'error');
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = originalSaveHtml;
+                    return;
+                }
+
+                const res = await fetch(`${API_BASE}/portal/config`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    currentConfig = result.data;
+                    populateForm(currentConfig);
+                    showToast('Lưu và xuất bản trang việc làm thành công!', 'success');
+                } else {
+                    showToast(result.message || 'Lỗi khi lưu cấu hình', 'error');
+                }
+            } catch (err) {
+                console.error("Lỗi khi lưu cấu hình:", err);
+                showToast(err.message || 'Lỗi hệ thống khi lưu', 'error');
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerHTML = originalSaveHtml;
+            }
+        }
+
+        // FULLSCREEN LIVE PREVIEW
+        function openLivePreview() {
+            // Read direct values currently on the form inputs (WYSIWYG)
+            const companyName = document.getElementById('companyName').value.trim() || 'Tập đoàn Công nghệ TTCS';
+            const tagline = document.getElementById('tagline').value.trim() || 'Đồng hành cùng nhân tài - Kiến tạo tương lai số';
+            const intro = document.getElementById('introduction').value.trim() || 'Chào mừng bạn đến với Cổng tuyển dụng và cơ hội nghề nghiệp của chúng tôi.';
+            const culture = document.getElementById('aboutCulture').value.trim() || 'Môi trường làm việc cởi mở, minh bạch, đề cao tinh thần đổi mới sáng tạo.';
+            const benefitsRaw = document.getElementById('benefits').value.trim();
+            const email = document.getElementById('email').value.trim() || 'recruitment@ttcs-group.vn';
+            const phone = document.getElementById('phone').value.trim() || '024.3888.9999';
+            const address = document.getElementById('address').value.trim() || 'Hà Nội';
+            const website = document.getElementById('website').value.trim() || 'https://ttcs-group.vn';
+            const hours = document.getElementById('workingHours').value.trim() || 'Thứ 2 - Thứ 6: 08:30 - 17:30';
+
+            // Sync visual elements
+            document.getElementById('simCompanyName').textContent = companyName;
+            document.getElementById('simTagline').textContent = tagline;
+            document.getElementById('simIntro').textContent = intro;
+            document.getElementById('simCultureText').textContent = culture;
+
+            // Logos & Banner sync
+            const logoSrc = document.getElementById('previewLogoImg').src;
+            document.getElementById('simLogo').src = logoSrc;
+
+            const bannerSrc = document.getElementById('previewBannerImg').src;
+            const heroSec = document.getElementById('simHeroSection');
+            heroSec.style.backgroundImage = `url('${bannerSrc}')`;
+
+            // Benefits list parsing
+            const benefitsListContainer = document.getElementById('simBenefitsList');
+            if (benefitsRaw) {
+                const lines = benefitsRaw.split('\n').filter(l => l.trim() !== '');
+                let benHtml = '';
+                lines.forEach(line => {
+                    const cleanText = line.replace(/^[•\-\*]\s*/, '');
+                    benHtml += `
+                        <div class="sim-benefit-item">
+                            <div class="sim-benefit-icon">✓</div>
+                            <div class="sim-benefit-text">${cleanText}</div>
+                        </div>
+                    `;
+                });
+                benefitsListContainer.innerHTML = benHtml;
+            } else {
+                benefitsListContainer.innerHTML = '<div style="color: #64748b; font-size: 13.5px;">Chưa thiết lập danh sách quyền lợi đãi ngộ.</div>';
+            }
+
+            // Public jobs rendering
+            const jobsContainer = document.getElementById('simJobsGrid');
+            if (publicJobsList && publicJobsList.length > 0) {
+                let jobsHtml = '';
+                publicJobsList.slice(0, 6).forEach(job => {
+                    const sal = (job.isSalaryVisible !== false && (job.minSalary || job.maxSalary))
+                        ? `${job.minSalary ? (job.minSalary/1000000).toFixed(0) : '0'} - ${job.maxSalary ? (job.maxSalary/1000000).toFixed(0) : 'Thương lượng'} triệu`
+                        : 'Thoả thuận / Thương lượng';
+                    const loc = job.locationName || 'Trụ sở chính';
+                    const emp = job.employmentTypeName || 'Toàn thời gian';
+                    jobsHtml += `
+                        <div class="sim-job-card">
+                            <div class="sim-job-header">
+                                <h4>${escapeHtml(job.title)}</h4>
+                                <div class="sim-job-badges">
+                                    <span class="sim-job-badge" style="background: #eff6ff; color: #2563eb; font-weight: 600;">💰 ${sal}</span>
+                                    <span class="sim-job-badge">👥 SL: ${job.headcount || 1}</span>
+                                    <span class="sim-job-badge">📍 ${escapeHtml(loc)}</span>
+                                    <span class="sim-job-badge">⏰ ${escapeHtml(emp)}</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 13px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                ${job.requirements || 'Trao đổi chi tiết khi phỏng vấn...'}
+                            </p>
+                            <button class="btn btn-secondary" style="align-self: flex-start; padding: 6px 14px; font-size: 12.5px;" onclick="alert('Xem chi tiết vị trí #${job.id}: ${job.title}')">
+                                Xem chi tiết & Ứng tuyển
+                            </button>
+                        </div>
+                    `;
+                });
+                jobsContainer.innerHTML = jobsHtml;
+            } else {
+                jobsContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 24px; color: #64748b; background: #f8fafc; border-radius: 8px;">
+                        Hiện chưa có vị trí nào đang mở hoặc đã duyệt tuyển dụng.
+                    </div>
+                `;
+            }
+
+            // Footer info sync
+            document.getElementById('simFooterCompany').textContent = companyName;
+            document.getElementById('simFooterIntro').textContent = tagline;
+            document.getElementById('simFooterAddress').textContent = address;
+            document.getElementById('simFooterHours').textContent = hours;
+            document.getElementById('simFooterEmail').textContent = email;
+            document.getElementById('simFooterPhone').textContent = phone;
+            document.getElementById('simFooterWebsite').textContent = website;
+
+            // Open modal
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function closeLivePreview() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function setPreviewDevice(device) {
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            const vp = document.getElementById('previewViewport');
+            vp.className = 'preview-viewport';
+
+            if (device === 'desktop') {
+                document.getElementById('btnDeviceDesktop').classList.add('active');
+            } else if (device === 'tablet') {
+                document.getElementById('btnDeviceTablet').classList.add('active');
+                vp.classList.add('tablet');
+            } else if (device === 'mobile') {
+                document.getElementById('btnDeviceMobile').classList.add('active');
+                vp.classList.add('mobile');
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toastBox');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        function handleLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRoles');
+                localStorage.removeItem('username');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

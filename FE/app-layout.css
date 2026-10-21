@@ -1,0 +1,290 @@
+/* =========================================================================
+   HỆ THỐNG TUYỂN DỤNG NỘI BỘ - ĐỒNG BỘ STYLING SIDEBAR & TOP HEADER
+   Hỗ trợ hiển thị menu phân cấp theo Chức vụ / Nghiệp vụ (Accordions)
+   ========================================================================= */
+
+.sidebar {
+    width: 280px !important;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-shrink: 0 !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+.sidebar-header {
+    padding: 22px 20px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+.sidebar-header svg {
+    flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+    font-size: 18px !important;
+    color: #1e3a8a !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.3px;
+}
+
+.sidebar-menu {
+    padding: 14px 10px !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar-menu::-webkit-scrollbar {
+    width: 5px;
+}
+.sidebar-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Top Level Menu Items */
+.menu-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px 14px !important;
+    color: #334155 !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 3px !important;
+    transition: background 0.18s ease, color 0.18s ease !important;
+    cursor: pointer !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.menu-item svg {
+    flex-shrink: 0;
+    transition: stroke 0.18s ease;
+}
+
+.menu-item:hover {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+
+.menu-item.active {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    font-weight: 600 !important;
+}
+
+.menu-item.active svg {
+    stroke: #2563eb !important;
+}
+
+/* Role Groups (Accordions theo Chức vụ) */
+.menu-group {
+    margin-bottom: 4px;
+}
+
+.menu-group-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.menu-group-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.menu-group-header .header-left svg {
+    flex-shrink: 0;
+    color: #2563eb;
+    transition: color 0.2s ease;
+}
+
+.menu-group-header:hover {
+    background: #f8fafc;
+    color: #1e3a8a;
+}
+
+.menu-group-header.expanded {
+    background: #f1f5f9;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.menu-group-header.expanded .header-left svg {
+    color: #1d4ed8;
+}
+
+.menu-group-header .chevron {
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: transform 0.22s ease, color 0.2s ease;
+    transform: rotate(-90deg);
+}
+
+.menu-group-header.expanded .chevron {
+    transform: rotate(0deg);
+    color: #1d4ed8;
+}
+
+/* Sub-items within Role Group */
+.menu-group-content {
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 2px solid #e2e8f0;
+    margin-top: 3px;
+    margin-bottom: 6px;
+    display: none;
+}
+
+.menu-sub-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: background 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.menu-sub-item .sub-bullet {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #94a3b8;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.menu-sub-item:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.menu-sub-item:hover .sub-bullet {
+    background: #2563eb;
+}
+
+.menu-sub-item.active {
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.menu-sub-item.active .sub-bullet {
+    background: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Divider & Section Labels */
+.menu-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 10px 4px;
+}
+
+.menu-section-label {
+    padding: 10px 12px 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* =========================================================================
+   GLOBAL DESIGN TOKENS & UTILITIES FOR MODERN ENTERPRISE LOOK
+   ========================================================================= */
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --primary-glow: rgba(37, 99, 235, 0.25);
+    --accent: #6366f1;
+    --slate-900: #0f172a;
+    --slate-800: #1e293b;
+    --slate-700: #334155;
+    --slate-600: #475569;
+    --slate-500: #64748b;
+    --slate-400: #94a3b8;
+    --slate-200: #e2e8f0;
+    --slate-100: #f1f5f9;
+    --slate-50: #f8fafc;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+}
+
+/* Global Smooth Transitions */
+button, a, input, select, textarea {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern Status & Pill Badges */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+.badge-pill-blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.badge-pill-green { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+.badge-pill-amber { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.badge-pill-rose { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
+.badge-pill-purple { background: #faf5ff; color: #7c3aed; border: 1px solid #e9d5ff; }
+
+/* Modern Card Container */
+.modern-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.modern-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08);
+}
+

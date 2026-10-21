@@ -1,0 +1,1280 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khung năng lực & Phiếu đánh giá - Quản trị Nhân sự</title>
+    <script src="api-config.js"></script>
+    <link rel="stylesheet" href="app-layout.css?v=2">
+    <script src="app-layout.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 280px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
+        .sidebar-header h2 { font-size: 18px; color: #1e3a8a; font-weight: 700; }
+        .sidebar-menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #475569; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 500; margin-bottom: 4px; transition: background 0.2s, color 0.2s; cursor: pointer; }
+        .menu-item:hover { background: #f1f5f9; color: #1e293b; }
+        .menu-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+        /* Main Wrapper */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #ffffff; padding: 16px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 16px; }
+        .user-name { font-weight: 600; color: #1e293b; font-size: 14px; text-align: right; }
+        .user-role-badge { display: block; font-size: 12px; color: #64748b; font-weight: 400; margin-top: 2px; }
+
+        .avatar-wrapper { position: relative; cursor: pointer; display: inline-block; transition: transform 0.2s; user-select: none; }
+        .avatar-wrapper:hover { transform: scale(1.06); }
+        .header-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white; font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #e2e8f0; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+            overflow: hidden;
+        }
+        .header-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .btn-header { background: none; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 13px; font-weight: 500; transition: 0.2s; }
+        .btn-header:hover { border-color: #2563eb; color: #2563eb; }
+        .btn-logout { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: #fca5a5; color: #991b1b; }
+
+        /* Content Area */
+        .content-area { flex: 1; overflow-y: auto; padding: 28px 36px; }
+        .container { max-width: 1320px; margin: 0 auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        .page-header p { font-size: 14px; color: #64748b; }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .btn-primary { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); transition: 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-success { background: #059669; color: white; border: none; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2); transition: 0.2s; }
+        .btn-success:hover { background: #047857; }
+        .btn-secondary { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-blue { background: #eff6ff; color: #2563eb; }
+        .stat-green { background: #ecfdf5; color: #059669; }
+        .stat-purple { background: #f5f3ff; color: #7c3aed; }
+        .stat-amber { background: #fffbeb; color: #d97706; }
+        .stat-info h3 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+        .stat-info span { font-size: 13px; color: #64748b; }
+
+        /* Info Alert Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .info-banner-text { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #1e3a8a; }
+
+        /* Filter Toolbar */
+        .toolbar { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .toolbar-left { display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px; flex-wrap: wrap; }
+        .search-input { width: 100%; max-width: 320px; padding: 9px 14px 9px 38px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") no-repeat 12px center; }
+        .search-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .filter-select { padding: 9px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; outline: none; cursor: pointer; color: #334155; }
+
+        /* Data Table */
+        .table-container { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { background: #f8fafc; padding: 14px 18px; font-size: 13px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        .data-table td { padding: 16px 18px; font-size: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        .data-table tr:hover { background: #f8fafc; }
+        .data-table tr:last-child td { border-bottom: none; }
+
+        /* Badges & Chips */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .badge-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge-primary { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-amber { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-purple { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .badge-gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        .chip-list { display: flex; flex-wrap: wrap; gap: 6px; max-width: 380px; }
+        .position-chip { display: inline-flex; align-items: center; background: #eff6ff; color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid #dbeafe; }
+        .position-chip.empty { background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; font-style: italic; }
+
+        .criteria-preview { display: flex; flex-direction: column; gap: 4px; }
+        .criterion-item { font-size: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #f8fafc; padding: 4px 8px; border-radius: 4px; border-left: 3px solid #2563eb; }
+        .criterion-name { font-weight: 500; color: #1e293b; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .criterion-weight { font-weight: 700; color: #2563eb; font-size: 11px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; }
+
+        /* Action buttons */
+        .action-group { display: flex; gap: 6px; align-items: center; }
+        .btn-action { width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; transition: 0.2s; }
+        .btn-action:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .btn-action.delete:hover { border-color: #dc2626; color: #dc2626; background: #fee2e2; }
+
+        /* Weight Meter Component */
+        .weight-meter {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .weight-meter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .weight-meter-title { font-size: 13px; font-weight: 600; color: #1e293b; }
+        .weight-meter-val { font-size: 14px; font-weight: 700; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; transition: width 0.3s ease, background 0.3s ease; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 100%; max-width: 760px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); animation: modalIn 0.2s ease-out; }
+        .modal-lg { max-width: 900px; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .modal-close { background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; line-height: 1; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc; border-radius: 0 0 16px 16px; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-hint { font-size: 12px; color: #64748b; margin-top: 4px; display: block; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* Dynamic Criteria Row Table */
+        .criteria-table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 12px; }
+        .criteria-table th { background: #f1f5f9; padding: 10px; font-size: 12px; font-weight: 600; color: #475569; text-align: left; }
+        .criteria-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        .btn-add-criterion { background: #eff6ff; color: #2563eb; border: 1px dashed #93c5fd; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-add-criterion:hover { background: #dbeafe; border-color: #2563eb; }
+
+        /* Evaluation Sheet Simulator UI */
+        .eval-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .eval-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e2e8f0; }
+        .eval-row:last-child { border-bottom: none; }
+        .eval-score-input { width: 80px; padding: 8px 10px; text-align: center; font-weight: 700; font-size: 16px; border: 2px solid #cbd5e1; border-radius: 8px; }
+        .eval-score-input:focus { border-color: #2563eb; }
+        .eval-summary-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+        .eval-summary-score { font-size: 36px; font-weight: 800; }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 14px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); color: white; min-width: 300px; animation: toastIn 0.3s ease; }
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+        .toast.info { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <svg width="28" height="28" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <h2>Tuyển dụng Nội bộ</h2>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <!-- Rendered by JS -->
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <div class="header">
+            <div class="user-info">
+                <div style="cursor: pointer;" onclick="window.location.href='profile.html'" title="Xem hồ sơ cá nhân">
+                    <div class="user-name" id="displayUsername">Đang tải...</div>
+                    <div class="user-role-badge" id="displayRoles">...</div>
+                </div>
+
+                <div class="avatar-wrapper" onclick="window.location.href='profile.html'" title="Hồ sơ cá nhân">
+                    <div class="header-avatar" id="headerAvatar">
+                        <span id="headerAvatarText">U</span>
+                        <img id="headerAvatarImg" src="" alt="Avatar" style="display: none;">
+                    </div>
+                </div>
+
+                <button class="btn-header" onclick="window.location.href='profile.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Hồ sơ
+                </button>
+                <button class="btn-header" onclick="window.location.href='change-password.html'">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.252l7.5-7.5A6 6 0 0115 7z"></path></svg>
+                    Đổi MK
+                </button>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1>Khung năng lực & Phiếu đánh giá</h1>
+                        <p>Bộ khung tiêu chí chuẩn mà mọi yêu cầu tuyển dụng và phiếu đánh giá đều tham chiếu tới (vai trò Trưởng phòng Nhân sự)</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-success" onclick="openEvaluationSimulatorModal()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            Mô phỏng sinh phiếu đánh giá
+                        </button>
+                        <button class="btn-primary" id="btnOpenCreate" onclick="openCreateFrameworkModal()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                            + Tạo khung năng lực mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info Alert Banner -->
+                <div class="info-banner">
+                    <div class="info-banner-text">
+                        <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <strong>Quy tắc nghiệp vụ cốt lõi:</strong> Mỗi chức danh gắn với một bộ tiêu chí đánh giá, mỗi tiêu chí có trọng số. 
+                            <strong>Tổng trọng số của một khung bằng 100%.</strong> Khung năng lực dùng chung được cho nhiều chức danh và tự động sinh ra phiếu đánh giá phỏng vấn.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-blue">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalFrameworks">0</h3>
+                            <span>Tổng khung năng lực</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-green">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statActiveFrameworks">0</h3>
+                            <span>Đang áp dụng</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-purple">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statMappedPositions">0</h3>
+                            <span>Chức danh đã ánh xạ</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-amber">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statTotalCriteria">100%</h3>
+                            <span>Chuẩn hóa trọng số (100%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Tìm theo mã, tên khung năng lực...">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="true">Đang áp dụng</option>
+                            <option value="false">Ngừng áp dụng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn-secondary" onclick="loadFrameworks()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Mã khung</th>
+                                <th style="width: 250px;">Tên khung năng lực</th>
+                                <th style="width: 320px;">Tiêu chí & Trọng số</th>
+                                <th>Chức danh dùng chung </th>
+                                <th style="width: 120px;">Trạng thái</th>
+                                <th style="width: 140px; text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="frameworksTableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">Đang tải dữ liệu khung năng lực...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Tạo / Cập nhật Khung năng lực & Tiêu chí -->
+    <div class="modal-overlay" id="frameworkModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="frameworkModalTitle">Tạo mới Khung năng lực</h3>
+                <button type="button" class="modal-close" onclick="closeModal('frameworkModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="frameworkForm" onsubmit="handleSaveFramework(event)">
+                    <input type="hidden" id="f_id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mã khung năng lực <span style="color: #dc2626;">*</span></label>
+                            <input type="text" id="f_code" class="form-control" placeholder="VD: KNL-DEV, KNL-QA, KNL-HR" required style="text-transform: uppercase;">
+                            <span class="form-hint">Mã duy nhất, viết hoa, không dấu.</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên khung năng lực <span style="color: #dc2626;">*</span></label>
+                            <input type="text" id="f_name" class="form-control" placeholder="VD: Khung năng lực Kỹ sư Phát triển Phần mềm" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả phạm vi áp dụng</label>
+                        <textarea id="f_description" class="form-control" rows="2" placeholder="Áp dụng chung cho các chức danh Backend, Frontend, Mobile, Fullstack..."></textarea>
+                    </div>
+
+                    <!-- Tiêu chí đánh giá & Trọng số -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="margin-bottom: 0; font-size: 14px; font-weight: 700; color: #0f172a;">
+                                Tiêu chí đánh giá & Trọng số <span style="color: #dc2626;">*</span>
+                            </label>
+                            <button type="button" class="btn-add-criterion" onclick="addCriterionRow()">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                                + Thêm tiêu chí
+                            </button>
+                        </div>
+
+                        <!-- Real-time Weight Meter -->
+                        <div class="weight-meter" id="weightMeter">
+                            <div class="weight-meter-header">
+                                <span class="weight-meter-title">Tổng trọng số tiêu chí:</span>
+                                <span class="weight-meter-val" id="totalWeightDisplay">0% / 100%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="weightProgressBar" style="width: 0%; background: #2563eb;"></div>
+                            </div>
+                            <span class="form-hint" id="weightMeterHint" style="margin-top: 6px;">Quy tắc: Tổng trọng số của tất cả tiêu chí phải bằng đúng 100%.</span>
+                        </div>
+
+                        <table class="criteria-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">#</th>
+                                    <th style="width: 240px;">Tên tiêu chí</th>
+                                    <th style="width: 110px;">Trọng số (%)</th>
+                                    <th>Mô tả / Hướng dẫn đánh giá</th>
+                                    <th style="width: 50px; text-align: center;">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="criteriaTableBody">
+                                <!-- Dynamic criteria rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Ánh xạ chức danh áp dụng khung năng lực -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label style="font-size: 14px; font-weight: 700; color: #0f172a;">
+                            Chức danh áp dụng khung năng lực này
+                        </label>
+                        <span class="form-hint" style="margin-bottom: 8px;">Một khung năng lực có thể áp dụng cho nhiều chức danh cùng khối nghề nghiệp:</span>
+                        <div id="positionCheckboxContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; max-height: 160px; overflow-y: auto; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                            <!-- Dynamic position checkboxes -->
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 16px;">
+                        <input type="checkbox" id="f_active" style="width: 18px; height: 18px; cursor: pointer;" checked>
+                        <label for="f_active" style="margin-bottom: 0; cursor: pointer; font-weight: 500;">
+                            Kích hoạt áp dụng khung năng lực
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('frameworkModal')">Hủy</button>
+                <button type="submit" form="frameworkForm" class="btn-primary" id="btnSaveFramework">Lưu khung năng lực</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Mô phỏng sinh phiếu đánh giá phỏng vấn -->
+    <div class="modal-overlay" id="evalSimulatorModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>Sinh phiếu đánh giá phỏng vấn</h3>
+                <button type="button" class="modal-close" onclick="closeModal('evalSimulatorModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #1e40af;">
+                    <strong>Nguyên lý </strong> Hệ thống tự động truy vết chức danh ứng tuyển của ứng viên, lấy ra Khung năng lực và các Tiêu chí kèm Trọng số tương ứng để sinh mẫu phiếu đánh giá. Điểm số cuối cùng được tính toán tự động bằng công thức bình quân gia quyền: <code>Σ (Điểm × Trọng số%)</code>.
+                </div>
+
+                <div class="form-row" style="margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label>Chọn chức danh cần sinh phiếu mẫu:</label>
+                        <select id="simPositionSelect" class="form-control" onchange="generateTemplateFromPositionSelect()">
+                            <option value="">-- Chọn chức danh --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hoặc chọn buổi phỏng vấn thực tế:</label>
+                        <select id="simInterviewSelect" class="form-control" onchange="generateTemplateFromInterviewSelect()">
+                            <option value="">-- Chọn buổi phỏng vấn --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="simTemplateContainer" style="display: none;">
+                    <div class="eval-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                            <div>
+                                <h4 id="simCandidateName" style="font-size: 16px; color: #0f172a; font-weight: 700;">Ứng viên: Nguyễn Văn A</h4>
+                                <span id="simPositionInfo" style="font-size: 13px; color: #64748b;">Vị trí: Lập trình viên Java Senior | Phòng Công nghệ</span>
+                            </div>
+                            <span class="badge badge-purple" id="simFrameworkBadge">KNL-DEV (100% trọng số)</span>
+                        </div>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;" id="simInstructions">
+                            Người phỏng vấn chấm điểm từng tiêu chí từ 1 đến 10. Hệ thống tự động tính điểm trung bình có trọng số.
+                        </p>
+
+                        <div id="simCriteriaList">
+                            <!-- Dynamic criteria evaluation rows -->
+                        </div>
+
+                        <div class="eval-summary-box">
+                            <div>
+                                <span style="font-size: 13px; opacity: 0.9; display: block;">Điểm đánh giá tổng kết (Có tính trọng số):</span>
+                                <h2 class="eval-summary-score" id="simTotalScoreDisplay">0.0 <span style="font-size: 18px; font-weight: 500;">/ 10</span></h2>
+                                <span id="simRatingLabel" style="font-size: 12px; opacity: 0.9;">Chưa có điểm</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <label style="display: block; font-size: 13px; margin-bottom: 6px; font-weight: 600;">Đề xuất tuyển dụng:</label>
+                                <select id="simRecommendedAction" style="padding: 8px 14px; border-radius: 8px; border: none; font-weight: 700; color: #1e3a8a; cursor: pointer; outline: none;">
+                                    <option value="HIRE">TUYỂN DỤNG (HIRE)</option>
+                                    <option value="NEXT_ROUND">PHỎNG VẤN VÒNG TIẾP (NEXT_ROUND)</option>
+                                    <option value="REJECT">TỪ CHỐI (REJECT)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
+                            <label>Nhận xét tổng thể của Người phỏng vấn:</label>
+                            <textarea id="simFeedback" class="form-control" rows="2" placeholder="Ghi nhận điểm mạnh, điểm cần cải thiện và lý do đưa ra đề xuất tuyển dụng..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('evalSimulatorModal')">Đóng</button>
+                <button type="button" class="btn-success" id="btnSubmitSimEvaluation" onclick="handleSubmitSimEvaluation()" style="display: none;">
+                    Lưu kết quả phiếu đánh giá
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Sidebar items managed centrally in app-layout.js
+
+        const API_CONFIG = { BASE_URL: '' };
+
+        const ROLES_INFO = {
+            'ROLE_CANDIDATE': { name: 'Ứng viên' },
+            'ROLE_RECRUITER': { name: 'Nhân viên tuyển dụng' },
+            'ROLE_HIRING_MANAGER': { name: 'Trưởng bộ phận' },
+            'ROLE_INTERVIEWER': { name: 'Người phỏng vấn' },
+            'ROLE_HR_MANAGER': { name: 'Trưởng phòng Nhân sự' },
+            'ROLE_APPROVER': { name: 'Người duyệt' },
+            'ROLE_ADMIN': { name: 'Quản trị hệ thống' },
+            'ROLE_USER': { name: 'Người dùng' }
+        };
+
+        function getAuthToken() {
+            return localStorage.getItem('accessToken') || localStorage.getItem('token') || '';
+        }
+
+        let currentUser = null;
+        let allFrameworks = [];
+        let allPositions = [];
+        let allInterviews = [];
+        let currentEditingCriteria = [];
+        let currentSimTemplate = null;
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            const token = getAuthToken();
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('token', token);
+
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    logout();
+                    return;
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    currentUser = data.data || data;
+
+                    document.getElementById('displayUsername').textContent = currentUser.fullName || currentUser.username;
+                    const roleNames = (currentUser.roles || []).map(r => ROLES_INFO[r]?.name || r).join(', ');
+                    document.getElementById('displayRoles').textContent = roleNames;
+
+                    if (currentUser.avatarUrl) {
+                        const img = document.getElementById('headerAvatarImg');
+                        img.src = currentUser.avatarUrl;
+                        img.style.display = 'block';
+                        document.getElementById('headerAvatarText').style.display = 'none';
+                    } else {
+                        const firstChar = (currentUser.fullName || currentUser.username || 'U').charAt(0).toUpperCase();
+                        document.getElementById('headerAvatarText').textContent = firstChar;
+                        document.getElementById('headerAvatarText').style.display = 'block';
+                        document.getElementById('headerAvatarImg').style.display = 'none';
+                    }
+
+                    renderSidebar(currentUser.roles || []);
+                    await loadPositions();
+                    await loadFrameworks();
+                    await loadInterviews();
+
+                    document.getElementById('searchInput').addEventListener('input', filterTable);
+                    document.getElementById('statusFilter').addEventListener('change', filterTable);
+                } else {
+                    console.error("Lỗi lấy thông tin người dùng:", res.status);
+                }
+            } catch (err) {
+                console.error("Lỗi khởi tạo:", err);
+            }
+        }
+
+        function renderSidebar(userRoles) {
+            renderAppSidebar(userRoles);
+        }
+
+        async function loadFrameworks() {
+            try {
+                const res = await fetch(API_CONFIG.BASE_URL + '/api/competencies', {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const result = await res.json();
+                allFrameworks = result.data || [];
+                renderFrameworks(allFrameworks);
+                updateStats(allFrameworks);
+            } catch (err) {
+                showToast("Lỗi tải danh sách khung năng lực", "error");
+            }
+        }
+
+        async function loadPositions() {
+            try {
+                const res = await fetch(API_CONFIG.BASE_URL + '/api/positions', {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const result = await res.json();
+                allPositions = result.data || [];
+                populatePositionSelects();
+            } catch (err) {
+                console.error("Lỗi tải danh sách chức danh:", err);
+            }
+        }
+
+        async function loadInterviews() {
+            try {
+                const res = await fetch(API_CONFIG.BASE_URL + '/api/interviews', {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const result = await res.json();
+                allInterviews = result.data || [];
+                populateInterviewSelect();
+            } catch (err) {
+                console.error("Lỗi tải danh sách phỏng vấn:", err);
+            }
+        }
+
+        function populatePositionSelects() {
+            const simPosSelect = document.getElementById('simPositionSelect');
+            simPosSelect.innerHTML = '<option value="">-- Chọn chức danh để sinh phiếu --</option>';
+            allPositions.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `${p.name} (${p.level}) [${p.code}]`;
+                simPosSelect.appendChild(opt);
+            });
+        }
+
+        function populateInterviewSelect() {
+            const simIntSelect = document.getElementById('simInterviewSelect');
+            simIntSelect.innerHTML = '<option value="">-- Chọn buổi phỏng vấn thực tế --</option>';
+            allInterviews.forEach(i => {
+                const opt = document.createElement('option');
+                opt.value = i.id;
+                opt.textContent = `Phỏng vấn #${i.id} - ${i.candidateName || 'Ứng viên'} (${i.jobTitle || 'Vị trí'}) - ${i.status}`;
+                simIntSelect.appendChild(opt);
+            });
+        }
+
+        function renderFrameworks(list) {
+            const tbody = document.getElementById('frameworksTableBody');
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">Chưa có khung năng lực nào trên hệ thống.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            list.forEach(f => {
+                const activeBadge = f.active 
+                    ? `<span class="badge badge-success">Đang áp dụng</span>`
+                    : `<span class="badge badge-danger">Ngừng áp dụng</span>`;
+
+                const totalWeightBadge = f.totalWeight === 100
+                    ? `<span class="badge badge-success" style="margin-left: 6px;">100% Trọng số</span>`
+                    : `<span class="badge badge-danger" style="margin-left: 6px;">${f.totalWeight}% (Sai quy tắc)</span>`;
+
+                // Render criteria items
+                let criteriaHtml = '';
+                if (f.criteria && f.criteria.length > 0) {
+                    criteriaHtml = '<div class="criteria-preview">';
+                    f.criteria.forEach(c => {
+                        criteriaHtml += `
+                            <div class="criterion-item" title="${escapeHtml(c.description || '')}">
+                                <span class="criterion-name">${escapeHtml(c.name)}</span>
+                                <span class="criterion-weight">${c.weight}%</span>
+                            </div>
+                        `;
+                    });
+                    criteriaHtml += '</div>';
+                } else {
+                    criteriaHtml = `<span style="color: #94a3b8; font-style: italic; font-size: 13px;">Chưa cấu hình tiêu chí</span>`;
+                }
+
+                // Render mapped positions chips
+                let positionsHtml = '';
+                if (f.positions && f.positions.length > 0) {
+                    positionsHtml = '<div class="chip-list">';
+                    f.positions.forEach(p => {
+                        positionsHtml += `
+                            <span class="position-chip" title="${escapeHtml(p.name)} (${p.level})">
+                                ${escapeHtml(p.name)}
+                            </span>
+                        `;
+                    });
+                    positionsHtml += '</div>';
+                } else {
+                    positionsHtml = `<span class="position-chip empty">Chưa gán chức danh</span>`;
+                }
+
+                html += `
+                    <tr>
+                        <td>
+                            <strong style="color: #1e3a8a; font-size: 13px;">${escapeHtml(f.code)}</strong>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600; color: #0f172a; margin-bottom: 2px;">${escapeHtml(f.name)}</div>
+                            <div style="font-size: 12px; color: #64748b;">${escapeHtml(f.description || 'Không có mô tả')}</div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 12px; font-weight: 600; color: #475569;">${f.criteriaCount} tiêu chí:</span>
+                                ${totalWeightBadge}
+                            </div>
+                            ${criteriaHtml}
+                        </td>
+                        <td>${positionsHtml}</td>
+                        <td>${activeBadge}</td>
+                        <td style="text-align: center;">
+                            <div class="action-group" style="justify-content: center;">
+                                <button class="btn-action" title="Mô phỏng phiếu đánh giá" onclick="previewFrameworkEvaluation(${f.id})">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                </button>
+                                <button class="btn-action" title="Chỉnh sửa khung năng lực" onclick="openEditFrameworkModal(${f.id})">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </button>
+                                <button class="btn-action" title="Bật/Tắt áp dụng" onclick="toggleFrameworkStatus(${f.id}, ${f.active})">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                </button>
+                                <button class="btn-action delete" title="Xóa khung năng lực" onclick="deleteFramework(${f.id})">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function updateStats(list) {
+            document.getElementById('statTotalFrameworks').textContent = list.length;
+            document.getElementById('statActiveFrameworks').textContent = list.filter(f => f.active).length;
+
+            let totalMapped = 0;
+            list.forEach(f => {
+                if (f.positions) totalMapped += f.positions.length;
+            });
+            document.getElementById('statMappedPositions').textContent = totalMapped;
+        }
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+
+            const filtered = allFrameworks.filter(f => {
+                const matchQuery = !query || 
+                    (f.code && f.code.toLowerCase().includes(query)) ||
+                    (f.name && f.name.toLowerCase().includes(query)) ||
+                    (f.description && f.description.toLowerCase().includes(query));
+
+                const matchStatus = status === '' || String(f.active) === status;
+                return matchQuery && matchStatus;
+            });
+
+            renderFrameworks(filtered);
+        }
+
+        // ==========================================
+        // MODAL & CRITERIA BUILDER
+        // ==========================================
+
+        function openCreateFrameworkModal() {
+            document.getElementById('frameworkModalTitle').textContent = "Tạo mới Khung năng lực";
+            document.getElementById('frameworkForm').reset();
+            document.getElementById('f_id').value = '';
+            document.getElementById('f_code').readOnly = false;
+            document.getElementById('f_active').checked = true;
+
+            currentEditingCriteria = [
+                { name: "Kiến thức chuyên môn cốt lõi", weight: 35.0, scaleMax: 10, description: "Hiểu biết kỹ thuật và quy trình chuyên môn", orderIndex: 1 },
+                { name: "Kỹ năng thực hành & Giải quyết vấn đề", weight: 35.0, scaleMax: 10, description: "Khả năng tư duy logic và triển khai công việc", orderIndex: 2 },
+                { name: "Kỹ năng giao tiếp & Làm việc nhóm", weight: 15.0, scaleMax: 10, description: "Giao tiếp, phản hồi và phối hợp liên phòng ban", orderIndex: 3 },
+                { name: "Thái độ & Phù hợp văn hóa tổ chức", weight: 15.0, scaleMax: 10, description: "Trách nhiệm, chủ động, đạo đức nghề nghiệp", orderIndex: 4 }
+            ];
+
+            renderCriteriaRows();
+            renderPositionCheckboxes([]);
+            openModal('frameworkModal');
+        }
+
+        function openEditFrameworkModal(id) {
+            const f = allFrameworks.find(item => item.id === id);
+            if (!f) return;
+
+            document.getElementById('frameworkModalTitle').textContent = "Cập nhật Khung năng lực";
+            document.getElementById('f_id').value = f.id;
+            document.getElementById('f_code').value = f.code;
+            document.getElementById('f_code').readOnly = true;
+            document.getElementById('f_name').value = f.name;
+            document.getElementById('f_description').value = f.description || '';
+            document.getElementById('f_active').checked = Boolean(f.active);
+
+            currentEditingCriteria = (f.criteria || []).map((c, idx) => ({
+                name: c.name,
+                weight: c.weight,
+                scaleMax: c.scaleMax || 10,
+                description: c.description || '',
+                orderIndex: c.orderIndex || (idx + 1)
+            }));
+
+            renderCriteriaRows();
+            const mappedIds = (f.positions || []).map(p => p.id);
+            renderPositionCheckboxes(mappedIds);
+            openModal('frameworkModal');
+        }
+
+        function addCriterionRow() {
+            currentEditingCriteria.push({
+                name: "",
+                weight: 10.0,
+                scaleMax: 10,
+                description: "",
+                orderIndex: currentEditingCriteria.length + 1
+            });
+            renderCriteriaRows();
+        }
+
+        function removeCriterionRow(index) {
+            if (currentEditingCriteria.length <= 1) {
+                showToast("Khung năng lực phải có ít nhất 1 tiêu chí đánh giá!", "error");
+                return;
+            }
+            currentEditingCriteria.splice(index, 1);
+            renderCriteriaRows();
+        }
+
+        function renderCriteriaRows() {
+            const tbody = document.getElementById('criteriaTableBody');
+            tbody.innerHTML = '';
+
+            currentEditingCriteria.forEach((c, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: #64748b;">${idx + 1}</td>
+                    <td>
+                        <input type="text" class="form-control" value="${escapeHtml(c.name)}" placeholder="Tên tiêu chí..." required oninput="updateCriterionField(${idx}, 'name', this.value)">
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" class="form-control" value="${c.weight}" min="1" max="100" step="1" required style="width: 75px; text-align: center; font-weight: 700;" oninput="updateCriterionField(${idx}, 'weight', parseFloat(this.value) || 0)">
+                            <span style="font-weight: 600; color: #64748b;">%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="${escapeHtml(c.description || '')}" placeholder="Mô tả hướng dẫn chấm điểm..." oninput="updateCriterionField(${idx}, 'description', this.value)">
+                    </td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn-action delete" onclick="removeCriterionRow(${idx})" title="Xóa tiêu chí">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            recalculateTotalWeight();
+        }
+
+        function updateCriterionField(index, field, value) {
+            if (currentEditingCriteria[index]) {
+                currentEditingCriteria[index][field] = value;
+                if (field === 'weight') {
+                    recalculateTotalWeight();
+                }
+            }
+        }
+
+        function recalculateTotalWeight() {
+            let total = 0;
+            currentEditingCriteria.forEach(c => {
+                total += (Number(c.weight) || 0);
+            });
+
+            const display = document.getElementById('totalWeightDisplay');
+            const pBar = document.getElementById('weightProgressBar');
+            const hint = document.getElementById('weightMeterHint');
+            const btnSave = document.getElementById('btnSaveFramework');
+
+            display.textContent = `${total.toFixed(1)}% / 100%`;
+            pBar.style.width = `${Math.min(total, 100)}%`;
+
+            if (Math.abs(total - 100.0) < 0.01) {
+                display.style.color = "#059669";
+                pBar.style.background = "#059669";
+                hint.textContent = "✓ Tuyệt vời! Tổng trọng số đã đạt đúng 100% theo tiêu chuẩn.";
+                hint.style.color = "#059669";
+                btnSave.disabled = false;
+            } else if (total < 100.0) {
+                const diff = (100.0 - total).toFixed(1);
+                display.style.color = "#d97706";
+                pBar.style.background = "#d97706";
+                hint.textContent = `⚠ Chưa đủ 100%! Còn thiếu ${diff}%. Vui lòng tăng trọng số các tiêu chí.`;
+                hint.style.color = "#d97706";
+                btnSave.disabled = true;
+            } else {
+                const diff = (total - 100.0).toFixed(1);
+                display.style.color = "#dc2626";
+                pBar.style.background = "#dc2626";
+                hint.textContent = `✕ Vượt quá 100%! Dư ${diff}%. Tổng trọng số của khung phải bằng 100%.`;
+                hint.style.color = "#dc2626";
+                btnSave.disabled = true;
+            }
+        }
+
+        function renderPositionCheckboxes(selectedIds) {
+            const container = document.getElementById('positionCheckboxContainer');
+            container.innerHTML = '';
+
+            if (allPositions.length === 0) {
+                container.innerHTML = `<span style="font-size: 13px; color: #94a3b8;">Chưa có chức danh nào trong hệ thống.</span>`;
+                return;
+            }
+
+            allPositions.forEach(p => {
+                const isChecked = selectedIds.includes(p.id) ? 'checked' : '';
+                const item = document.createElement('div');
+                item.style.display = 'flex';
+                item.style.alignItems = 'center';
+                item.style.gap = '8px';
+                item.innerHTML = `
+                    <input type="checkbox" id="chk_pos_${p.id}" value="${p.id}" ${isChecked} style="cursor: pointer;">
+                    <label for="chk_pos_${p.id}" style="margin-bottom: 0; font-size: 13px; cursor: pointer;">
+                        <strong>${escapeHtml(p.name)}</strong> (${p.level})
+                    </label>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function handleSaveFramework(e) {
+            e.preventDefault();
+
+            // Validate total weight
+            let total = 0;
+            currentEditingCriteria.forEach(c => total += (Number(c.weight) || 0));
+            if (Math.abs(total - 100.0) > 0.01) {
+                showToast(`Tổng trọng số phải bằng 100% (Hiện tại: ${total.toFixed(1)}%). Vui lòng cân đối lại!`, "error");
+                return;
+            }
+
+            // Gather position IDs
+            const selectedPosIds = [];
+            allPositions.forEach(p => {
+                const chk = document.getElementById(`chk_pos_${p.id}`);
+                if (chk && chk.checked) {
+                    selectedPosIds.push(p.id);
+                }
+            });
+
+            const id = document.getElementById('f_id').value;
+            const payload = {
+                code: document.getElementById('f_code').value.trim().toUpperCase(),
+                name: document.getElementById('f_name').value.trim(),
+                description: document.getElementById('f_description').value.trim(),
+                active: document.getElementById('f_active').checked,
+                criteria: currentEditingCriteria,
+                positionIds: selectedPosIds
+            };
+
+            const url = id ? `${API_CONFIG.BASE_URL}/api/competencies/${id}` : `${API_CONFIG.BASE_URL}/api/competencies`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAuthToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(id ? "Cập nhật khung năng lực thành công" : "Tạo khung năng lực mới thành công", "success");
+                    closeModal('frameworkModal');
+                    await loadFrameworks();
+                    await loadPositions();
+                } else {
+                    showToast(data.message || "Lỗi lưu khung năng lực", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        async function toggleFrameworkStatus(id, currentActive) {
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/competencies/${id}/status?active=${!currentActive}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Đã đổi trạng thái khung năng lực", "success");
+                    await loadFrameworks();
+                } else {
+                    showToast(data.message || "Lỗi thao tác", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        async function deleteFramework(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa khung năng lực này? Các chức danh đang ánh xạ sẽ được gỡ liên kết.")) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/competencies/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                if (res.ok) {
+                    showToast("Đã xóa khung năng lực thành công", "success");
+                    await loadFrameworks();
+                    await loadPositions();
+                } else {
+                    const data = await res.json();
+                    showToast(data.message || "Lỗi khi xóa", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        // ==========================================
+        // SIMULATE EVALUATION SHEET
+        // ==========================================
+
+        function openEvaluationSimulatorModal() {
+            document.getElementById('simPositionSelect').value = '';
+            document.getElementById('simInterviewSelect').value = '';
+            document.getElementById('simTemplateContainer').style.display = 'none';
+            document.getElementById('btnSubmitSimEvaluation').style.display = 'none';
+            openModal('evalSimulatorModal');
+        }
+
+        async function previewFrameworkEvaluation(frameworkId) {
+            const f = allFrameworks.find(item => item.id === frameworkId);
+            if (!f) return;
+
+            openEvaluationSimulatorModal();
+
+            // Render template directly from framework
+            const dummyTemplate = {
+                frameworkId: f.id,
+                frameworkCode: f.code,
+                frameworkName: f.name,
+                frameworkDescription: f.description,
+                positionName: f.positions && f.positions.length > 0 ? f.positions[0].name : "Chức danh mẫu",
+                candidateName: "Nguyễn Văn Ứng Viên (Mẫu)",
+                totalWeight: f.totalWeight,
+                instructions: "Người phỏng vấn chấm điểm từng tiêu chí từ 1 đến 10. Điểm tổng kết bình quân gia quyền được tính toán tự động.",
+                criteria: f.criteria
+            };
+
+            renderSimEvaluationForm(dummyTemplate);
+        }
+
+        async function generateTemplateFromPositionSelect() {
+            const posId = document.getElementById('simPositionSelect').value;
+            if (!posId) return;
+
+            document.getElementById('simInterviewSelect').value = '';
+
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/competencies/evaluations/template/position/${posId}`, {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    const tmpl = result.data;
+                    tmpl.candidateName = "Ứng viên mẫu thử nghiệm";
+                    renderSimEvaluationForm(tmpl);
+                } else {
+                    showToast(result.message || "Lỗi sinh phiếu đánh giá", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        async function generateTemplateFromInterviewSelect() {
+            const interviewId = document.getElementById('simInterviewSelect').value;
+            if (!interviewId) return;
+
+            document.getElementById('simPositionSelect').value = '';
+
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/competencies/evaluations/template/interview/${interviewId}`, {
+                    headers: { 'Authorization': 'Bearer ' + getAuthToken() }
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    renderSimEvaluationForm(result.data);
+                    document.getElementById('btnSubmitSimEvaluation').style.display = 'inline-flex';
+                } else {
+                    showToast(result.message || "Lỗi sinh phiếu đánh giá", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        function renderSimEvaluationForm(template) {
+            currentSimTemplate = template;
+            document.getElementById('simTemplateContainer').style.display = 'block';
+
+            document.getElementById('simCandidateName').textContent = `Ứng viên: ${template.candidateName || 'Chưa xác định'}`;
+            document.getElementById('simPositionInfo').textContent = `Vị trí: ${template.positionName || 'Vị trí tiêu chuẩn'} | ${template.departmentName || 'Bộ phận chuyên môn'}`;
+            document.getElementById('simFrameworkBadge').textContent = `${template.frameworkCode} (${template.frameworkName}) - Tổng trọng số: ${template.totalWeight}%`;
+
+            const listContainer = document.getElementById('simCriteriaList');
+            listContainer.innerHTML = '';
+
+            (template.criteria || []).forEach((c, idx) => {
+                const div = document.createElement('div');
+                div.className = 'eval-row';
+                div.innerHTML = `
+                    <div style="flex: 1; padding-right: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <strong style="color: #0f172a; font-size: 14px;">${idx + 1}. ${escapeHtml(c.name)}</strong>
+                            <span class="badge badge-primary">Trọng số: ${c.weight}%</span>
+                        </div>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 6px;">${escapeHtml(c.description || 'Đánh giá năng lực theo thang điểm 1 - 10')}</p>
+                        <input type="text" class="form-control" id="sim_comment_${idx}" placeholder="Ghi chú đánh giá tiêu chí này..." style="font-size: 13px; padding: 6px 10px;">
+                    </div>
+                    <div style="text-align: center;">
+                        <label style="display: block; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Điểm (1-10)</label>
+                        <input type="number" class="eval-score-input" id="sim_score_${idx}" min="1" max="10" step="0.5" value="8.0" oninput="calculateSimWeightedScore()">
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+
+            calculateSimWeightedScore();
+        }
+
+        function calculateSimWeightedScore() {
+            if (!currentSimTemplate || !currentSimTemplate.criteria) return;
+
+            let totalWeightedScore = 0.0;
+            let totalWeight = 0.0;
+
+            currentSimTemplate.criteria.forEach((c, idx) => {
+                const scoreInput = document.getElementById(`sim_score_${idx}`);
+                const score = parseFloat(scoreInput ? scoreInput.value : 0) || 0;
+                const weight = Number(c.weight) || 0;
+
+                totalWeightedScore += score * (weight / 100.0);
+                totalWeight += weight;
+            });
+
+            const scoreDisplay = document.getElementById('simTotalScoreDisplay');
+            const ratingLabel = document.getElementById('simRatingLabel');
+
+            scoreDisplay.innerHTML = `${totalWeightedScore.toFixed(2)} <span style="font-size: 18px; font-weight: 500;">/ 10</span>`;
+
+            if (totalWeightedScore >= 8.5) {
+                ratingLabel.textContent = "Xuất sắc (Đạt yêu cầu cao nhất) - Khuyến nghị TUYỂN DỤNG";
+                ratingLabel.style.color = "#86efac";
+                document.getElementById('simRecommendedAction').value = "HIRE";
+            } else if (totalWeightedScore >= 7.0) {
+                ratingLabel.textContent = "Khá tốt (Đạt yêu cầu cơ bản) - Xem xét TUYỂN DỤNG hoặc VÒNG TIẾP";
+                ratingLabel.style.color = "#fde047";
+                document.getElementById('simRecommendedAction').value = "HIRE";
+            } else if (totalWeightedScore >= 5.0) {
+                ratingLabel.textContent = "Trung bình (Cần đánh giá thêm) - Khuyến nghị PHỎNG VẤN VÒNG TIẾP";
+                ratingLabel.style.color = "#fdba74";
+                document.getElementById('simRecommendedAction').value = "NEXT_ROUND";
+            } else {
+                ratingLabel.textContent = "Chưa đạt yêu cầu năng lực - Khuyến nghị TỪ CHỐI";
+                ratingLabel.style.color = "#fca5a5";
+                document.getElementById('simRecommendedAction').value = "REJECT";
+            }
+        }
+
+        async function handleSubmitSimEvaluation() {
+            if (!currentSimTemplate || !currentSimTemplate.interviewId) {
+                showToast("Vui lòng chọn một buổi phỏng vấn thực tế để lưu kết quả!", "error");
+                return;
+            }
+
+            const criteriaScores = [];
+            currentSimTemplate.criteria.forEach((c, idx) => {
+                const scoreInput = document.getElementById(`sim_score_${idx}`);
+                const commentInput = document.getElementById(`sim_comment_${idx}`);
+                criteriaScores.push({
+                    criterionId: c.id,
+                    criterionName: c.name,
+                    weight: c.weight,
+                    score: parseFloat(scoreInput ? scoreInput.value : 0) || 0,
+                    comment: commentInput ? commentInput.value : ''
+                });
+            });
+
+            const payload = {
+                interviewId: currentSimTemplate.interviewId,
+                frameworkId: currentSimTemplate.frameworkId,
+                feedback: document.getElementById('simFeedback').value.trim(),
+                recommendedAction: document.getElementById('simRecommendedAction').value,
+                criteriaScores: criteriaScores
+            };
+
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/competencies/evaluations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getAuthToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    showToast(`Đã lưu phiếu đánh giá thành công! Điểm trọng số: ${result.data.weightedScore}/10`, "success");
+                    closeModal('evalSimulatorModal');
+                    await loadInterviews();
+                } else {
+                    showToast(result.message || "Lỗi lưu phiếu đánh giá", "error");
+                }
+            } catch (err) {
+                showToast("Lỗi kết nối máy chủ", "error");
+            }
+        }
+
+        // ==========================================
+        // HELPERS
+        // ==========================================
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function showToast(msg, type = "info") {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('userRoles');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
