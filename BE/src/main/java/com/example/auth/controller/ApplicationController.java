@@ -63,11 +63,75 @@ public class ApplicationController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
     public ResponseEntity<ApiResponse<ApplicationDto>> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {
         ApplicationDto dto = applicationService.updateStatus(id, status);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái thành công", dto));
+    }
+
+    /**
+     * KN-304, KN-306, KN-308: Lấy chi tiết hồ sơ ứng viên (có phân quyền Recruiter & Hiring Manager)
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<ApiResponse<com.example.auth.dto.CandidateDetailDto>> getCandidateDetail(
+            @PathVariable Long id,
+            Authentication authentication) {
+        com.example.auth.dto.CandidateDetailDto detail = applicationService.getCandidateDetail(id, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin chi tiết hồ sơ thành công", detail));
+    }
+
+    /**
+     * KN-307: Lấy danh sách ghi chú nội bộ của hồ sơ
+     */
+    @GetMapping("/{id}/notes")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<ApiResponse<List<com.example.auth.dto.ApplicationNoteDto>>> getApplicationNotes(
+            @PathVariable Long id,
+            Authentication authentication) {
+        List<com.example.auth.dto.ApplicationNoteDto> notes = applicationService.getApplicationNotes(id, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách ghi chú thành công", notes));
+    }
+
+    /**
+     * KN-307: Thêm ghi chú nội bộ mới cho hồ sơ
+     */
+    @PostMapping("/{id}/notes")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<ApiResponse<com.example.auth.dto.ApplicationNoteDto>> addApplicationNote(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body,
+            Authentication authentication) {
+        String content = body != null ? body.get("content") : "";
+        com.example.auth.dto.ApplicationNoteDto note = applicationService.addApplicationNote(id, content, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Thêm ghi chú thành công", note));
+    }
+
+    /**
+     * KN-307: Xóa ghi chú
+     */
+    @DeleteMapping("/notes/{noteId}")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<ApiResponse<Void>> deleteApplicationNote(
+            @PathVariable Long noteId,
+            Authentication authentication) {
+        applicationService.deleteApplicationNote(noteId, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Xóa ghi chú thành công", null));
+    }
+
+    /**
+     * KN-307: Cập nhật nhãn (Tags) cho hồ sơ
+     */
+    @PutMapping("/{id}/tags")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HIRING_MANAGER', 'ADMIN', 'HR_MANAGER')")
+    public ResponseEntity<ApiResponse<com.example.auth.dto.CandidateDetailDto>> updateApplicationTags(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, List<String>> body,
+            Authentication authentication) {
+        List<String> tags = body != null ? body.get("tags") : List.of();
+        com.example.auth.dto.CandidateDetailDto updated = applicationService.updateApplicationTags(id, tags, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật nhãn thành công", updated));
     }
 }

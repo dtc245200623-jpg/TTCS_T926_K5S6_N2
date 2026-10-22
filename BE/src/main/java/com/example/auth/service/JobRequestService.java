@@ -28,4 +28,10 @@ public interface JobRequestService {
 
     // Đăng tin & Cổng ứng tuyển - Nhân viên tuyển dụng
     JobRequestDto publishJobPosting(Long id, com.example.auth.dto.PublishJobPostingDto dto, String username);
+
+    // KN-301: Cho phép nhà tuyển dụng gỡ tin thủ công bất cứ lúc nào
+    JobRequestDto unpublishJobPosting(Long id, String username);
+
+    // KN-302, KN-303: Tác vụ tự động quét và ẩn tin quá hạn nhận hồ sơ
+    int autoExpireJobs();
 }

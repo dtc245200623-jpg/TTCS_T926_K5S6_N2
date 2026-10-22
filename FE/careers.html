@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -1257,7 +1257,7 @@
             <div class="search-container">
                 <div class="search-top-row">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="jobSearchInput" placeholder="Tìm kiếm theo từ khoá chức danh hoặc mô tả (ví dụ: Java Backend, React, BA, AI Engineer...)" onkeyup="if(event.key==='Enter') executeSearch()">
+                    <input type="text" id="jobSearchInput" placeholder="Tìm kiếm theo từ khoá chức danh hoặc mô tả (ví dụ: Java Backend, React, BA, AI Engineer...)" onkeyup="if(event.key==='Enter') executeSearch(true)">
                     <span class="search-shortcut-badge">Nhấn Enter ↵</span>
                 </div>
 
@@ -1305,7 +1305,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary" onclick="executeSearch()" style="height: 44px; padding: 0 22px;">
+                    <button type="button" class="btn btn-primary" onclick="executeSearch(true)" style="height: 44px; padding: 0 22px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         Tìm kiếm
                     </button>
@@ -1646,13 +1646,23 @@
             container.innerHTML = html;
         }
 
-        // Search API call with all criteria (Image 1, )
-        async function executeSearch() {
+        // Search API call with all criteria
+        async function executeSearch(scrollToResults = false) {
             const keyword = document.getElementById('jobSearchInput').value.trim();
             const deptId = document.getElementById('deptFilter').value;
             const locId = document.getElementById('locationFilter').value;
             const empTypeId = document.getElementById('empTypeFilter').value;
             const salaryFilter = document.getElementById('salaryFilter').value;
+
+            // Hiển thị loading spinner
+            const grid = document.getElementById('jobsGrid');
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <div style="display: inline-block; width: 48px; height: 48px; border: 4px solid var(--slate-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                    <p style="margin-top: 16px; color: var(--slate-500); font-size: 15px;">Đang tìm kiếm việc làm phù hợp...</p>
+                </div>
+            `;
+            document.getElementById('jobsCountText').innerHTML = '<span>Đang tìm kiếm...</span>';
 
             let url = `${API_BASE}/portal/public-jobs?`;
             const params = [];
@@ -1666,25 +1676,44 @@
             try {
                 const res = await fetch(url);
                 const result = await res.json();
-                if (res.ok && result.data) {
-                    allJobs = result.data;
-                    
-                    // Filter salary on client if chosen
+                if (res.ok && result.data !== undefined) {
+                    allJobs = result.data || [];
+
+                    // Lọc theo lương trên client — job lương ẩn (Thương lượng) luôn hiện
                     let filtered = allJobs;
                     if (salaryFilter === 'UNDER_15') {
-                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && j.maxSalary && j.maxSalary < 15000000);
+                        filtered = allJobs.filter(j => {
+                            if (!j.isSalaryVisible) return false; // ẩn lương không lọc được
+                            return j.maxSalary && j.maxSalary < 15000000;
+                        });
                     } else if (salaryFilter === '15_30') {
-                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && ((j.minSalary >= 15000000 || j.maxSalary >= 15000000) && (j.minSalary <= 30000000)));
+                        filtered = allJobs.filter(j => {
+                            if (!j.isSalaryVisible) return false;
+                            return (j.minSalary >= 15000000 || j.maxSalary >= 15000000) && (j.minSalary <= 30000000);
+                        });
                     } else if (salaryFilter === 'OVER_30') {
-                        filtered = allJobs.filter(j => j.isSalaryVisible !== false && j.maxSalary && j.maxSalary >= 30000000);
+                        filtered = allJobs.filter(j => {
+                            if (!j.isSalaryVisible) return false;
+                            return j.maxSalary && j.maxSalary >= 30000000;
+                        });
                     }
 
                     renderJobs(filtered);
+
+                    // Tự cuộn xuống kết quả nếu người dùng chủ động tìm
+                    if (scrollToResults) {
+                        setTimeout(() => {
+                            document.getElementById('jobsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 150);
+                    }
                 } else {
-                    document.getElementById('jobsGrid').innerHTML = '<p style="text-align: center; color: red;">Không thể tải danh sách việc làm.</p>';
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;">⚠️ Không thể tải danh sách việc làm. Vui lòng thử lại sau.</div>';
+                    document.getElementById('jobsCountText').innerHTML = '';
                 }
             } catch (err) {
                 console.error("Lỗi tìm kiếm:", err);
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;">⚠️ Lỗi kết nối máy chủ. Vui lòng kiểm tra và thử lại.</div>';
+                document.getElementById('jobsCountText').innerHTML = '';
             }
         }
 
@@ -1707,7 +1736,7 @@
             document.querySelectorAll('.chip-tag').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
             document.getElementById('jobSearchInput').value = tag;
-            executeSearch();
+            executeSearch(true); // cuộn xuống kết quả
         }
 
         function renderJobs(jobs) {

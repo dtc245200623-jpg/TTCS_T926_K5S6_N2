@@ -38,4 +38,14 @@ public interface CandidateApplicationService {
      * Recruiter xác nhận hoặc chỉnh sửa dữ liệu bóc tách từ CV (KN-287, KN-288)
      */
     ApplicationDto confirmOrUpdateParsedData(Long applicationId, ConfirmParsedDataDto dto, String recruiterUsername);
+
+    /**
+     * KN-293, KN-294: Lấy thông tin ứng tuyển để hiển thị màn hình xác nhận trước khi rút hồ sơ
+     */
+    CandidateWithdrawInfoDto getWithdrawalInfo(String trackingCode, String email);
+
+    /**
+     * KN-293, KN-294, KN-295, KN-296: Thực hiện rút hồ sơ ứng tuyển
+     */
+    PublicApplicationStatusDto withdrawApplication(CandidateWithdrawRequestDto request);
 }

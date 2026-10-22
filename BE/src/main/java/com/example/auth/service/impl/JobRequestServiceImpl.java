@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class JobRequestServiceImpl implements JobRequestService {
 
     private final JobRequestRepository jobRequestRepository;
@@ -864,5 +865,65 @@ public class JobRequestServiceImpl implements JobRequestService {
         job.setUpdatedAt(LocalDateTime.now());
         JobRequest saved = jobRequestRepository.save(job);
         return mapToDto(saved);
+    }
+
+    /**
+     * KN-301: Cho phép nhà tuyển dụng gỡ tin thủ công bất cứ lúc nào
+     * Khi gỡ tin, tin biến mất khỏi trang việc làm công khai ngay lập tức.
+     */
+    @Override
+    @Transactional
+    public JobRequestDto unpublishJobPosting(Long id, String username) {
+        JobRequest job = jobRequestRepository.findById(id)
+                .orElseThrow(() -> new AppException("Yêu cầu tuyển dụng không tồn tại"));
+
+        if (job.getPublishedAt() == null && !"OPEN".equalsIgnoreCase(job.getStatus())) {
+            throw new AppException("Tin tuyển dụng này hiện chưa được xuất bản hoặc đã được gỡ trước đó!");
+        }
+
+        // Gỡ tin công khai: xóa mốc thời gian xuất bản và đưa về trạng thái đã duyệt (APPROVED)
+        job.setPublishedAt(null);
+        job.setPublishedBy(null);
+        job.setStatus("APPROVED");
+        job.setUpdatedAt(LocalDateTime.now());
+
+        JobRequest saved = jobRequestRepository.save(job);
+        log.info("Nhà tuyển dụng '{}' đã gỡ tin tuyển dụng ID={} ({})", username, saved.getId(), saved.getTitle());
+        return mapToDto(saved);
+    }
+
+    /**
+     * KN-302, KN-303: Tác vụ tự động quét và ẩn tin quá hạn nhận hồ sơ
+     * Điều kiện: applicationDeadline < LocalDate.now() và tin đang mở/đang xuất bản
+     */
+    @Override
+    @Transactional
+    public int autoExpireJobs() {
+        LocalDate today = LocalDate.now();
+        List<JobRequest> all = jobRequestRepository.findAll();
+        int count = 0;
+
+        for (JobRequest job : all) {
+            boolean isPublishedOrOpen = "OPEN".equalsIgnoreCase(job.getStatus()) || job.getPublishedAt() != null;
+            boolean isExpired = job.getApplicationDeadline() != null && job.getApplicationDeadline().isBefore(today);
+
+            if (isPublishedOrOpen && isExpired) {
+                log.info(">>> [AUTO EXPIRE] Ẩn tin tuyển dụng quá hạn: ID={}, Tiêu đề={}, Hạn chót={}",
+                        job.getId(), job.getTitle(), job.getApplicationDeadline());
+
+                job.setStatus("CLOSED");
+                job.setClosingReason("EXPIRED");
+                job.setClosingNote("Hệ thống tự động đóng và ẩn tin do đã quá hạn nhận hồ sơ ngày " + job.getApplicationDeadline());
+                job.setClosedAt(LocalDateTime.now());
+                job.setClosedBy("HỆ THỐNG");
+                job.setUpdatedAt(LocalDateTime.now());
+
+                jobRequestRepository.save(job);
+                count++;
+            }
+        }
+
+        log.info(">>> [AUTO EXPIRE] Hoàn tất quét tin hết hạn. Tổng số tin đã tự động ẩn: {}", count);
+        return count;
     }
 }

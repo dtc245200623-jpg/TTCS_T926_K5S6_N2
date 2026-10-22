@@ -171,6 +171,27 @@ public class CareerPortalController {
     }
 
     /**
+     * KN-293, KN-294: Lấy thông tin ứng tuyển trước khi ứng viên xác nhận rút hồ sơ
+     */
+    @GetMapping("/withdraw-info")
+    public ResponseEntity<ApiResponse<CandidateWithdrawInfoDto>> getWithdrawalInfo(
+            @RequestParam("code") String code,
+            @RequestParam("email") String email) {
+        CandidateWithdrawInfoDto info = candidateApplicationService.getWithdrawalInfo(code, email);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin rút hồ sơ thành công", info));
+    }
+
+    /**
+     * KN-293, KN-294, KN-295, KN-296: Thực hiện rút hồ sơ ứng tuyển
+     */
+    @PostMapping("/withdraw")
+    public ResponseEntity<ApiResponse<PublicApplicationStatusDto>> withdrawApplication(
+            @Valid @RequestBody CandidateWithdrawRequestDto request) {
+        PublicApplicationStatusDto result = candidateApplicationService.withdrawApplication(request);
+        return ResponseEntity.ok(ApiResponse.success("Rút hồ sơ ứng tuyển thành công", result));
+    }
+
+    /**
      * Recruiter xem dữ liệu bóc tách từ CV đối chiếu với thông tin ứng viên (KN-287)
      */
     @GetMapping("/applications/{id}/parsed-data")

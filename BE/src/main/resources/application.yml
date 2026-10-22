@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
@@ -9,10 +9,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   datasource:
-    url: jdbc:sqlserver://localhost\SQLEXPRESS02;databaseName=TTCS_T926_K5S6_N2;encrypt=true;trustServerCertificate=true
+    url: ${DB_URL:${SPRING_DATASOURCE_URL:jdbc:sqlserver://${DB_SERVER:localhost\SQLEXPRESS02};databaseName=${DB_NAME:TTCS_T926_K5S6_N2};encrypt=true;trustServerCertificate=true}}
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: sa
-    password: 123
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:123}
   jpa:
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
@@ -22,10 +22,10 @@ spring:
       hibernate:
         format_sql: true
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: dtc245200623@ictu.edu.vn
-    password: syykmjwlzwekgovs
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:dtc245200623@ictu.edu.vn}
+    password: ${MAIL_PASSWORD:syykmjwlzwekgovs}
     properties:
       mail: 
         smtp: 
@@ -35,6 +35,7 @@ spring:
 
 jwt:
   # Secret key tối thiểu 256 bits cho HS256
-  secret: mySecretKeyForJwtSigningMustBeVeryLongAndSecure12345678
+  secret: ${JWT_SECRET:mySecretKeyForJwtSigningMustBeVeryLongAndSecure12345678}
   # Thời gian hết hạn của token: 24h = 86400000 ms
-  expiration-ms: 86400000
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+

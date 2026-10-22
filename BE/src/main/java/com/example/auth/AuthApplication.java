@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
+@org.springframework.scheduling.annotation.EnableScheduling
 public class AuthApplication {
 
     public static void main(String[] args) {
+        com.example.auth.config.DotenvLoader.load();
         SpringApplication.run(AuthApplication.class, args);
     }
 

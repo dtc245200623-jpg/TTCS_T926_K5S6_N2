@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class PublicApplicationStatusDto {
     private String trackingCode;
     private String candidateName;
+    private String candidateEmail;
     private String jobTitle;
     private String departmentName;
     private String locationName;

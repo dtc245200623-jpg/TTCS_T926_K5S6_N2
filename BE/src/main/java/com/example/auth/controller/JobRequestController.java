@@ -156,4 +156,27 @@ public class JobRequestController {
         JobRequestDto published = jobRequestService.publishJobPosting(id, dto, authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("Đăng tin tuyển dụng thành công", published));
     }
+
+    /**
+     * KN-301: Cho phép nhà tuyển dụng gỡ tin thủ công bất cứ lúc nào
+     */
+    @PostMapping("/{id:[0-9]+}/unpublish")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HR_MANAGER', 'ADMIN') or hasAuthority('ROLE_RECRUITER') or hasAuthority('ROLE_HR_MANAGER') or hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<JobRequestDto>> unpublishJobPosting(
+            @PathVariable Long id,
+            Authentication authentication) {
+        JobRequestDto unpublished = jobRequestService.unpublishJobPosting(id, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Gỡ tin tuyển dụng thành công", unpublished));
+    }
+
+    /**
+     * KN-302, KN-303: Kích hoạt quét và tự động ẩn các tin tuyển dụng quá hạn nhận hồ sơ
+     */
+    @PostMapping("/sync-expired")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'HR_MANAGER', 'ADMIN') or hasAuthority('ROLE_RECRUITER') or hasAuthority('ROLE_HR_MANAGER') or hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> syncExpiredJobs() {
+        int count = jobRequestService.autoExpireJobs();
+        return ResponseEntity.ok(ApiResponse.success("Đã hoàn tất đồng bộ tin quá hạn", 
+                java.util.Map.of("expiredJobsCount", count)));
+    }
 }

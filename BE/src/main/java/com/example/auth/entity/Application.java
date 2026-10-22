@@ -84,6 +84,21 @@ public class Application {
     @Builder.Default
     private Boolean parsedDataConfirmed = false;
 
+    @Column(name = "tags", columnDefinition = "NVARCHAR(1000)")
+    private String tags;
+
+    // KN-295: Trạng thái và lý do ứng viên tự rút hồ sơ
+    @Column(name = "withdrawal_reason", columnDefinition = "NVARCHAR(MAX)")
+    private String withdrawalReason;
+
+    @Column(name = "withdrawn_at")
+    private LocalDateTime withdrawnAt;
+
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    @Builder.Default
+    private java.util.List<ApplicationNote> notes = new java.util.ArrayList<>();
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

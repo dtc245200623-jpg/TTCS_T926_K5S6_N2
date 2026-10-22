@@ -38,6 +38,7 @@ public class CandidateApplicationServiceImpl implements CandidateApplicationServ
     private final JobRequestRepository jobRequestRepository;
     private final RecruitmentCategoryRepository categoryRepository;
     private final CvParserService cvParserService;
+    private final com.example.auth.service.EmailService emailService;
 
     private static final long MAX_CV_FILE_SIZE = 10 * 1024 * 1024; // 10MB (KN-281)
     private static final List<String> ALLOWED_CV_EXTS = Arrays.asList("pdf", "docx", "doc");
@@ -247,6 +248,12 @@ public class CandidateApplicationServiceImpl implements CandidateApplicationServ
         String statusDesc;
 
         switch (rawStatus) {
+            case "WITHDRAWN":
+            case "CANDIDATE_WITHDRAWN":
+                generalStatus = "Ứng viên rút";
+                statusCode = "WITHDRAWN";
+                statusDesc = "Hồ sơ đã được bạn chủ động rút khỏi đợt tuyển dụng này.";
+                break;
             case "SCREENING":
             case "REVIEWING":
                 generalStatus = "Đang xem xét";
@@ -402,12 +409,18 @@ public class CandidateApplicationServiceImpl implements CandidateApplicationServ
     }
 
     private void sendConfirmationEmail(String email, String candidateName, String trackingCode, String jobTitle) {
-        // Ghi log notification và có thể mở rộng gửi qua JavaMailSender nếu mail server sẵn sàng
+        String withdrawLink = "http://localhost:8080/career-portal.html?action=withdraw&code=" + trackingCode + "&email=" + email;
         log.info("=== [EMAIL CONFIRMATION SENT] ===");
         log.info("To: {}", email);
         log.info("Subject: Xác nhận tiếp nhận hồ sơ ứng tuyển vị trí {}", jobTitle);
-        log.info("Nội dung: Chào {}, Cảm ơn bạn đã ứng tuyển vào vị trí '{}'. Mã tra cứu hồ sơ của bạn là: {}. Bạn có thể tra cứu trạng thái hồ sơ bất kỳ lúc nào tại Cổng nghề nghiệp.", candidateName, jobTitle, trackingCode);
+        log.info("Mã tra cứu: {}, Link rút hồ sơ: {}", trackingCode, withdrawLink);
         log.info("==================================");
+
+        try {
+            emailService.sendApplicationConfirmationEmail(email, candidateName, jobTitle, trackingCode, withdrawLink);
+        } catch (Exception e) {
+            log.warn("Không thể gửi email thực tế qua SMTP: {}", e.getMessage());
+        }
     }
 
     private PublicJobDetailDto mapToPublicDetailDto(JobRequest job) {
@@ -481,6 +494,102 @@ public class CandidateApplicationServiceImpl implements CandidateApplicationServ
                 .cvParsingStatus(a.getCvParsingStatus())
                 .cvParsingNote(a.getCvParsingNote())
                 .parsedDataConfirmed(a.getParsedDataConfirmed())
+                .build();
+    }
+
+    /**
+     * KN-293, KN-294: Lấy thông tin ứng tuyển trước khi xác nhận rút hồ sơ
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CandidateWithdrawInfoDto getWithdrawalInfo(String trackingCode, String email) {
+        if (trackingCode == null || email == null) {
+            throw new AppException("Vui lòng cung cấp đầy đủ Mã tra cứu và Email.");
+        }
+        Application app = applicationRepository.findByTrackingCodeAndCandidateEmailIgnoreCase(trackingCode.trim(), email.trim())
+                .orElseThrow(() -> new AppException("Không tìm thấy hồ sơ ứng tuyển tương ứng với thông tin này."));
+
+        boolean isAlreadyWithdrawn = "WITHDRAWN".equalsIgnoreCase(app.getStatus()) || "CANDIDATE_WITHDRAWN".equalsIgnoreCase(app.getStatus());
+
+        return CandidateWithdrawInfoDto.builder()
+                .applicationId(app.getId())
+                .trackingCode(app.getTrackingCode())
+                .candidateName(app.getCandidateName())
+                .candidateEmail(app.getCandidateEmail())
+                .jobId(app.getJobRequest() != null ? app.getJobRequest().getId() : null)
+                .jobTitle(app.getJobRequest() != null ? app.getJobRequest().getTitle() : null)
+                .departmentName(app.getJobRequest() != null && app.getJobRequest().getDepartment() != null ? app.getJobRequest().getDepartment().getName() : null)
+                .appliedAt(app.getAppliedAt())
+                .status(app.getStatus())
+                .isAlreadyWithdrawn(isAlreadyWithdrawn)
+                .withdrawalReason(app.getWithdrawalReason())
+                .withdrawnAt(app.getWithdrawnAt())
+                .build();
+    }
+
+    /**
+     * KN-293, KN-294, KN-295, KN-296: Thực hiện rút hồ sơ ứng tuyển
+     */
+    @Override
+    @Transactional
+    public PublicApplicationStatusDto withdrawApplication(CandidateWithdrawRequestDto request) {
+        if (request == null || request.getTrackingCode() == null || request.getEmail() == null) {
+            throw new AppException("Vui lòng nhập đầy đủ Mã tra cứu và Email.");
+        }
+
+        // KN-294: Bắt buộc bước xác nhận lại trước khi rút hồ sơ
+        if (!Boolean.TRUE.equals(request.getConfirm())) {
+            throw new AppException("Vui lòng xác nhận đồng ý rút hồ sơ trước khi thực hiện.");
+        }
+
+        Application app = applicationRepository.findByTrackingCodeAndCandidateEmailIgnoreCase(
+                request.getTrackingCode().trim(), request.getEmail().trim().toLowerCase(Locale.ROOT))
+                .orElseThrow(() -> new AppException("Không tìm thấy hồ sơ ứng tuyển với thông tin đã cung cấp."));
+
+        if ("WITHDRAWN".equalsIgnoreCase(app.getStatus()) || "CANDIDATE_WITHDRAWN".equalsIgnoreCase(app.getStatus())) {
+            throw new AppException("Hồ sơ này đã được rút trước đó vào lúc " + app.getWithdrawnAt());
+        }
+
+        if ("HIRED".equalsIgnoreCase(app.getStatus())) {
+            throw new AppException("Hồ sơ đã ở trạng thái trúng tuyển (HIRED), không thể rút hồ sơ trực tuyến. Vui lòng liên hệ trực tiếp Bộ phận Tuyển dụng.");
+        }
+
+        // KN-295: Cập nhật trạng thái sang "Ứng viên rút" (WITHDRAWN)
+        String reason = (request.getReason() != null && !request.getReason().trim().isEmpty())
+                ? request.getReason().trim() : "Ứng viên chủ động rút hồ sơ";
+
+        app.setStatus("WITHDRAWN");
+        app.setWithdrawalReason(reason);
+        app.setWithdrawnAt(LocalDateTime.now());
+        app.setUpdatedAt(LocalDateTime.now());
+
+        Application saved = applicationRepository.save(app);
+        log.info("Ứng viên rút hồ sơ thành công: AppID={}, TrackingCode={}, Candidate={}, Reason={}",
+                saved.getId(), saved.getTrackingCode(), saved.getCandidateName(), reason);
+
+        // KN-296: Gửi thông báo cho Recruiter phụ trách khi ứng viên rút hồ sơ
+        if (saved.getJobRequest() != null && saved.getJobRequest().getRecruiter() != null) {
+            com.example.auth.entity.User recruiter = saved.getJobRequest().getRecruiter();
+            emailService.sendCandidateWithdrawalNotification(
+                    recruiter.getEmail(),
+                    recruiter.getFullName() != null ? recruiter.getFullName() : recruiter.getUsername(),
+                    saved.getCandidateName(),
+                    saved.getCandidateEmail(),
+                    saved.getJobRequest().getTitle(),
+                    saved.getTrackingCode(),
+                    reason
+            );
+        }
+
+        return PublicApplicationStatusDto.builder()
+                .trackingCode(saved.getTrackingCode())
+                .candidateName(saved.getCandidateName())
+                .candidateEmail(saved.getCandidateEmail())
+                .jobTitle(saved.getJobRequest() != null ? saved.getJobRequest().getTitle() : null)
+                .appliedAt(saved.getAppliedAt())
+                .generalStatus("Ứng viên rút")
+                .statusCode("WITHDRAWN")
+                .statusDescription("Hồ sơ của bạn đã được rút thành công. Rất hy vọng có cơ hội hợp tác cùng bạn trong các đợt tuyển dụng tương lai.")
                 .build();
     }
 }
