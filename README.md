@@ -5,7 +5,7 @@
 > **Mã dự án:** `TTCS_T926_K5S6_N2`  
 > **Nhóm thực hiện:** Nhóm 2  
 > **Thời gian dự kiến:** 8 tuần (8 Sprint, mỗi Sprint 1 tuần)  
-> **Phương pháp phát triển:** Agile/Scrum
+> **Phương pháp phát triển:** Agile/Scru
 
 ---
 
